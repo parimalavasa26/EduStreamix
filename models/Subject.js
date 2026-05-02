@@ -15,7 +15,9 @@ const videoSchema = new mongoose.Schema({
 }, { _id: false });
 
 const chapterSchema = new mongoose.Schema({
+  lessonNo:    { type: String, default: '' },
   chapterName: { type: String, required: true },
+  type:        { type: String, default: '' },
   videos:      [videoSchema]
 }, { _id: false });
 

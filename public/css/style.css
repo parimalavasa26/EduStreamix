@@ -199,12 +199,17 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .back-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.85rem;font-weight:600;color:var(--accent-1);margin-bottom:.8rem;cursor:pointer;transition:opacity .3s;background:none;border:none}
 .back-link:hover{opacity:.7}
 .chapters-title{font-family:var(--font-heading);font-size:1.5rem;font-weight:700}
-.chapters-list{display:flex;flex-direction:column;gap:.7rem}
-.chapter-btn{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.4rem;background:var(--bg-card);border:1px solid var(--border-glass);border-radius:14px;text-align:left;width:100%;font-size:.95rem;font-weight:500;cursor:pointer;transition:all .3s var(--ease-out);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
-.chapter-btn:hover{background:var(--bg-card-hover);border-color:var(--accent-1);transform:translateX(6px)}
-.ch-num{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(108,99,255,0.12);border-radius:10px;font-family:var(--font-heading);font-weight:700;font-size:.85rem;color:var(--accent-1);flex-shrink:0}
-.ch-name{color:var(--text-primary)}
-.ch-unit{margin-left:auto;font-size:.75rem;color:var(--text-muted)}
+.chapters-list{display:flex;flex-direction:column;gap:2.5rem}
+.chapters-table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.chapters-table th, .chapters-table td{border:1px solid #b8c2d1;padding:0.8rem 1rem}
+.unit-title-row th{background:#f8dfcc;color:#000;font-family:var(--font-heading);font-size:1.15rem;font-weight:700;text-align:center}
+.col-headers-row th{background:#1d3966;color:#fff;font-weight:600;font-size:0.95rem;text-align:center}
+.chapter-row{cursor:pointer;transition:background 0.2s;background:#fff}
+.chapter-row:hover{background:#edf2f7}
+.chapter-row td{color:var(--text-primary);font-size:0.95rem;vertical-align:middle}
+.col-lesson{text-align:center;font-weight:600;width:120px}
+.col-title{font-weight:500}
+.col-type{color:var(--text-secondary)}
 
 /* Video */
 .video-section{animation:fadeInUp .5s var(--ease-out) both}

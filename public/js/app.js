@@ -27,16 +27,51 @@
         return;
       }
       chaptersList.innerHTML = '';
-      data.chapters.forEach((ch, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'chapter-btn';
-        btn.innerHTML = '<span class="ch-num">' + (i+1) + '</span><span class="ch-name">' + ch.chapterName + '</span><span class="ch-unit">' + (ch.unitName||'') + '</span>';
-        btn.addEventListener('click', () => {
-          currentChapter = ch.chapterName;
-          showVideo();
-        });
-        chaptersList.appendChild(btn);
+      
+      const units = {};
+      data.chapters.forEach(ch => {
+        const u = ch.unitName || 'General';
+        if (!units[u]) units[u] = [];
+        units[u].push(ch);
       });
+
+      for (const [unitName, chaps] of Object.entries(units)) {
+        const table = document.createElement('table');
+        table.className = 'chapters-table';
+        
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+          <tr class="unit-title-row">
+            <th colspan="3">${unitName}</th>
+          </tr>
+          <tr class="col-headers-row">
+            <th>Lesson No.</th>
+            <th>Chapter Title</th>
+            <th>Type</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+        
+        const tbody = document.createElement('tbody');
+        chaps.forEach(ch => {
+          const tr = document.createElement('tr');
+          tr.className = 'chapter-row';
+          tr.addEventListener('click', () => {
+            currentChapter = ch.chapterName;
+            showVideo();
+          });
+          
+          tr.innerHTML = `
+            <td class="col-lesson">${ch.lessonNo || '-'}</td>
+            <td class="col-title">${ch.chapterName || '-'}</td>
+            <td class="col-type">${ch.type || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        
+        chaptersList.appendChild(table);
+      }
     } catch (e) {
       chaptersList.innerHTML = '<p class="no-data-msg error-msg">Error loading chapters.</p>';
     }
