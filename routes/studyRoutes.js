@@ -7,8 +7,11 @@ const router = express.Router();
 const ctrl = require('../controllers/studyController');
 
 // ── Pages ───────────────────────────────────
-router.get('/',      ctrl.renderLanding);
-router.get('/study', ctrl.renderStudy);
+router.get('/',         ctrl.renderLanding);
+router.get('/classes',  ctrl.renderClasses);
+router.get('/boards',   ctrl.renderBoards);
+router.get('/subjects', ctrl.renderSubjects);
+router.get('/study',    ctrl.renderStudy);
 
 // ── API Endpoints ───────────────────────────
 router.get('/api/subjects', ctrl.getSubjects);

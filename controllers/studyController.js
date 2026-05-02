@@ -32,14 +32,45 @@ exports.renderLanding = (req, res) => {
 };
 
 /**
- * GET /study  — Render study selection page
- * Optional query params: grade, board, language
+ * GET /classes  — Render class selection page (Step 1)
+ */
+exports.renderClasses = (req, res) => {
+  res.render('classes');
+};
+
+/**
+ * GET /boards  — Render board selection page (Step 2)
+ * Query params: grade
+ */
+exports.renderBoards = (req, res) => {
+  const { grade } = req.query;
+  res.render('boards', {
+    selectedGrade: grade || '8'
+  });
+};
+
+/**
+ * GET /subjects  — Render subjects page (Step 3)
+ * Query params: grade, board
+ */
+exports.renderSubjects = (req, res) => {
+  const { grade, board } = req.query;
+  res.render('subjects', {
+    selectedGrade: grade || '8',
+    selectedBoard: board || 'CBSE'
+  });
+};
+
+/**
+ * GET /study  — Render study page (chapters, video player)
+ * Query params: grade, board, subject
  */
 exports.renderStudy = (req, res) => {
-  const { grade, board, language } = req.query;
+  const { grade, board, subject, language } = req.query;
   res.render('study', {
     selectedGrade:    grade || null,
     selectedBoard:    board || null,
+    selectedSubject:  subject || null,
     selectedLanguage: language || null
   });
 };

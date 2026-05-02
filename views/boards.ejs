@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Select your board — SSC, CBSE, or ICSE — on EduStreamix." />
+  <title>Select Board — EduStreamix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="step-body">
+
+  <nav class="navbar scrolled" id="navbar">
+    <a href="/" class="nav-brand">
+      <span class="brand-icon">🎓</span>
+      <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+    </div>
+  </nav>
+
+  <main class="step-main">
+    <div class="step-container">
+
+      <!-- Progress indicator -->
+      <div class="step-progress" id="step-progress">
+        <div class="step-dot completed" data-step="1">
+          <span class="step-dot-inner">✓</span>
+          <span class="step-dot-label">Class</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step-dot active" data-step="2">
+          <span class="step-dot-inner">2</span>
+          <span class="step-dot-label">Board</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="3">
+          <span class="step-dot-inner">3</span>
+          <span class="step-dot-label">Subjects</span>
+        </div>
+      </div>
+
+      <div class="step-header">
+        <a href="/classes" class="back-step-link" id="back-to-classes">← Back to Classes</a>
+        <h1 class="step-title">Select <span class="hero-highlight">Board</span></h1>
+        <p class="step-subtitle">Choose your education board to see relevant subjects</p>
+      </div>
+
+      <div class="board-grid" id="board-grid">
+        <a href="/subjects?grade=<%= selectedGrade %>&board=SSC" class="board-card" id="board-card-ssc">
+          <div class="board-card-glow"></div>
+          <span class="board-icon">🏫</span>
+          <h3 class="board-card-title">SSC</h3>
+          <p class="board-card-label">State Board</p>
+          <span class="board-card-arrow">→</span>
+        </a>
+        <a href="/subjects?grade=<%= selectedGrade %>&board=CBSE" class="board-card" id="board-card-cbse">
+          <div class="board-card-glow"></div>
+          <span class="board-icon">📘</span>
+          <h3 class="board-card-title">CBSE</h3>
+          <p class="board-card-label">Central Board</p>
+          <span class="board-card-arrow">→</span>
+        </a>
+        <a href="/subjects?grade=<%= selectedGrade %>&board=ICSE" class="board-card" id="board-card-icse">
+          <div class="board-card-glow"></div>
+          <span class="board-icon">🎓</span>
+          <h3 class="board-card-title">ICSE</h3>
+          <p class="board-card-label">Indian Certificate</p>
+          <span class="board-card-arrow">→</span>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand">🎓 EduStreami<span class="brand-x">x</span></span>
+      <span class="footer-copy">&copy; 2026 EduStreamix. Built for learners.</span>
+    </div>
+  </footer>
+
+</body>
+</html>

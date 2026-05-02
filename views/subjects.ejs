@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Browse subjects on EduStreamix and start learning." />
+  <title>Subjects — EduStreamix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="step-body">
+
+  <nav class="navbar scrolled" id="navbar">
+    <a href="/" class="nav-brand">
+      <span class="brand-icon">🎓</span>
+      <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+    </div>
+  </nav>
+
+  <main class="step-main">
+    <div class="step-container">
+
+      <!-- Progress indicator -->
+      <div class="step-progress" id="step-progress">
+        <div class="step-dot completed" data-step="1">
+          <span class="step-dot-inner">✓</span>
+          <span class="step-dot-label">Class</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step-dot completed" data-step="2">
+          <span class="step-dot-inner">✓</span>
+          <span class="step-dot-label">Board</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step-dot active" data-step="3">
+          <span class="step-dot-inner">3</span>
+          <span class="step-dot-label">Subjects</span>
+        </div>
+      </div>
+
+      <div class="step-header">
+        <a href="/boards?grade=<%= selectedGrade %>" class="back-step-link" id="back-to-boards">← Back to Boards</a>
+        <h1 class="step-title"><span class="hero-highlight">Subjects</span></h1>
+        <p class="step-subtitle">Pick a subject to explore chapters and start watching</p>
+      </div>
+
+      <div class="subjects-grid" id="subjects-grid">
+        <!-- Filled by JS -->
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand">🎓 EduStreami<span class="brand-x">x</span></span>
+      <span class="footer-copy">&copy; 2026 EduStreamix. Built for learners.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const GRADE = '<%= selectedGrade %>';
+      const BOARD = '<%= selectedBoard %>';
+
+      const SUBJECT_ICONS = {
+        'Mathematics':'📐','Science':'🔬','Social Science':'🌍','English':'📖',
+        'Hindi':'📝','Physics':'⚡','Chemistry':'🧪','Biology':'🧬',
+        'General Science':'🔬','Social Studies':'🌍','Telugu':'📜',
+        'Physical Science':'⚡','Biological Science':'🧬'
+      };
+
+      const grid = document.getElementById('subjects-grid');
+
+      async function loadSubjects() {
+        grid.innerHTML = Array(5).fill('<div class="skeleton-card"></div>').join('');
+        try {
+          const res = await fetch('/api/subjects?grade=' + GRADE + '&board=' + BOARD);
+          const data = await res.json();
+          if (!data.subjects || !data.subjects.length) {
+            grid.innerHTML = '<p class="no-data-msg">No subjects found for this selection.</p>';
+            return;
+          }
+          grid.innerHTML = '';
+          data.subjects.forEach(subj => {
+            const card = document.createElement('a');
+            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(subj);
+            card.className = 'subject-card';
+            card.id = 'subject-' + subj.toLowerCase().replace(/\s+/g, '-');
+            card.innerHTML =
+              '<span class="subject-icon">' + (SUBJECT_ICONS[subj] || '📖') + '</span>' +
+              '<span class="subject-name">' + subj + '</span>';
+            grid.appendChild(card);
+          });
+        } catch (e) {
+          grid.innerHTML = '<p class="no-data-msg error-msg">Error loading subjects. Please try again.</p>';
+        }
+      }
+
+      loadSubjects();
+    })();
+  </script>
+
+</body>
+</html>

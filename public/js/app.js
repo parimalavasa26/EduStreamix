@@ -5,76 +5,25 @@
   'use strict';
 
   const GRADE = window.__GRADE__;
-  let BOARD = window.__BOARD__;
-  let currentSubject = null;
+  const BOARD = window.__BOARD__;
+  const SUBJECT = window.__SUBJECT__;
   let currentChapter = null;
 
   // DOM
-  const subjectsSection = document.getElementById('subjects-section');
-  const subjectsGrid = document.getElementById('subjects-grid');
   const chaptersSection = document.getElementById('chapters-section');
   const chaptersList = document.getElementById('chapters-list');
-  const chaptersTitle = document.getElementById('chapters-title');
   const videoSection = document.getElementById('video-section');
 
-  const SUBJECT_ICONS = {
-    'Mathematics':'📐','Science':'🔬','Social Science':'🌍','English':'📖',
-    'Hindi':'📝','Physics':'⚡','Chemistry':'🧪','Biology':'🧬',
-    'General Science':'🔬','Social Studies':'🌍','Telugu':'📜',
-    'Physical Science':'⚡','Biological Science':'🧬'
-  };
-
-  // ── Board Tabs ─────────────────────────────
-  document.querySelectorAll('.board-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.board-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      BOARD = tab.dataset.board;
-      showSubjects();
-      chaptersSection.style.display = 'none';
-      videoSection.style.display = 'none';
-    });
-  });
-
-  // ── Show Subjects ──────────────────────────
-  async function showSubjects() {
-    subjectsSection.style.display = '';
-    subjectsGrid.innerHTML = Array(5).fill('<div class="skeleton-card"></div>').join('');
-    try {
-      const res = await fetch('/api/subjects?grade=' + GRADE + '&board=' + BOARD);
-      const data = await res.json();
-      if (!data.subjects || !data.subjects.length) {
-        subjectsGrid.innerHTML = '<p style="color:var(--accent-3)">No subjects found.</p>';
-        return;
-      }
-      subjectsGrid.innerHTML = '';
-      data.subjects.forEach(subj => {
-        const card = document.createElement('button');
-        card.className = 'subject-card';
-        card.innerHTML = '<span class="subject-icon">' + (SUBJECT_ICONS[subj] || '📖') + '</span><span class="subject-name">' + subj + '</span>';
-        card.addEventListener('click', () => {
-          currentSubject = subj;
-          showChapters();
-        });
-        subjectsGrid.appendChild(card);
-      });
-    } catch (e) {
-      subjectsGrid.innerHTML = '<p style="color:var(--accent-3)">Error loading subjects.</p>';
-    }
-  }
-
-  // ── Show Chapters ──────────────────────────
+  // ── Load Chapters on Init ─────────────────
   async function showChapters() {
-    subjectsSection.style.display = 'none';
-    videoSection.style.display = 'none';
     chaptersSection.style.display = '';
-    chaptersTitle.textContent = currentSubject + ' — Chapters';
+    videoSection.style.display = 'none';
     chaptersList.innerHTML = Array(6).fill('<div class="skeleton-item"></div>').join('');
     try {
-      const res = await fetch('/api/chapters?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(currentSubject));
+      const res = await fetch('/api/chapters?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(SUBJECT));
       const data = await res.json();
       if (!data.chapters || !data.chapters.length) {
-        chaptersList.innerHTML = '<p style="color:var(--accent-3)">No chapters found.</p>';
+        chaptersList.innerHTML = '<p class="no-data-msg">No chapters found.</p>';
         return;
       }
       chaptersList.innerHTML = '';
@@ -89,14 +38,13 @@
         chaptersList.appendChild(btn);
       });
     } catch (e) {
-      chaptersList.innerHTML = '<p style="color:var(--accent-3)">Error loading chapters.</p>';
+      chaptersList.innerHTML = '<p class="no-data-msg error-msg">Error loading chapters.</p>';
     }
   }
 
   // ── Show Video ─────────────────────────────
   async function showVideo() {
     chaptersSection.style.display = 'none';
-    subjectsSection.style.display = 'none';
     videoSection.style.display = '';
 
     const titleEl = document.getElementById('video-title');
@@ -116,20 +64,20 @@
 
     try {
       const params = new URLSearchParams({
-        chapter: currentChapter, grade: GRADE, language: 'English', board: BOARD, subject: currentSubject
+        chapter: currentChapter, grade: GRADE, language: 'English', board: BOARD, subject: SUBJECT
       });
       const res = await fetch('/api/video?' + params.toString());
       const data = await res.json();
 
       if (!data.video) {
         titleEl.textContent = 'No video found';
-        loader.innerHTML = '<p style="color:var(--accent-3)">No video found for this topic.</p>';
+        loader.innerHTML = '<p class="no-data-msg error-msg">No video found for this topic.</p>';
         return;
       }
       iframe.src = data.video.embedUrl;
       iframe.style.display = 'block';
       loader.style.display = 'none';
-      titleEl.textContent = data.video.title || (currentChapter + ' — ' + currentSubject);
+      titleEl.textContent = data.video.title || (currentChapter + ' — ' + SUBJECT);
 
       let meta = '';
       if (data.video.viewCount) meta += '<span>👁️ ' + Number(data.video.viewCount).toLocaleString() + ' views</span>';
@@ -141,7 +89,7 @@
       showQuiz();
     } catch (e) {
       titleEl.textContent = 'Error loading video';
-      loader.innerHTML = '<p style="color:var(--accent-3)">Could not load video.</p>';
+      loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
     }
   }
 
@@ -160,7 +108,7 @@
       'Biology': 'This chapter explores living systems, their structures, and functions. Focus on understanding how different biological processes are interconnected.'
     };
 
-    const summary = summaries[currentSubject] || 'This chapter covers important concepts in ' + currentSubject + '. Pay close attention to key definitions, formulas, and real-world applications discussed in the video.';
+    const summary = summaries[SUBJECT] || 'This chapter covers important concepts in ' + SUBJECT + '. Pay close attention to key definitions, formulas, and real-world applications discussed in the video.';
     const fullText = '📌 Topic: ' + currentChapter + '\n\n' + summary + '\n\n💡 Tip: Take notes while watching and try to solve practice problems immediately after.';
 
     content.innerHTML = '';
@@ -192,7 +140,7 @@
 
     if (typeof window.QUIZ_DATA === 'undefined') { section.style.display = 'none'; return; }
 
-    const pool = window.QUIZ_DATA[currentSubject] || window.QUIZ_DATA['General'] || [];
+    const pool = window.QUIZ_DATA[SUBJECT] || window.QUIZ_DATA['General'] || [];
     if (pool.length === 0) { section.style.display = 'none'; return; }
 
     section.style.display = '';
@@ -243,13 +191,7 @@
     retake.onclick = () => showQuiz();
   }
 
-  // ── Back Buttons ───────────────────────────
-  document.getElementById('back-to-subjects').addEventListener('click', () => {
-    chaptersSection.style.display = 'none';
-    videoSection.style.display = 'none';
-    subjectsSection.style.display = '';
-  });
-
+  // ── Back Button ───────────────────────────
   document.getElementById('back-to-chapters').addEventListener('click', () => {
     videoSection.style.display = 'none';
     document.getElementById('video-iframe').src = '';
@@ -257,5 +199,5 @@
   });
 
   // ── Init ───────────────────────────────────
-  showSubjects();
+  showChapters();
 })();

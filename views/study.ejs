@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Study Class <%= selectedGrade || '' %> subjects and chapters on EduStreamix." />
-  <title>Class <%= selectedGrade || '' %> — EduStreamix</title>
+  <meta name="description" content="Study <%= selectedSubject || '' %> chapters on EduStreamix." />
+  <title><%= selectedSubject || 'Study' %> — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -27,31 +27,13 @@
 
       <!-- HEADER -->
       <div class="study-page-header">
-        <a href="/" class="back-home-link">← Back to Classes</a>
-        <h1 class="study-page-title">Class <span class="hero-highlight" id="grade-display"><%= selectedGrade || '8' %></span></h1>
-        <p class="study-page-desc">Select a subject, then pick a chapter to start watching</p>
+        <a href="/subjects?grade=<%= selectedGrade %>&board=<%= selectedBoard %>" class="back-home-link" id="back-to-subjects-link">← Back to Subjects</a>
+        <h1 class="study-page-title"><span class="hero-highlight" id="subject-display"><%= selectedSubject || 'Subject' %></span></h1>
+        <p class="study-page-desc">Select a chapter to start watching</p>
       </div>
 
-      <!-- BOARD SELECTOR (compact) -->
-      <div class="board-bar" id="board-bar">
-        <button class="board-tab active" data-board="CBSE">CBSE</button>
-        <button class="board-tab" data-board="SSC">SSC</button>
-        <button class="board-tab" data-board="ICSE">ICSE</button>
-      </div>
-
-      <!-- SUBJECTS -->
-      <div class="subjects-section" id="subjects-section">
-        <div class="subjects-grid" id="subjects-grid">
-          <!-- Filled by JS -->
-        </div>
-      </div>
-
-      <!-- CHAPTERS (hidden initially) -->
-      <div class="chapters-section" id="chapters-section" style="display:none;">
-        <div class="chapters-header">
-          <button class="back-link" id="back-to-subjects">← Back to Subjects</button>
-          <h2 class="chapters-title" id="chapters-title">Chapters</h2>
-        </div>
+      <!-- CHAPTERS -->
+      <div class="chapters-section" id="chapters-section">
         <div class="chapters-list" id="chapters-list">
           <!-- Filled by JS -->
         </div>
@@ -107,8 +89,9 @@
   </footer>
 
   <script>
-    window.__GRADE__ = <%= selectedGrade || 8 %>;
-    window.__BOARD__ = '<%= selectedBoard || "CBSE" %>';
+    window.__GRADE__   = <%= selectedGrade || 8 %>;
+    window.__BOARD__   = '<%= selectedBoard || "CBSE" %>';
+    window.__SUBJECT__ = '<%= selectedSubject || "" %>';
   </script>
   <script src="/js/quizData.js"></script>
   <script src="/js/app.js"></script>
