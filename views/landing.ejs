@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EduStreamix — Your focused, distraction-free learning platform." />
+  <title>EduStreamix — Distraction-Free Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="landing-body">
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">🎓</span>
+      <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="#classes">Classes</a>
+      <a href="#features">Features</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <p class="hero-tagline">The distraction-free platform</p>
+      <h1 class="hero-title">Where classrooms meet<br /><span class="hero-highlight">innovation</span></h1>
+      <p class="hero-subtitle">
+        EduStreamix is your focused learning space—where content is organized,
+        distractions are minimized, and learning becomes effective.
+      </p>
+      <a href="#classes" class="hero-btn">
+        <span>Explore Classes</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M6 12l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <div class="hero-float-elements">
+      <div class="float-card float-card-1"><span class="float-emoji">🎯</span><span>Focused Learning</span></div>
+      <div class="float-card float-card-2"><span class="float-emoji">🛡️</span><span>Zero Distractions</span></div>
+      <div class="float-card float-card-3"><span class="float-emoji">📂</span><span>Smart Organization</span></div>
+      <div class="float-card float-card-4"><span class="float-emoji">🧠</span><span>Enhanced Focus</span></div>
+      <div class="float-card float-card-5"><span class="float-emoji">🎓</span><span>Student Friendly</span></div>
+      <div class="float-card float-card-6"><span class="float-emoji">⏱️</span><span>Time Saving</span></div>
+      <div class="float-card float-card-7"><span class="float-emoji">📈</span><span>Improved Productivity</span></div>
+    </div>
+  </section>
+
+  <!-- CLASS SELECTION -->
+  <section class="classes-section" id="classes">
+    <h2 class="section-title">Choose Your Class</h2>
+    <p class="section-subtitle">Select your grade to begin learning</p>
+    <div class="class-grid">
+      <a href="/study?grade=8" class="class-card" id="class-card-8">
+        <div class="class-card-glow"></div>
+        <span class="class-stage-icon">🌱</span>
+        <h3 class="class-card-title">Class 8</h3>
+        <p class="class-card-label">Foundation Stage</p>
+        <span class="class-card-arrow">→</span>
+      </a>
+      <a href="/study?grade=9" class="class-card" id="class-card-9">
+        <div class="class-card-glow"></div>
+        <span class="class-stage-icon">🌿</span>
+        <h3 class="class-card-title">Class 9</h3>
+        <p class="class-card-label">Growth Stage</p>
+        <span class="class-card-arrow">→</span>
+      </a>
+      <a href="/study?grade=10" class="class-card" id="class-card-10">
+        <div class="class-card-glow"></div>
+        <span class="class-stage-icon">🌳</span>
+        <h3 class="class-card-title">Class 10</h3>
+        <p class="class-card-label">Mastery Stage</p>
+        <span class="class-card-arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <h2 class="section-title">Why EduStreamix?</h2>
+    <p class="section-subtitle">Everything you need, nothing you don't.</p>
+    <div class="features-grid">
+      <div class="feature-card" id="feature-1">
+        <div class="feature-icon-wrap"><div class="feature-icon">🛡️</div></div>
+        <h3>Distraction-Free</h3>
+        <p>No ads, no recommendations, no rabbit holes. Videos play right here — clean, focused, and controlled.</p>
+      </div>
+      <div class="feature-card" id="feature-2">
+        <div class="feature-icon-wrap"><div class="feature-icon">⚡</div></div>
+        <h3>Smart Ranking</h3>
+        <p>Our algorithm picks the best video for each topic using view counts, likes, and embeddability.</p>
+      </div>
+      <div class="feature-card" id="feature-3">
+        <div class="feature-icon-wrap"><div class="feature-icon">📚</div></div>
+        <h3>Organized Content</h3>
+        <p>Subjects, chapters, and topics — all structured so you never lose your way.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-brand">🎓 EduStreami<span class="brand-x">x</span></span>
+      <span class="footer-copy">&copy; 2026 EduStreamix. Built for learners.</span>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+    });
+  </script>
+</body>
+</html>
