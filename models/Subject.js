@@ -14,11 +14,31 @@ const videoSchema = new mongoose.Schema({
   embedUrl:       { type: String, default: '' }
 }, { _id: false });
 
+const textbookPartSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true }
+}, { _id: false });
+
+const keyMomentSchema = new mongoose.Schema({
+  timestamp: { type: String, required: true },
+  title: { type: String, required: true }
+}, { _id: false });
+
+const quizQuestionSchema = new mongoose.Schema({
+  question: { type: String, required: true },
+  options: [{ type: String, required: true }],
+  correctAnswer: { type: Number, required: true }
+}, { _id: false });
+
 const chapterSchema = new mongoose.Schema({
   lessonNo:    { type: String, default: '' },
   chapterName: { type: String, required: true },
   type:        { type: String, default: '' },
-  videos:      [videoSchema]
+  videos:      [videoSchema],
+  textbookContent: [textbookPartSchema],
+  keyMoments: [keyMomentSchema],
+  quizQuestions: [quizQuestionSchema],
+  summary:     { type: String, default: '' }
 }, { _id: false });
 
 const unitSchema = new mongoose.Schema({

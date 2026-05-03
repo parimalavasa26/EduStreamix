@@ -113,14 +113,23 @@ exports.getChapters = async (req, res) => {
   try {
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },
-      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1 }
+      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.textbookContent': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1 }
     ).lean();
 
     if (doc && doc.units && doc.units.length > 0) {
       const chapters = [];
       doc.units.forEach(unit => {
         unit.chapters.forEach(ch => {
-          chapters.push({ unitName: unit.unitName, lessonNo: ch.lessonNo, chapterName: ch.chapterName, type: ch.type });
+          chapters.push({ 
+            unitName: unit.unitName, 
+            lessonNo: ch.lessonNo, 
+            chapterName: ch.chapterName, 
+            type: ch.type,
+            textbookContent: ch.textbookContent,
+            keyMoments: ch.keyMoments,
+            quizQuestions: ch.quizQuestions,
+            summary: ch.summary
+          });
         });
       });
       return res.json({ grade: gradeNum, board: boardUp, subject, chapters });

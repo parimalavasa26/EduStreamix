@@ -2516,6 +2516,32 @@ async function seed() {
     await Subject.deleteMany({});
     console.log('🗑️  Cleared existing data');
 
+    // Inject dummy data for the new features into every chapter
+    SEED_DATA.forEach(subject => {
+      subject.units.forEach(unit => {
+        unit.chapters.forEach(chapter => {
+          chapter.textbookContent = [
+            { title: "Part 1: Introduction", content: "This is the introduction to " + chapter.chapterName + ". It covers the foundational concepts and historical context." },
+            { title: "Part 2: Core Concept", content: "The core concept of this chapter revolves around the fundamental principles. Understanding this is crucial for the rest of the topic." },
+            { title: "Part 3: Examples", content: "Here are some examples illustrating the core concept. Example 1 shows the basic application. Example 2 demonstrates a more complex scenario." },
+            { title: "Part 4: Applications", content: "These concepts are applied in real-world scenarios. For instance, in engineering, medicine, and everyday life." }
+          ];
+          chapter.keyMoments = [
+            { timestamp: "0:00", title: "Introduction" },
+            { timestamp: "1:30", title: "Core Concept Explanation" },
+            { timestamp: "3:45", title: "Examples" },
+            { timestamp: "5:20", title: "Real-world Applications" }
+          ];
+          chapter.quizQuestions = Array.from({ length: 10 }, (_, i) => ({
+            question: `Which of the following is a key aspect of ${chapter.chapterName} (Question ${i + 1})?`,
+            options: [`Option A for ${chapter.chapterName}`, `Option B for ${chapter.chapterName}`, `Option C for ${chapter.chapterName}`, `Option D for ${chapter.chapterName}`],
+            correctAnswer: Math.floor(Math.random() * 4) // 0 to 3
+          }));
+          chapter.summary = `AI Summary of this Chapter:\n\n• The chapter covers the fundamental principles of ${chapter.chapterName}.\n• Explores historical context and core theories.\n• Provides practical examples and real-world applications.\n• Ensures a comprehensive understanding of the topic.`;
+        });
+      });
+    });
+
     await Subject.insertMany(SEED_DATA);
     console.log('🌱 Seeded ' + SEED_DATA.length + ' subject documents');
 

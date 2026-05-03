@@ -39,10 +39,42 @@
         </div>
       </div>
 
+      <!-- MODE SELECTION -->
+      <div class="mode-section" id="mode-section" style="display:none;">
+        <div class="video-top-bar">
+          <button class="back-link" id="back-from-mode">← Back to Chapters</button>
+        </div>
+        <h2 class="mode-title" id="mode-chapter-title">Chapter Title</h2>
+        <p class="mode-subtitle">How would you like to learn today?</p>
+        <div class="mode-cards">
+          <div class="mode-card" id="btn-textbook-mode">
+            <div class="mode-icon">📖</div>
+            <h3>Textbook Mode</h3>
+            <p>Read structured chapter content</p>
+          </div>
+          <div class="mode-card" id="btn-video-mode">
+            <div class="mode-icon">▶️</div>
+            <h3>Video Mode</h3>
+            <p>Watch interactive video lessons</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEXTBOOK SECTION -->
+      <div class="textbook-section" id="textbook-section" style="display:none;">
+        <div class="video-top-bar">
+          <button class="back-link" id="back-from-textbook">← Back to Modes</button>
+        </div>
+        <h2 class="textbook-title" id="textbook-title">Loading...</h2>
+        <div class="textbook-content-wrapper" id="textbook-content">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
       <!-- VIDEO PLAYER (hidden initially) -->
       <div class="video-section" id="video-section" style="display:none;">
         <div class="video-top-bar">
-          <button class="back-link" id="back-to-chapters">← Back to Chapters</button>
+          <button class="back-link" id="back-from-video">← Back to Modes</button>
         </div>
         <h2 class="video-title" id="video-title">Loading...</h2>
         <div class="video-meta" id="video-meta"></div>
@@ -54,6 +86,14 @@
           <iframe id="video-iframe" src="" title="EduStreamix Video Player" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen style="display:none;"></iframe>
+        </div>
+
+        <!-- Key Moments -->
+        <div class="key-moments-section" id="key-moments" style="display:none;">
+          <div class="key-moments-header">
+            <span>⏱️ Key Moments</span>
+          </div>
+          <div class="key-moments-list" id="key-moments-list"></div>
         </div>
 
         <!-- AI Summary -->
@@ -75,6 +115,18 @@
           </div>
           <div class="quiz-result" id="quiz-result" style="display:none;"></div>
           <button class="quiz-retake-btn" id="quiz-retake-btn" style="display:none;">🔄 Retake Quiz</button>
+        </div>
+        
+        <!-- AI Chatbot -->
+        <div class="chatbot-section" id="chatbot-section" style="display:none;">
+          <div class="chatbot-header">🤖 AI Teacher</div>
+          <div class="chatbot-messages" id="chatbot-messages">
+            <div class="chat-msg bot-msg">Hello! I am your AI Teacher. Ask me any doubts about this chapter!</div>
+          </div>
+          <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Ask a doubt about this chapter..." />
+            <button id="chatbot-send-btn">Send</button>
+          </div>
         </div>
       </div>
 

@@ -7,17 +7,27 @@
   const GRADE = window.__GRADE__;
   const BOARD = window.__BOARD__;
   const SUBJECT = window.__SUBJECT__;
-  let currentChapter = null;
+  let currentChapterData = null;
 
   // DOM
   const chaptersSection = document.getElementById('chapters-section');
   const chaptersList = document.getElementById('chapters-list');
+  
+  const modeSection = document.getElementById('mode-section');
+  const modeTitle = document.getElementById('mode-chapter-title');
+  const btnTextbookMode = document.getElementById('btn-textbook-mode');
+  const btnVideoMode = document.getElementById('btn-video-mode');
+  
+  const textbookSection = document.getElementById('textbook-section');
+  const textbookTitle = document.getElementById('textbook-title');
+  const textbookContent = document.getElementById('textbook-content');
+
   const videoSection = document.getElementById('video-section');
 
   // ── Load Chapters on Init ─────────────────
   async function showChapters() {
+    hideAllSections();
     chaptersSection.style.display = '';
-    videoSection.style.display = 'none';
     chaptersList.innerHTML = Array(6).fill('<div class="skeleton-item"></div>').join('');
     try {
       const res = await fetch('/api/chapters?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(SUBJECT));
@@ -57,8 +67,8 @@
           const tr = document.createElement('tr');
           tr.className = 'chapter-row';
           tr.addEventListener('click', () => {
-            currentChapter = ch.chapterName;
-            showVideo();
+            currentChapterData = ch;
+            showModeSelection();
           });
           
           tr.innerHTML = `
@@ -77,29 +87,65 @@
     }
   }
 
-  // ── Show Video ─────────────────────────────
-  async function showVideo() {
-    chaptersSection.style.display = 'none';
+  // ── Mode Selection ────────────────────────
+  function showModeSelection() {
+    hideAllSections();
+    modeSection.style.display = '';
+    modeTitle.textContent = currentChapterData.chapterName;
+  }
+
+  btnTextbookMode.addEventListener('click', showTextbookMode);
+  btnVideoMode.addEventListener('click', showVideoMode);
+
+  // ── Textbook Mode ─────────────────────────
+  function showTextbookMode() {
+    hideAllSections();
+    textbookSection.style.display = '';
+    textbookTitle.textContent = currentChapterData.chapterName;
+    textbookContent.innerHTML = '';
+
+    const parts = currentChapterData.textbookContent || [];
+    if (parts.length === 0) {
+      textbookContent.innerHTML = '<p class="no-data-msg">No textbook content available.</p>';
+      return;
+    }
+
+    parts.forEach(part => {
+      const partDiv = document.createElement('div');
+      partDiv.className = 'textbook-part';
+      partDiv.innerHTML = `
+        <h3>${part.title}</h3>
+        <p>${part.content}</p>
+      `;
+      textbookContent.appendChild(partDiv);
+    });
+  }
+
+  // ── Video Mode ────────────────────────────
+  async function showVideoMode() {
+    hideAllSections();
     videoSection.style.display = '';
 
     const titleEl = document.getElementById('video-title');
     const metaEl = document.getElementById('video-meta');
     const loader = document.getElementById('video-loader');
     const iframe = document.getElementById('video-iframe');
-    const aiBox = document.getElementById('ai-summary');
-    const quizBox = document.getElementById('quiz-section');
 
     loader.style.display = 'flex';
     iframe.style.display = 'none';
     iframe.src = '';
-    titleEl.textContent = 'Finding the best video...';
+    titleEl.textContent = 'Loading video...';
     metaEl.innerHTML = '';
-    aiBox.style.display = 'none';
-    quizBox.style.display = 'none';
+
+    // Reset components
+    document.getElementById('key-moments').style.display = 'none';
+    document.getElementById('ai-summary').style.display = 'none';
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('chatbot-section').style.display = 'none';
 
     try {
       const params = new URLSearchParams({
-        chapter: currentChapter, grade: GRADE, language: 'English', board: BOARD, subject: SUBJECT
+        chapter: currentChapterData.chapterName, grade: GRADE, language: 'English', board: BOARD, subject: SUBJECT
       });
       const res = await fetch('/api/video?' + params.toString());
       const data = await res.json();
@@ -109,10 +155,16 @@
         loader.innerHTML = '<p class="no-data-msg error-msg">No video found for this topic.</p>';
         return;
       }
-      iframe.src = data.video.embedUrl;
+      
+      const baseUrl = new URL(data.video.embedUrl);
+      baseUrl.searchParams.set('enablejsapi', '1');
+      baseUrl.searchParams.set('rel', '0');
+      
+      iframe.src = baseUrl.toString();
+      iframe.dataset.baseUrl = baseUrl.toString();
       iframe.style.display = 'block';
       loader.style.display = 'none';
-      titleEl.textContent = data.video.title || (currentChapter + ' — ' + SUBJECT);
+      titleEl.textContent = data.video.title || (currentChapterData.chapterName + ' — ' + SUBJECT);
 
       let meta = '';
       if (data.video.viewCount) meta += '<span>👁️ ' + Number(data.video.viewCount).toLocaleString() + ' views</span>';
@@ -120,31 +172,55 @@
       if (data.cached) meta += '<span>⚡ Cached</span>';
       metaEl.innerHTML = meta;
 
+      showKeyMoments();
       showAISummary();
       showQuiz();
+      showChatbot();
     } catch (e) {
       titleEl.textContent = 'Error loading video';
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
     }
   }
 
-  // ── AI Summary (mock) ──────────────────────
+  // ── Key Moments ───────────────────────────
+  function showKeyMoments() {
+    const momentsSection = document.getElementById('key-moments');
+    const momentsList = document.getElementById('key-moments-list');
+    
+    const moments = currentChapterData.keyMoments || [];
+    if (moments.length === 0) return;
+
+    momentsSection.style.display = '';
+    momentsList.innerHTML = '';
+
+    moments.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'key-moment-btn';
+      btn.innerHTML = `<span class="moment-time">${m.timestamp}</span> <span class="moment-title">${m.title}</span>`;
+      
+      btn.onclick = () => {
+        const parts = m.timestamp.split(':');
+        let seconds = 0;
+        if (parts.length === 2) seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        else if (parts.length === 3) seconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
+        
+        const iframe = document.getElementById('video-iframe');
+        const url = new URL(iframe.dataset.baseUrl);
+        url.searchParams.set('start', seconds);
+        url.searchParams.set('autoplay', '1');
+        iframe.src = url.toString();
+      };
+      momentsList.appendChild(btn);
+    });
+  }
+
+  // ── AI Summary ────────────────────────────
   function showAISummary() {
     const box = document.getElementById('ai-summary');
     const content = document.getElementById('ai-summary-content');
     box.style.display = '';
 
-    const summaries = {
-      'Mathematics': 'This chapter covers fundamental mathematical concepts including problem-solving techniques, formulas, and their real-world applications. Focus on understanding the underlying logic rather than memorizing steps.',
-      'Science': 'This topic explores key scientific principles through observation and experimentation. Understanding cause-and-effect relationships is essential for mastering this chapter.',
-      'Social Science': 'This chapter examines important historical, geographical, or civic concepts that shape our understanding of society and governance.',
-      'Physics': 'This chapter deals with fundamental physical laws governing motion, energy, and forces. Pay attention to the mathematical relationships between quantities.',
-      'Chemistry': 'This topic covers chemical properties, reactions, and molecular structures. Understanding atomic behavior is key to this chapter.',
-      'Biology': 'This chapter explores living systems, their structures, and functions. Focus on understanding how different biological processes are interconnected.'
-    };
-
-    const summary = summaries[SUBJECT] || 'This chapter covers important concepts in ' + SUBJECT + '. Pay close attention to key definitions, formulas, and real-world applications discussed in the video.';
-    const fullText = '📌 Topic: ' + currentChapter + '\n\n' + summary + '\n\n💡 Tip: Take notes while watching and try to solve practice problems immediately after.';
+    const fullText = currentChapterData.summary || 'Summary for ' + currentChapterData.chapterName + ' is not available.';
 
     content.innerHTML = '';
     let i = 0;
@@ -153,12 +229,19 @@
 
     function type() {
       if (i < fullText.length) {
-        content.textContent = fullText.substring(0, i + 1);
+        let char = fullText.charAt(i);
+        if (char === '\\n') {
+          content.appendChild(document.createElement('br'));
+        } else {
+          content.appendChild(document.createTextNode(char));
+        }
         content.appendChild(cursor);
         i++;
-        setTimeout(type, 12);
+        setTimeout(type, 10);
       } else {
         cursor.remove();
+        // Convert plain newlines to breaks
+        content.innerHTML = fullText.replace(/\\n/g, '<br>');
       }
     }
     type();
@@ -173,24 +256,22 @@
     const retake = document.getElementById('quiz-retake-btn');
     const submit = document.getElementById('quiz-submit-btn');
 
-    if (typeof window.QUIZ_DATA === 'undefined') { section.style.display = 'none'; return; }
-
-    const pool = window.QUIZ_DATA[SUBJECT] || window.QUIZ_DATA['General'] || [];
-    if (pool.length === 0) { section.style.display = 'none'; return; }
+    const pool = currentChapterData.quizQuestions || [];
+    if (pool.length === 0) return;
 
     section.style.display = '';
     result.style.display = 'none';
     retake.style.display = 'none';
     actions.style.display = '';
 
-    // Pick 5 random questions
-    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 5);
+    // Pick random 10 questions (or less if pool is smaller)
+    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
 
     body.innerHTML = '';
     shuffled.forEach((q, qi) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.dataset.answer = q.answer;
+      div.dataset.answer = q.correctAnswer;
       let html = '<p>' + (qi+1) + '. ' + q.question + '</p>';
       q.options.forEach((opt, oi) => {
         html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> ' + opt + '</label>';
@@ -199,11 +280,10 @@
       body.appendChild(div);
     });
 
-    // Submit handler
-    const submitHandler = () => {
+    submit.onclick = () => {
       let score = 0;
       const questions = body.querySelectorAll('.quiz-question');
-      questions.forEach((qDiv, qi) => {
+      questions.forEach((qDiv) => {
         const correct = parseInt(qDiv.dataset.answer);
         const selected = qDiv.querySelector('input:checked');
         const opts = qDiv.querySelectorAll('.quiz-option');
@@ -218,20 +298,56 @@
       actions.style.display = 'none';
       result.style.display = '';
       result.textContent = 'Score: ' + score + ' / ' + questions.length;
-      result.className = 'quiz-result ' + (score >= 4 ? 'good' : score >= 2 ? 'ok' : 'bad');
+      result.className = 'quiz-result ' + (score >= (questions.length * 0.8) ? 'good' : score >= (questions.length * 0.4) ? 'ok' : 'bad');
       retake.style.display = '';
     };
 
-    submit.onclick = submitHandler;
-    retake.onclick = () => showQuiz();
+    retake.onclick = showQuiz;
   }
 
-  // ── Back Button ───────────────────────────
-  document.getElementById('back-to-chapters').addEventListener('click', () => {
+  // ── AI Chatbot ────────────────────────────
+  function showChatbot() {
+    const section = document.getElementById('chatbot-section');
+    const messages = document.getElementById('chatbot-messages');
+    const input = document.getElementById('chatbot-input');
+    const sendBtn = document.getElementById('chatbot-send-btn');
+    
+    section.style.display = '';
+    messages.innerHTML = '<div class="chat-msg bot-msg">Hello! I am your AI Teacher. Ask me any doubts about "' + currentChapterData.chapterName + '"!</div>';
+    
+    sendBtn.onclick = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      
+      messages.innerHTML += '<div class="chat-msg user-msg">' + text + '</div>';
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+      
+      setTimeout(() => {
+        messages.innerHTML += '<div class="chat-msg bot-msg">That is a great question about ' + currentChapterData.chapterName + '! The concepts in this chapter show that understanding the fundamentals is key. Let me give you an example...</div>';
+        messages.scrollTop = messages.scrollHeight;
+      }, 1000);
+    };
+
+    input.onkeypress = (e) => {
+      if (e.key === 'Enter') sendBtn.click();
+    };
+  }
+
+  // ── Helpers ───────────────────────────────
+  function hideAllSections() {
+    chaptersSection.style.display = 'none';
+    modeSection.style.display = 'none';
+    textbookSection.style.display = 'none';
     videoSection.style.display = 'none';
-    document.getElementById('video-iframe').src = '';
-    showChapters();
-  });
+    const iframe = document.getElementById('video-iframe');
+    if (iframe) iframe.src = '';
+  }
+
+  // ── Back Buttons ──────────────────────────
+  document.getElementById('back-from-mode').addEventListener('click', showChapters);
+  document.getElementById('back-from-textbook').addEventListener('click', showModeSelection);
+  document.getElementById('back-from-video').addEventListener('click', showModeSelection);
 
   // ── Init ───────────────────────────────────
   showChapters();
