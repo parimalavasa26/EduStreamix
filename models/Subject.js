@@ -6,7 +6,7 @@
 const mongoose = require('mongoose');
 
 const videoSchema = new mongoose.Schema({
-  language:       { type: String, enum: ['English', 'Hindi', 'Telugu'], required: true },
+  language:       { type: String, required: true },
   youtubeVideoId: { type: String, required: true },
   title:          { type: String, default: '' },
   viewCount:      { type: Number, default: 0 },

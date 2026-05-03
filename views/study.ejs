@@ -29,7 +29,6 @@
       <div class="study-page-header">
         <a href="/subjects?grade=<%= selectedGrade %>&board=<%= selectedBoard %>" class="back-home-link" id="back-to-subjects-link">← Back to Subjects</a>
         <h1 class="study-page-title"><span class="hero-highlight" id="subject-display"><%= selectedSubject || 'Subject' %></span></h1>
-        <p class="study-page-desc">Select a chapter to start watching</p>
       </div>
 
       <!-- CHAPTERS -->
@@ -60,6 +59,25 @@
         </div>
       </div>
 
+      <!-- LANGUAGE SELECTION -->
+      <div class="language-section" id="language-section" style="display:none;">
+        <div class="video-top-bar">
+          <button class="back-link" id="back-from-language">← Back to Modes</button>
+        </div>
+        <h2 class="mode-title" id="language-chapter-title">Chapter Title</h2>
+        <p class="mode-subtitle">Select your preferred language for the video</p>
+        <div class="language-grid" id="language-grid">
+          <button class="lang-btn" data-lang="English">English</button>
+          <button class="lang-btn" data-lang="Hindi">Hindi</button>
+          <button class="lang-btn" data-lang="Telugu">Telugu</button>
+          <button class="lang-btn" data-lang="Urdu">Urdu</button>
+          <button class="lang-btn" data-lang="Kannada">Kannada</button>
+          <button class="lang-btn" data-lang="Malayalam">Malayalam</button>
+          <button class="lang-btn" data-lang="Tamil">Tamil</button>
+          <button class="lang-btn" data-lang="Bengali">Bengali</button>
+        </div>
+      </div>
+
       <!-- TEXTBOOK SECTION -->
       <div class="textbook-section" id="textbook-section" style="display:none;">
         <div class="video-top-bar">
@@ -74,7 +92,7 @@
       <!-- VIDEO PLAYER (hidden initially) -->
       <div class="video-section" id="video-section" style="display:none;">
         <div class="video-top-bar">
-          <button class="back-link" id="back-from-video">← Back to Modes</button>
+          <button class="back-link" id="back-from-video">← Back to Languages</button>
         </div>
         <h2 class="video-title" id="video-title">Loading...</h2>
         <div class="video-meta" id="video-meta"></div>

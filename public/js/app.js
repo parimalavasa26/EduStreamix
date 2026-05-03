@@ -95,7 +95,21 @@
   }
 
   btnTextbookMode.addEventListener('click', showTextbookMode);
-  btnVideoMode.addEventListener('click', showVideoMode);
+  btnVideoMode.addEventListener('click', showLanguageSelection);
+
+  // ── Language Selection ────────────────────
+  function showLanguageSelection() {
+    hideAllSections();
+    document.getElementById('language-section').style.display = '';
+    document.getElementById('language-chapter-title').textContent = currentChapterData.chapterName;
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selectedLang = btn.getAttribute('data-lang');
+      showVideoMode(selectedLang);
+    });
+  });
 
   // ── Textbook Mode ─────────────────────────
   function showTextbookMode() {
@@ -122,7 +136,7 @@
   }
 
   // ── Video Mode ────────────────────────────
-  async function showVideoMode() {
+  async function showVideoMode(selectedLanguage = 'English') {
     hideAllSections();
     videoSection.style.display = '';
 
@@ -145,7 +159,7 @@
 
     try {
       const params = new URLSearchParams({
-        chapter: currentChapterData.chapterName, grade: GRADE, language: 'English', board: BOARD, subject: SUBJECT
+        chapter: currentChapterData.chapterName, grade: GRADE, language: selectedLanguage, board: BOARD, subject: SUBJECT
       });
       const res = await fetch('/api/video?' + params.toString());
       const data = await res.json();
@@ -338,6 +352,7 @@
   function hideAllSections() {
     chaptersSection.style.display = 'none';
     modeSection.style.display = 'none';
+    document.getElementById('language-section').style.display = 'none';
     textbookSection.style.display = 'none';
     videoSection.style.display = 'none';
     const iframe = document.getElementById('video-iframe');
@@ -347,7 +362,8 @@
   // ── Back Buttons ──────────────────────────
   document.getElementById('back-from-mode').addEventListener('click', showChapters);
   document.getElementById('back-from-textbook').addEventListener('click', showModeSelection);
-  document.getElementById('back-from-video').addEventListener('click', showModeSelection);
+  document.getElementById('back-from-language').addEventListener('click', showModeSelection);
+  document.getElementById('back-from-video').addEventListener('click', showLanguageSelection);
 
   // ── Init ───────────────────────────────────
   showChapters();

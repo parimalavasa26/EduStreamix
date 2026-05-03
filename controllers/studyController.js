@@ -199,7 +199,7 @@ exports.getVideo = async (req, res) => {
 
   // ── Fetch from YouTube API ────────────────
   try {
-    const video = await fetchBestVideo(chapter, gradeNum, language);
+    const video = await fetchBestVideo(chapter, gradeNum, language, subject);
 
     if (!video) {
       return res.status(404).json({ error: 'No suitable video found' });

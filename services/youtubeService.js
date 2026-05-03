@@ -14,9 +14,10 @@ const API_KEY = process.env.YT_API_KEY;
  * @param {string} topic     — e.g. "Kinematics"
  * @param {number} grade     — e.g. 8
  * @param {string} language  — "English" | "Hindi" | "Telugu"
+ * @param {string} subject   — e.g. "Science"
  * @returns {object|null}    — { youtubeVideoId, title, viewCount, likeCount, embedUrl }
  */
-async function fetchBestVideo(topic, grade, language) {
+async function fetchBestVideo(topic, grade, language, subject) {
   try {
     if (!API_KEY || API_KEY === 'YOUR_YOUTUBE_API_KEY_HERE') {
       console.warn('⚠️  YouTube API key not set. Returning placeholder.');
@@ -24,7 +25,8 @@ async function fetchBestVideo(topic, grade, language) {
     }
 
     // ── Step 1: Search YouTube ────────────────
-    const searchQuery = `${topic} class ${grade} ${language}`;
+    const subjectQuery = subject ? ` ${subject} ` : ' ';
+    const searchQuery = `${topic} class ${grade}${subjectQuery}${language}`;
     const searchRes = await axios.get(YT_SEARCH_URL, {
       params: {
         part:       'snippet',

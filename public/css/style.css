@@ -26,7 +26,7 @@
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden}
+body{font-family:var(--font-body);background:linear-gradient(135deg, #e0f2fe 0%, #ede9fe 50%, #ccfbf1 100%);background-attachment:fixed;color:var(--text-primary);line-height:1.6;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 button{font-family:var(--font-body);cursor:pointer;border:none;background:none;color:inherit}
 
@@ -51,12 +51,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
    HERO (Landing Page)
    ═══════════════════════════════════════ */
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-height) + 4rem) 2rem 6rem;overflow:hidden}
-.hero-bg-orbs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.18;animation:orbFloat 20s infinite ease-in-out}
-.orb-1{width:500px;height:500px;background:var(--accent-1);top:-100px;right:-100px}
-.orb-2{width:400px;height:400px;background:var(--accent-2);bottom:-80px;left:-80px;animation-delay:-7s}
-.orb-3{width:350px;height:350px;background:var(--accent-3);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-14s}
-@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(40px,-30px) scale(1.05)}50%{transform:translate(-20px,40px) scale(.95)}75%{transform:translate(30px,20px) scale(1.02)}}
+
 
 .hero-content{position:relative;z-index:2;text-align:center;max-width:800px;animation:fadeInUp 1s var(--ease-out) both}
 .hero-tagline{font-size:clamp(.85rem,1.2vw,1rem);font-weight:600;text-transform:uppercase;letter-spacing:3px;color:var(--accent-2);margin-bottom:1.2rem}
@@ -99,6 +94,107 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .features-cta{margin-top:3.5rem}
 
 /* ═══════════════════════════════════════
+   LANDING PAGE (Dark, Rich, Modern)
+   ═══════════════════════════════════════ */
+.landing-body {
+  background: #0f172a;
+  color: #f8fafc;
+  position: relative;
+}
+.landing-body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+.landing-body .navbar.scrolled {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.landing-body .nav-links a { color: #cbd5e1; }
+.landing-body .nav-links a:hover { color: #ffffff; }
+
+/* Landing Hero Orbs */
+.landing-body .hero-bg-orbs {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.landing-body .orb {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+  animation: drift 25s infinite alternate ease-in-out;
+}
+.landing-body .orb-1 { width: 55vw; height: 55vw; background: #7c3aed; top: -15%; left: -10%; animation-duration: 28s; }
+.landing-body .orb-2 { width: 45vw; height: 45vw; background: #14b8a6; bottom: -10%; right: -5%; animation-duration: 32s; animation-delay: -5s; }
+.landing-body .orb-3 { width: 35vw; height: 35vw; background: #f472b6; top: 30%; left: 40%; animation-duration: 36s; animation-delay: -10s; }
+.landing-body .orb-4 { width: 40vw; height: 40vw; background: #0f172a; bottom: 10%; left: 10%; animation-duration: 30s; animation-delay: -15s; box-shadow: 0 0 100px 100px #0f172a; }
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, 4%) scale(1.05); }
+  100% { transform: translate(-2%, -3%) scale(0.95); }
+}
+
+/* Watermark Icons */
+.landing-body .watermark-icons {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.landing-body .watermark {
+  position: absolute; font-size: 8rem; color: rgba(255, 255, 255, 0.03); filter: blur(1px);
+}
+.landing-body .icon-1 { top: 15%; left: 8%; transform: rotate(-15deg); }
+.landing-body .icon-2 { top: 60%; right: 10%; transform: rotate(10deg); font-size: 10rem; }
+.landing-body .icon-3 { bottom: 20%; left: 15%; transform: rotate(-5deg); font-size: 7rem; }
+.landing-body .icon-4 { top: 25%; right: 20%; transform: rotate(20deg); font-size: 6rem; }
+
+/* Hero Text & Spotlight */
+.landing-body .hero-title {
+  position: relative; z-index: 1;
+}
+.landing-body .title-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 65%);
+  filter: blur(25px);
+  z-index: -1;
+  pointer-events: none;
+}
+.landing-body .hero-subtitle { color: #cbd5e1; }
+.landing-body .hero-tagline { color: #14b8a6; }
+.landing-body .float-card {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+/* Landing Features Glassmorphism */
+.landing-body .features { position: relative; z-index: 2; }
+.landing-body .section-subtitle { color: #cbd5e1; }
+.landing-body .feature-card {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+.landing-body .feature-card p { color: #cbd5e1; }
+.landing-body .feature-card:hover {
+  background: rgba(30, 41, 59, 0.6);
+  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+.landing-body .feature-icon-wrap { background: rgba(124, 58, 237, 0.15); }
+
+.landing-body .footer { border-top: 1px solid rgba(255, 255, 255, 0.08); position: relative; z-index: 2; }
+.landing-body .footer-copy { color: #94a3b8; }
+
+/* ═══════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════ */
 .footer{border-top:1px solid var(--border-glass);padding:2rem}
@@ -110,7 +206,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
    STEP PAGES (Classes, Boards, Subjects)
    Multi-step flow layout
    ═══════════════════════════════════════ */
-.step-body{background:var(--bg-primary)}
+.step-body{background:transparent}
 .step-main{min-height:calc(100vh - 80px);display:flex;flex-direction:column;align-items:center;padding:calc(var(--nav-height) + 3rem) 1.5rem 4rem}
 .step-container{width:100%;max-width:920px;animation:fadeInUp .6s var(--ease-out) both}
 
@@ -183,7 +279,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 /* ═══════════════════════════════════════
    STUDY PAGE
    ═══════════════════════════════════════ */
-.study-body{background:var(--bg-primary)}
+.study-body{background:transparent}
 .study-main{min-height:calc(100vh - 80px);display:flex;flex-direction:column;align-items:center;padding:calc(var(--nav-height) + 2.5rem) 1.5rem 4rem}
 .study-container{width:100%;max-width:860px}
 
@@ -278,6 +374,14 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .textbook-part p { color: var(--text-secondary); line-height: 1.7; }
 
 /* ═══════════════════════════════════════
+   LANGUAGE SELECTION
+   ═══════════════════════════════════════ */
+.language-section { text-align: center; animation: fadeInUp .5s var(--ease-out) both; padding: 1rem 0; }
+.language-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; max-width: 600px; margin: 0 auto; }
+.lang-btn { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 14px; padding: 1rem; font-family: var(--font-heading); font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s; }
+.lang-btn:hover { transform: translateY(-4px); border-color: var(--accent-1); color: var(--accent-1); box-shadow: 0 12px 30px rgba(108,99,255,0.15); }
+
+/* ═══════════════════════════════════════
    KEY MOMENTS & CHATBOT
    ═══════════════════════════════════════ */
 .key-moments-section { margin-top: 2rem; background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 18px; overflow: hidden; animation: fadeInUp .5s var(--ease-out) both; }
@@ -314,6 +418,10 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
   .step-dot-inner{width:38px;height:38px;font-size:.85rem}
   .step-dot-label{font-size:.65rem}
   .footer-inner{flex-direction:column;text-align:center}
+  
+  /* Disable heavy animations on mobile for performance */
+  .landing-body .orb { animation: none !important; opacity: 0.2; }
+  .landing-body .title-glow { display: none; }
 }
 @media(max-width:480px){
   .nav-links a:not(.nav-cta){display:none}
