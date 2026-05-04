@@ -94,43 +94,43 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .features-cta{margin-top:3.5rem}
 
 /* ═══════════════════════════════════════
-   LANDING PAGE (Dark, Rich, Modern)
+   LANDING PAGE (Light Pastel / Powder Blue)
    ═══════════════════════════════════════ */
 .landing-body {
-  background: #0f172a;
-  color: #f8fafc;
+  background: linear-gradient(160deg, #e0f0ff 0%, #d5e6f8 25%, #e8e0f8 50%, #d0eef0 75%, #e4f0ff 100%);
+  color: #1e293b;
   position: relative;
 }
 .landing-body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(108, 99, 255, 0.04) 1px, transparent 1px);
   background-size: 30px 30px;
   opacity: 0.8;
   pointer-events: none;
   z-index: 0;
 }
 .landing-body .navbar.scrolled {
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(224, 240, 255, 0.88);
   backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
 }
-.landing-body .nav-links a { color: #cbd5e1; }
-.landing-body .nav-links a:hover { color: #ffffff; }
+.landing-body .nav-links a { color: #475569; }
+.landing-body .nav-links a:hover { color: #1e293b; }
 
 /* Landing Hero Orbs */
 .landing-body .hero-bg-orbs {
   position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
 }
 .landing-body .orb {
-  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+  position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4;
   animation: drift 25s infinite alternate ease-in-out;
 }
-.landing-body .orb-1 { width: 55vw; height: 55vw; background: #7c3aed; top: -15%; left: -10%; animation-duration: 28s; }
-.landing-body .orb-2 { width: 45vw; height: 45vw; background: #14b8a6; bottom: -10%; right: -5%; animation-duration: 32s; animation-delay: -5s; }
-.landing-body .orb-3 { width: 35vw; height: 35vw; background: #f472b6; top: 30%; left: 40%; animation-duration: 36s; animation-delay: -10s; }
-.landing-body .orb-4 { width: 40vw; height: 40vw; background: #0f172a; bottom: 10%; left: 10%; animation-duration: 30s; animation-delay: -15s; box-shadow: 0 0 100px 100px #0f172a; }
+.landing-body .orb-1 { width: 55vw; height: 55vw; background: #a5b4fc; top: -15%; left: -10%; animation-duration: 28s; }
+.landing-body .orb-2 { width: 45vw; height: 45vw; background: #99f6e4; bottom: -10%; right: -5%; animation-duration: 32s; animation-delay: -5s; }
+.landing-body .orb-3 { width: 35vw; height: 35vw; background: #f0abfc; top: 30%; left: 40%; animation-duration: 36s; animation-delay: -10s; }
+.landing-body .orb-4 { width: 40vw; height: 40vw; background: #bfdbfe; bottom: 10%; left: 10%; animation-duration: 30s; animation-delay: -15s; }
 
 @keyframes drift {
   0% { transform: translate(0, 0) scale(1); }
@@ -143,7 +143,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
   position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
 }
 .landing-body .watermark {
-  position: absolute; font-size: 8rem; color: rgba(255, 255, 255, 0.03); filter: blur(1px);
+  position: absolute; font-size: 8rem; color: rgba(108, 99, 255, 0.04); filter: blur(1px);
 }
 .landing-body .icon-1 { top: 15%; left: 8%; transform: rotate(-15deg); }
 .landing-body .icon-2 { top: 60%; right: 10%; transform: rotate(10deg); font-size: 10rem; }
@@ -152,47 +152,49 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 
 /* Hero Text & Spotlight */
 .landing-body .hero-title {
-  position: relative; z-index: 1;
+  position: relative; z-index: 1; color: #1e293b;
 }
 .landing-body .title-glow {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(165, 180, 252, 0.3) 0%, transparent 65%);
   filter: blur(25px);
   z-index: -1;
   pointer-events: none;
 }
-.landing-body .hero-subtitle { color: #cbd5e1; }
-.landing-body .hero-tagline { color: #14b8a6; }
+.landing-body .hero-subtitle { color: #475569; }
+.landing-body .hero-tagline { color: #0d9488; }
 .landing-body .float-card {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(108, 99, 255, 0.1);
+  color: #475569;
+  backdrop-filter: blur(16px);
 }
 
 /* Landing Features Glassmorphism */
 .landing-body .features { position: relative; z-index: 2; }
-.landing-body .section-subtitle { color: #cbd5e1; }
+.landing-body .section-title { color: #1e293b; }
+.landing-body .section-subtitle { color: #475569; }
 .landing-body .feature-card {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  border: 1px solid rgba(108, 99, 255, 0.08);
+  color: #1e293b;
+  box-shadow: 0 4px 24px rgba(108, 99, 255, 0.06);
 }
-.landing-body .feature-card p { color: #cbd5e1; }
+.landing-body .feature-card p { color: #475569; }
 .landing-body .feature-card:hover {
-  background: rgba(30, 41, 59, 0.6);
-  box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
-  border-color: rgba(124, 58, 237, 0.3);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 12px 40px rgba(108, 99, 255, 0.12);
+  border-color: rgba(108, 99, 255, 0.2);
 }
-.landing-body .feature-icon-wrap { background: rgba(124, 58, 237, 0.15); }
+.landing-body .feature-icon-wrap { background: rgba(108, 99, 255, 0.1); }
 
-.landing-body .footer { border-top: 1px solid rgba(255, 255, 255, 0.08); position: relative; z-index: 2; }
-.landing-body .footer-copy { color: #94a3b8; }
+.landing-body .footer { border-top: 1px solid rgba(0, 0, 0, 0.06); position: relative; z-index: 2; }
+.landing-body .footer-copy { color: #64748b; }
 
 /* ═══════════════════════════════════════
    FOOTER
@@ -420,7 +422,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
   .footer-inner{flex-direction:column;text-align:center}
   
   /* Disable heavy animations on mobile for performance */
-  .landing-body .orb { animation: none !important; opacity: 0.2; }
+  .landing-body .orb { animation: none !important; opacity: 0.25; }
   .landing-body .title-glow { display: none; }
 }
 @media(max-width:480px){
