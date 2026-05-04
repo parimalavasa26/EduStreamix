@@ -93,16 +93,32 @@
             grid.innerHTML = '<p class="no-data-msg">No subjects found for this selection.</p>';
             return;
           }
+          let translatedSubjects = [...data.subjects];
+          const appLang = localStorage.getItem('appLang') || 'English';
+          
+          if (appLang !== 'English' && appLang !== 'en') {
+            try {
+              const transRes = await fetch('/translate-batch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ texts: data.subjects, targetLang: appLang })
+              });
+              const translations = await transRes.json();
+              translatedSubjects = data.subjects.map(s => translations[s] || s);
+            } catch(e) {
+              console.error("Translation failed", e);
+            }
+          }
+
           grid.innerHTML = '';
-          data.subjects.forEach(subj => {
+          data.subjects.forEach((subj, i) => {
             const card = document.createElement('a');
-            const appLang = localStorage.getItem('appLang') || 'English';
             card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&language=' + appLang + '&subject=' + encodeURIComponent(subj);
             card.className = 'subject-card';
             card.id = 'subject-' + subj.toLowerCase().replace(/\s+/g, '-');
             card.innerHTML =
               '<span class="subject-icon">' + (SUBJECT_ICONS[subj] || '📖') + '</span>' +
-              '<span class="subject-name" data-i18n="' + subj + '">' + (window.t ? window.t(subj) : subj) + '</span>';
+              '<span class="subject-name" data-i18n="' + subj + '">' + translatedSubjects[i] + '</span>';
             grid.appendChild(card);
           });
         } catch (e) {
@@ -130,11 +146,33 @@
         display.textContent = languageNames[lang] || lang;
       }
     });
-    document.addEventListener('languageChanged', () => {
-      document.querySelectorAll('.subject-name').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (key && window.t) el.innerHTML = window.t(key);
-      });
+    document.addEventListener('languageChanged', async (e) => {
+      const newLang = e.detail;
+      const els = document.querySelectorAll('.subject-name');
+      const subjects = Array.from(els).map(el => el.getAttribute('data-i18n')).filter(Boolean);
+      
+      if (subjects.length > 0 && newLang !== 'English' && newLang !== 'en') {
+        try {
+          const transRes = await fetch('/translate-batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: subjects, targetLang: newLang })
+          });
+          const translations = await transRes.json();
+          els.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[key] && translations[key] !== key) {
+              el.innerHTML = translations[key];
+            } else if (window.t) {
+              el.innerHTML = window.t(key);
+            }
+          });
+        } catch(err) {}
+      } else {
+        els.forEach(el => {
+           el.innerHTML = el.getAttribute('data-i18n');
+        });
+      }
     });
   </script>
 </body>

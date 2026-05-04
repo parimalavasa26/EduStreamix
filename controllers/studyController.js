@@ -12,7 +12,7 @@ const translate = require('google-translate-api-x');
 const CURRICULUM = {
   8: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC:  ['Mathematics', 'General Science', 'Social Studies', 'English', 'Telugu'],
+    SSC:  ['Telugu', 'Hindi', 'English', 'Mathematics', 'Physical Science', 'Biological Science', 'Social Studies'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   },
   9: {
@@ -453,25 +453,32 @@ exports.translateBatch = async (req, res) => {
     const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
     const target = langCodes[reqLang] || reqLang;
     
-    // Robust parallel translation block
-    const promises = texts.map(async (text) => {
-      if (!text || text === '-') {
-        return { original: text, translated: text };
-      }
-      try {
-        const response = await translate(text, { to: target });
-        return { original: text, translated: response.text };
-      } catch (innerErr) {
-        console.error("Error translating:", text);
-        return { original: text, translated: text }; // fallback
-      }
+    // True array batch translation
+    const validTexts = [];
+    const results = {};
+    
+    texts.forEach(t => {
+      if (!t || t === '-') results[t] = t;
+      else validTexts.push(t);
     });
 
-    const resolved = await Promise.all(promises);
-    const results = {};
-    resolved.forEach(r => {
-      results[r.original] = r.translated;
-    });
+    if (validTexts.length > 0) {
+      // Chunk validTexts into chunks of 5 to avoid API length limits
+      for (let i = 0; i < validTexts.length; i += 5) {
+        const chunk = validTexts.slice(i, i + 5);
+        try {
+          const response = await translate(chunk, { to: target });
+          const resArray = Array.isArray(response) ? response : [response];
+          
+          chunk.forEach((t, j) => {
+            results[t] = resArray[j].text;
+          });
+        } catch (err) {
+          console.error("Batch translation error:", err.message || err);
+          chunk.forEach(t => { results[t] = t; }); // fallback
+        }
+      }
+    }
 
     res.json(results);
   } catch (error) {

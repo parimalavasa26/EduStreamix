@@ -90,8 +90,8 @@
       return data.chapters;
     }
     
-    // Use v2 cache key to bust any previously poisoned English caches!
-    const cacheKey = `chapters_v2_${selectedLanguage}_${grade}_${board}_${subject}`;
+    // Use v3 cache key to bust the old english transliteration cache!
+    const cacheKey = `chapters_v3_${selectedLanguage}_${grade}_${board}_${subject}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       try {
@@ -183,14 +183,17 @@
         const chapterTitleLabel = window.t ? window.t('Chapter Title') : 'Chapter Title';
         const typeLabel = window.t ? window.t('Type') : 'Type';
 
+        const hideType = (GRADE == 8 && BOARD === 'SSC');
+        const colspan = hideType ? 2 : 3;
+
         thead.innerHTML = `
           <tr class="unit-title-row">
-            <th colspan="3">${unitNameLabel}</th>
+            <th colspan="${colspan}">${unitNameLabel}</th>
           </tr>
           <tr class="col-headers-row">
             <th>${lessonNoLabel}</th>
             <th>${chapterTitleLabel}</th>
-            <th>${typeLabel}</th>
+            ${hideType ? '' : `<th>${typeLabel}</th>`}
           </tr>
         `;
         table.appendChild(thead);
@@ -207,7 +210,7 @@
           tr.innerHTML = `
             <td class="col-lesson">${ch.lessonNo || '-'}</td>
             <td class="col-title">${ch.chapterName || '-'}</td>
-            <td class="col-type">${ch.type || '-'}</td>
+            ${hideType ? '' : `<td class="col-type">${ch.type || '-'}</td>`}
           `;
           tbody.appendChild(tr);
         });
@@ -323,7 +326,7 @@
   }
 
   // ── Quiz ───────────────────────────────────
-  function showQuiz() {
+  async function showQuiz() {
     const section = document.getElementById('quiz-section');
     const body = document.getElementById('quiz-body');
     const actions = document.getElementById('quiz-actions');
@@ -331,25 +334,61 @@
     const retake = document.getElementById('quiz-retake-btn');
     const submit = document.getElementById('quiz-submit-btn');
 
-    const pool = currentChapterData.quizQuestions || [];
-    if (pool.length === 0) return;
+    let pool = currentChapterData.quizQuestions;
+    if (!pool || pool.length === 0) {
+      pool = (window.QUIZ_DATA && window.QUIZ_DATA[SUBJECT]) ? window.QUIZ_DATA[SUBJECT] : (window.QUIZ_DATA ? window.QUIZ_DATA['General'] : []);
+    }
+    if (!pool || pool.length === 0) return;
 
     section.style.display = '';
     result.style.display = 'none';
     retake.style.display = 'none';
-    actions.style.display = '';
+    actions.style.display = 'none';
 
     // Pick random 10 questions (or less if pool is smaller)
-    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    let shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
 
+    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div><p style="text-align:center; margin-top:1rem; color:var(--text-secondary);" data-i18n="Translating quiz...">Translating quiz...</p>';
+
+    // Translate questions if language is not English
+    if (LANGUAGE !== 'English' && LANGUAGE !== 'en') {
+      const textsToTranslate = [];
+      shuffled.forEach(q => {
+        if (!textsToTranslate.includes(q.question)) textsToTranslate.push(q.question);
+        q.options.forEach(opt => {
+          if (!textsToTranslate.includes(opt)) textsToTranslate.push(opt);
+        });
+      });
+
+      if (textsToTranslate.length > 0) {
+        try {
+          const res = await fetch('/translate-batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: textsToTranslate, targetLang: LANGUAGE })
+          });
+          const translations = await res.json();
+          
+          shuffled = shuffled.map(q => ({
+            ...q,
+            question: translations[q.question] || q.question,
+            options: q.options.map(opt => translations[opt] || opt)
+          }));
+        } catch (e) {
+          console.error("Quiz translation failed", e);
+        }
+      }
+    }
+
+    actions.style.display = '';
     body.innerHTML = '';
     shuffled.forEach((q, qi) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.dataset.answer = q.correctAnswer;
-      let html = '<p>' + (qi+1) + '. <span data-i18n="' + q.question + '">' + (window.t ? window.t(q.question) : q.question) + '</span></p>';
+      div.dataset.answer = q.answer !== undefined ? q.answer : q.correctAnswer;
+      let html = '<p>' + (qi+1) + '. <span>' + q.question + '</span></p>';
       q.options.forEach((opt, oi) => {
-        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span data-i18n="' + opt + '">' + (window.t ? window.t(opt) : opt) + '</span></label>';
+        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span>' + opt + '</span></label>';
       });
       div.innerHTML = html;
       body.appendChild(div);
@@ -362,17 +401,17 @@
         const correct = parseInt(qDiv.dataset.answer);
         const selected = qDiv.querySelector('input:checked');
         const opts = qDiv.querySelectorAll('.quiz-option');
-        opts[correct].classList.add('correct');
+        if (opts[correct]) opts[correct].classList.add('correct');
         if (selected) {
           const val = parseInt(selected.value);
           if (val === correct) { score++; }
-          else { opts[val].classList.add('wrong'); }
+          else { if (opts[val]) opts[val].classList.add('wrong'); }
         }
         qDiv.querySelectorAll('input').forEach(inp => inp.disabled = true);
       });
       actions.style.display = 'none';
       result.style.display = '';
-      result.textContent = 'Score: ' + score + ' / ' + questions.length;
+      result.textContent = (window.t ? window.t('Score') : 'Score') + ': ' + score + ' / ' + questions.length;
       result.className = 'quiz-result ' + (score >= (questions.length * 0.8) ? 'good' : score >= (questions.length * 0.4) ? 'ok' : 'bad');
       retake.style.display = '';
     };
