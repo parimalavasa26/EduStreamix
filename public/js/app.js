@@ -12,15 +12,6 @@
   // DOM
   const chaptersSection = document.getElementById('chapters-section');
   const chaptersList = document.getElementById('chapters-list');
-  
-  const modeSection = document.getElementById('mode-section');
-  const modeTitle = document.getElementById('mode-chapter-title');
-  const btnTextbookMode = document.getElementById('btn-textbook-mode');
-  const btnVideoMode = document.getElementById('btn-video-mode');
-  
-  const textbookSection = document.getElementById('textbook-section');
-  const textbookTitle = document.getElementById('textbook-title');
-  const textbookContent = document.getElementById('textbook-content');
 
   const videoSection = document.getElementById('video-section');
 
@@ -68,7 +59,7 @@
           tr.className = 'chapter-row';
           tr.addEventListener('click', () => {
             currentChapterData = ch;
-            showModeSelection();
+            showVideoMode('English');
           });
           
           tr.innerHTML = `
@@ -87,53 +78,6 @@
     }
   }
 
-  // ── Mode Selection ────────────────────────
-  function showModeSelection() {
-    hideAllSections();
-    modeSection.style.display = '';
-    modeTitle.textContent = currentChapterData.chapterName;
-  }
-
-  btnTextbookMode.addEventListener('click', showTextbookMode);
-  btnVideoMode.addEventListener('click', showLanguageSelection);
-
-  // ── Language Selection ────────────────────
-  function showLanguageSelection() {
-    hideAllSections();
-    document.getElementById('language-section').style.display = '';
-    document.getElementById('language-chapter-title').textContent = currentChapterData.chapterName;
-  }
-
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const selectedLang = btn.getAttribute('data-lang');
-      showVideoMode(selectedLang);
-    });
-  });
-
-  // ── Textbook Mode ─────────────────────────
-  function showTextbookMode() {
-    hideAllSections();
-    textbookSection.style.display = '';
-    textbookTitle.textContent = currentChapterData.chapterName;
-    textbookContent.innerHTML = '';
-
-    const parts = currentChapterData.textbookContent || [];
-    if (parts.length === 0) {
-      textbookContent.innerHTML = '<p class="no-data-msg">No textbook content available.</p>';
-      return;
-    }
-
-    parts.forEach(part => {
-      const partDiv = document.createElement('div');
-      partDiv.className = 'textbook-part';
-      partDiv.innerHTML = `
-        <h3>${part.title}</h3>
-        <p>${part.content}</p>
-      `;
-      textbookContent.appendChild(partDiv);
-    });
-  }
 
   // ── Video Mode ────────────────────────────
   async function showVideoMode(selectedLanguage = 'English') {
@@ -155,7 +99,6 @@
     document.getElementById('key-moments').style.display = 'none';
     document.getElementById('ai-summary').style.display = 'none';
     document.getElementById('quiz-section').style.display = 'none';
-    document.getElementById('chatbot-section').style.display = 'none';
 
     try {
       const params = new URLSearchParams({
@@ -189,7 +132,6 @@
       showKeyMoments();
       showAISummary();
       showQuiz();
-      showChatbot();
     } catch (e) {
       titleEl.textContent = 'Error loading video';
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
@@ -319,51 +261,17 @@
     retake.onclick = showQuiz;
   }
 
-  // ── AI Chatbot ────────────────────────────
-  function showChatbot() {
-    const section = document.getElementById('chatbot-section');
-    const messages = document.getElementById('chatbot-messages');
-    const input = document.getElementById('chatbot-input');
-    const sendBtn = document.getElementById('chatbot-send-btn');
-    
-    section.style.display = '';
-    messages.innerHTML = '<div class="chat-msg bot-msg">Hello! I am your AI Teacher. Ask me any doubts about "' + currentChapterData.chapterName + '"!</div>';
-    
-    sendBtn.onclick = () => {
-      const text = input.value.trim();
-      if (!text) return;
-      
-      messages.innerHTML += '<div class="chat-msg user-msg">' + text + '</div>';
-      input.value = '';
-      messages.scrollTop = messages.scrollHeight;
-      
-      setTimeout(() => {
-        messages.innerHTML += '<div class="chat-msg bot-msg">That is a great question about ' + currentChapterData.chapterName + '! The concepts in this chapter show that understanding the fundamentals is key. Let me give you an example...</div>';
-        messages.scrollTop = messages.scrollHeight;
-      }, 1000);
-    };
-
-    input.onkeypress = (e) => {
-      if (e.key === 'Enter') sendBtn.click();
-    };
-  }
 
   // ── Helpers ───────────────────────────────
   function hideAllSections() {
     chaptersSection.style.display = 'none';
-    modeSection.style.display = 'none';
-    document.getElementById('language-section').style.display = 'none';
-    textbookSection.style.display = 'none';
     videoSection.style.display = 'none';
     const iframe = document.getElementById('video-iframe');
     if (iframe) iframe.src = '';
   }
 
   // ── Back Buttons ──────────────────────────
-  document.getElementById('back-from-mode').addEventListener('click', showChapters);
-  document.getElementById('back-from-textbook').addEventListener('click', showModeSelection);
-  document.getElementById('back-from-language').addEventListener('click', showModeSelection);
-  document.getElementById('back-from-video').addEventListener('click', showLanguageSelection);
+  document.getElementById('back-from-video').addEventListener('click', showChapters);
 
   // ── Init ───────────────────────────────────
   showChapters();

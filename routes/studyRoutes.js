@@ -17,5 +17,9 @@ router.get('/study',    ctrl.renderStudy);
 router.get('/api/subjects', ctrl.getSubjects);
 router.get('/api/chapters', ctrl.getChapters);
 router.get('/api/video',    ctrl.getVideo);
+router.post('/api/upload-pdf', ctrl.uploadPdf);
+
+// ── Admin ───────────────────────────────────
+router.get('/admin', ctrl.renderAdmin);
 
 module.exports = router;

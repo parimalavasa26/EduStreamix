@@ -14,10 +14,7 @@ const videoSchema = new mongoose.Schema({
   embedUrl:       { type: String, default: '' }
 }, { _id: false });
 
-const textbookPartSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true }
-}, { _id: false });
+
 
 const keyMomentSchema = new mongoose.Schema({
   timestamp: { type: String, required: true },
@@ -35,7 +32,8 @@ const chapterSchema = new mongoose.Schema({
   chapterName: { type: String, required: true },
   type:        { type: String, default: '' },
   videos:      [videoSchema],
-  textbookContent: [textbookPartSchema],
+  pdfUrl:      { type: String, default: '' },
+  pdfTitle:    { type: String, default: '' },
   keyMoments: [keyMomentSchema],
   quizQuestions: [quizQuestionSchema],
   summary:     { type: String, default: '' }
