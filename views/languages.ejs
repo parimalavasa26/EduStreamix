@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Select your board — SSC, CBSE, or ICSE — on EduStreamix." />
-  <title>Select Board — EduStreamix</title>
+  <meta name="description" content="Select your preferred language — EduStreamix." />
+  <title>Select Language — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -33,18 +33,19 @@
   <main class="step-main">
     <div class="step-container">
 
+      <!-- Progress indicator -->
       <div class="step-progress" id="step-progress">
-        <div class="step-dot completed" data-step="1">
+        <div class="step-dot active" data-step="1">
           <span class="step-dot-inner">1</span>
           <span class="step-dot-label" data-i18n="Language">Language</span>
         </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot completed" data-step="2">
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="2">
           <span class="step-dot-inner">2</span>
           <span class="step-dot-label" data-i18n="Class">Class</span>
         </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="3">
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="3">
           <span class="step-dot-inner">3</span>
           <span class="step-dot-label" data-i18n="Board">Board</span>
         </div>
@@ -56,33 +57,21 @@
       </div>
 
       <div class="step-header">
-        <a href="/classes" class="back-step-link" id="back-to-classes" data-i18n="Back to Classes">← Back to Classes</a>
-        <h1 class="step-title"><span data-i18n="Select Board">Select Board</span></h1>
-        <p class="step-subtitle" data-i18n="Choose your education board to see relevant subjects">Choose your education board to see relevant subjects</p>
+        <a href="/" class="back-step-link" id="back-to-boards" data-i18n="Back to Home">← Back to Home</a>
+        <h1 class="step-title"><span data-i18n="Select Language">Select Language</span></h1>
+        <p class="step-subtitle" data-i18n="Choose your preferred language for your lessons">Choose your preferred language for your lessons</p>
       </div>
 
-      <div class="board-grid" id="board-grid">
-        <a href="/subjects?grade=<%= selectedGrade %>&board=SSC" class="board-card" id="board-card-ssc">
-          <div class="board-card-glow"></div>
-          <span class="board-icon">🏫</span>
-          <h3 class="board-card-title" data-i18n="SSC">SSC</h3>
-          <p class="board-card-label" data-i18n="State Board">State Board</p>
-          <span class="board-card-arrow">→</span>
-        </a>
-        <a href="/subjects?grade=<%= selectedGrade %>&board=CBSE" class="board-card" id="board-card-cbse">
-          <div class="board-card-glow"></div>
-          <span class="board-icon">📘</span>
-          <h3 class="board-card-title" data-i18n="CBSE">CBSE</h3>
-          <p class="board-card-label" data-i18n="Central Board">Central Board</p>
-          <span class="board-card-arrow">→</span>
-        </a>
-        <a href="/subjects?grade=<%= selectedGrade %>&board=ICSE" class="board-card" id="board-card-icse">
-          <div class="board-card-glow"></div>
-          <span class="board-icon">🎓</span>
-          <h3 class="board-card-title" data-i18n="ICSE">ICSE</h3>
-          <p class="board-card-label" data-i18n="Indian Certificate">Indian Certificate</p>
-          <span class="board-card-arrow">→</span>
-        </a>
+      <div class="board-grid" id="language-grid">
+        <% const langs = ['English', 'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Malayalam']; %>
+        <% langs.forEach(lang => { %>
+          <a href="#" class="board-card language-selector" data-lang="<%= lang %>">
+            <div class="board-card-glow"></div>
+            <span class="board-icon">🌐</span>
+            <h3 class="board-card-title"><%= lang %></h3>
+            <span class="board-card-arrow">→</span>
+          </a>
+        <% }) %>
       </div>
 
     </div>
@@ -97,6 +86,30 @@
 
   <script src="/js/i18n.js"></script>
   <script>
+    // Language code map for Google Translate (deprecated but kept for structure)
+    const langCodesLoc = {
+      'English': 'en',
+      'Hindi': 'hi',
+      'Telugu': 'te',
+      'Tamil': 'ta',
+      'Kannada': 'kn',
+      'Malayalam': 'ml'
+    };
+
+    document.querySelectorAll('.language-selector').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        const selectedLang = this.getAttribute('data-lang');
+        
+        // Use our new instant system instead of Google Translate cookies
+        if (window.applyLanguage) applyLanguage(selectedLang);
+        else localStorage.setItem('appLang', selectedLang);
+
+        // Redirect to classes step
+        window.location.href = '/classes';
+      });
+    });
+
     document.addEventListener('DOMContentLoaded', () => {
       const switcher = document.getElementById('nav-lang-switcher');
       if (switcher) {

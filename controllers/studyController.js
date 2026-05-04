@@ -52,14 +52,27 @@ exports.renderBoards = (req, res) => {
 };
 
 /**
+ * GET /languages  — Render language selection page (Step 3)
+ * Query params: grade, board
+ */
+exports.renderLanguages = (req, res) => {
+  const { grade, board } = req.query;
+  res.render('languages', {
+    selectedGrade: grade || '8',
+    selectedBoard: board || 'CBSE'
+  });
+};
+
+/**
  * GET /subjects  — Render subjects page (Step 3)
  * Query params: grade, board
  */
 exports.renderSubjects = (req, res) => {
-  const { grade, board } = req.query;
+  const { grade, board, language } = req.query;
   res.render('subjects', {
     selectedGrade: grade || '8',
-    selectedBoard: board || 'CBSE'
+    selectedBoard: board || 'CBSE',
+    selectedLanguage: language || 'English'
   });
 };
 

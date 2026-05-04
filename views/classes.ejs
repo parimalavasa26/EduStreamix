@@ -18,6 +18,14 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
+      <select id="nav-lang-switcher" class="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Kannada">Kannada</option>
+        <option value="Malayalam">Malayalam</option>
+      </select>
       <a href="/">Home</a>
     </div>
   </nav>
@@ -27,47 +35,53 @@
 
       <!-- Progress indicator -->
       <div class="step-progress" id="step-progress">
-        <div class="step-dot active" data-step="1">
+        <div class="step-dot completed" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label">Class</span>
+          <span class="step-dot-label" data-i18n="Language">Language</span>
         </div>
-        <div class="step-line"></div>
-        <div class="step-dot" data-step="2">
+        <div class="step-line filled"></div>
+        <div class="step-dot active" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Board</span>
+          <span class="step-dot-label" data-i18n="Class">Class</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" data-step="3">
           <span class="step-dot-inner">3</span>
-          <span class="step-dot-label">Subjects</span>
+          <span class="step-dot-label" data-i18n="Board">Board</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-dot" data-step="4">
+          <span class="step-dot-inner">4</span>
+          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
         </div>
       </div>
 
       <div class="step-header">
-        <h1 class="step-title">Choose Your <span class="hero-highlight">Class</span></h1>
-        <p class="step-subtitle">Select your grade to begin your learning journey</p>
+        <a href="/languages" class="back-step-link" id="back-to-languages" data-i18n="Back to Languages">← Back to Languages</a>
+        <h1 class="step-title"><span data-i18n="Select Class">Choose Your Class</span></h1>
+        <p class="step-subtitle" data-i18n="Select your grade to begin your learning journey">Select your grade to begin your learning journey</p>
       </div>
 
       <div class="class-grid" id="class-grid">
         <a href="/boards?grade=8" class="class-card" id="class-card-8">
           <div class="class-card-glow"></div>
           <span class="class-stage-icon">🌱</span>
-          <h3 class="class-card-title">Class 8</h3>
-          <p class="class-card-label">Foundation Stage</p>
+          <h3 class="class-card-title" data-i18n="Class 8">Class 8</h3>
+          <p class="class-card-label" data-i18n="Foundation Stage">Foundation Stage</p>
           <span class="class-card-arrow">→</span>
         </a>
         <a href="/boards?grade=9" class="class-card" id="class-card-9">
           <div class="class-card-glow"></div>
           <span class="class-stage-icon">🌿</span>
-          <h3 class="class-card-title">Class 9</h3>
-          <p class="class-card-label">Growth Stage</p>
+          <h3 class="class-card-title" data-i18n="Class 9">Class 9</h3>
+          <p class="class-card-label" data-i18n="Growth Stage">Growth Stage</p>
           <span class="class-card-arrow">→</span>
         </a>
         <a href="/boards?grade=10" class="class-card" id="class-card-10">
           <div class="class-card-glow"></div>
           <span class="class-stage-icon">🌳</span>
-          <h3 class="class-card-title">Class 10</h3>
-          <p class="class-card-label">Mastery Stage</p>
+          <h3 class="class-card-title" data-i18n="Class 10">Class 10</h3>
+          <p class="class-card-label" data-i18n="Mastery Stage">Mastery Stage</p>
           <span class="class-card-arrow">→</span>
         </a>
       </div>
@@ -82,5 +96,17 @@
     </div>
   </footer>
 
+  <script src="/js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const switcher = document.getElementById('nav-lang-switcher');
+      if (switcher) {
+        switcher.value = localStorage.getItem('appLang') || 'English';
+        switcher.addEventListener('change', (e) => {
+          if (window.applyLanguage) applyLanguage(e.target.value);
+        });
+      }
+    });
+  </script>
 </body>
 </html>

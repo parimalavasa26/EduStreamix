@@ -18,6 +18,14 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
+      <select id="nav-lang-switcher" class="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">Hindi</option>
+        <option value="Telugu">Telugu</option>
+        <option value="Tamil">Tamil</option>
+        <option value="Kannada">Kannada</option>
+        <option value="Malayalam">Malayalam</option>
+      </select>
       <a href="/">Home</a>
     </div>
   </nav>
@@ -25,28 +33,32 @@
   <main class="step-main">
     <div class="step-container">
 
-      <!-- Progress indicator -->
       <div class="step-progress" id="step-progress">
         <div class="step-dot completed" data-step="1">
-          <span class="step-dot-inner">✓</span>
-          <span class="step-dot-label">Class</span>
+          <span class="step-dot-inner">1</span>
+          <span class="step-dot-label" data-i18n="Language">Language</span>
         </div>
         <div class="step-line filled"></div>
         <div class="step-dot completed" data-step="2">
-          <span class="step-dot-inner">✓</span>
-          <span class="step-dot-label">Board</span>
+          <span class="step-dot-inner">2</span>
+          <span class="step-dot-label" data-i18n="Class">Class</span>
         </div>
         <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="3">
+        <div class="step-dot completed" data-step="3">
           <span class="step-dot-inner">3</span>
-          <span class="step-dot-label">Subjects</span>
+          <span class="step-dot-label" data-i18n="Board">Board</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step-dot active" data-step="4">
+          <span class="step-dot-inner">4</span>
+          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
         </div>
       </div>
 
       <div class="step-header">
-        <a href="/boards?grade=<%= selectedGrade %>" class="back-step-link" id="back-to-boards">← Back to Boards</a>
-        <h1 class="step-title"><span class="hero-highlight">Subjects</span></h1>
-        <p class="step-subtitle">Pick a subject to explore chapters and start watching</p>
+        <a href="/boards?grade=<%= selectedGrade %>" class="back-step-link" id="back-to-boards" data-i18n="Back to Boards">← Back to Boards</a>
+        <h1 class="step-title"><span class="hero-highlight" data-i18n="Subjects">Subjects</span></h1>
+        <p class="step-subtitle" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
       </div>
 
       <div class="subjects-grid" id="subjects-grid">
@@ -91,12 +103,13 @@
           grid.innerHTML = '';
           data.subjects.forEach(subj => {
             const card = document.createElement('a');
-            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(subj);
+            const appLang = localStorage.getItem('appLang') || 'English';
+            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&language=' + appLang + '&subject=' + encodeURIComponent(subj);
             card.className = 'subject-card';
             card.id = 'subject-' + subj.toLowerCase().replace(/\s+/g, '-');
             card.innerHTML =
               '<span class="subject-icon">' + (SUBJECT_ICONS[subj] || '📖') + '</span>' +
-              '<span class="subject-name">' + subj + '</span>';
+              '<span class="subject-name" data-i18n="' + subj + '">' + (window.t ? window.t(subj) : subj) + '</span>';
             grid.appendChild(card);
           });
         } catch (e) {
@@ -107,6 +120,23 @@
       loadSubjects();
     })();
   </script>
-
+  <script src="/js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const switcher = document.getElementById('nav-lang-switcher');
+      if (switcher) {
+        switcher.value = localStorage.getItem('appLang') || 'English';
+        switcher.addEventListener('change', (e) => {
+          if (window.applyLanguage) applyLanguage(e.target.value);
+        });
+      }
+    });
+    document.addEventListener('languageChanged', () => {
+      document.querySelectorAll('.subject-name').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key && window.t) el.innerHTML = window.t(key);
+      });
+    });
+  </script>
 </body>
 </html>

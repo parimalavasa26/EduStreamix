@@ -10,6 +10,7 @@ const ctrl = require('../controllers/studyController');
 router.get('/',         ctrl.renderLanding);
 router.get('/classes',  ctrl.renderClasses);
 router.get('/boards',   ctrl.renderBoards);
+router.get('/languages', ctrl.renderLanguages);
 router.get('/subjects', ctrl.renderSubjects);
 router.get('/study',    ctrl.renderStudy);
 
