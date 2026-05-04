@@ -4,6 +4,9 @@
 
 const Subject = require('../models/Subject');
 const { fetchBestVideo } = require('../services/youtubeService');
+const fs = require('fs');
+const path = require('path');
+const translate = require('google-translate-api-x');
 
 // ── Curriculum mapping (example subjects per class + board) ──
 const CURRICULUM = {
@@ -50,14 +53,27 @@ exports.renderBoards = (req, res) => {
 };
 
 /**
+ * GET /languages  — Render language selection page (Step 3)
+ * Query params: grade, board
+ */
+exports.renderLanguages = (req, res) => {
+  const { grade, board } = req.query;
+  res.render('languages', {
+    selectedGrade: grade || '8',
+    selectedBoard: board || 'CBSE'
+  });
+};
+
+/**
  * GET /subjects  — Render subjects page (Step 3)
  * Query params: grade, board
  */
 exports.renderSubjects = (req, res) => {
-  const { grade, board } = req.query;
+  const { grade, board, language } = req.query;
   res.render('subjects', {
     selectedGrade: grade || '8',
-    selectedBoard: board || 'CBSE'
+    selectedBoard: board || 'CBSE',
+    selectedLanguage: language || 'English'
   });
 };
 
@@ -113,7 +129,7 @@ exports.getChapters = async (req, res) => {
   try {
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },
-      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.textbookContent': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1 }
+      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1 }
     ).lean();
 
     if (doc && doc.units && doc.units.length > 0) {
@@ -125,7 +141,8 @@ exports.getChapters = async (req, res) => {
             lessonNo: ch.lessonNo, 
             chapterName: ch.chapterName, 
             type: ch.type,
-            textbookContent: ch.textbookContent,
+            pdfUrl: ch.pdfUrl,
+            pdfTitle: ch.pdfTitle,
             keyMoments: ch.keyMoments,
             quizQuestions: ch.quizQuestions,
             summary: ch.summary
@@ -319,3 +336,146 @@ function _getDefaultChapters(subject) {
   return (defaults[subject] || ['Chapter 1', 'Chapter 2', 'Chapter 3'])
     .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name, type: 'General Topic' }));
 }
+
+/**
+ * GET /admin  — Render Admin Page
+ */
+exports.renderAdmin = (req, res) => {
+  res.render('admin');
+};
+
+/**
+ * POST /api/upload-pdf
+ * Handles base64 PDF upload and updates the MongoDB schema
+ */
+exports.uploadPdf = async (req, res) => {
+  const { grade, board, subject, chapterName, pdfDataUrl, pdfTitle } = req.body;
+
+  if (!grade || !board || !subject || !chapterName || !pdfDataUrl) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+
+  try {
+    // 1. Decode Base64 PDF
+    const matches = pdfDataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Invalid base64 string' });
+    }
+
+    const buffer = Buffer.from(matches[2], 'base64');
+
+    // 2. Save PDF to disk
+    const uploadDir = path.join(__dirname, '../public/uploads/pdfs');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const safeChapter = chapterName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const fileName = `grade${grade}_${board}_${subject.replace(/\\s/g, '')}_${safeChapter}_${Date.now()}.pdf`;
+    const filePath = path.join(uploadDir, fileName);
+
+    fs.writeFileSync(filePath, buffer);
+    const pdfUrl = `/uploads/pdfs/${fileName}`;
+
+    // 3. Update MongoDB Subject Chapter
+    const gradeNum = parseInt(grade, 10);
+    const boardUp = board.toUpperCase();
+
+    let doc = await Subject.findOne({ grade: gradeNum, board: boardUp, subject });
+    
+    if (!doc) {
+      // Create a default if doesn't exist
+      doc = new Subject({
+        grade: gradeNum,
+        board: boardUp,
+        subject,
+        units: [{
+          unitName: 'General',
+          chapters: [{
+            chapterName,
+            pdfUrl,
+            pdfTitle: pdfTitle || chapterName
+          }]
+        }]
+      });
+      await doc.save();
+    } else {
+      let found = false;
+      for (const unit of doc.units) {
+        for (const ch of unit.chapters) {
+          if (ch.chapterName === chapterName) {
+            ch.pdfUrl = pdfUrl;
+            ch.pdfTitle = pdfTitle || chapterName;
+            found = true;
+            break;
+          }
+        }
+        if (found) break;
+      }
+
+      if (!found) {
+        doc.units[0].chapters.push({
+          chapterName,
+          pdfUrl,
+          pdfTitle: pdfTitle || chapterName
+        });
+      }
+
+      await doc.save();
+    }
+
+    res.json({ success: true, pdfUrl });
+  } catch (error) {
+    console.error('Error uploading PDF:', error);
+    res.status(500).json({ error: 'Failed to upload PDF' });
+  }
+};
+
+/**
+ * POST /translate-batch
+ * Batch translates array of strings
+ */
+exports.translateBatch = async (req, res) => {
+  try {
+    const { texts, lang, targetLang } = req.body;
+    const reqLang = targetLang || lang;
+
+    if (!texts || !Array.isArray(texts)) {
+      return res.status(400).json({ error: "Invalid texts array" });
+    }
+
+    if (reqLang === 'en' || reqLang === 'English') {
+      const fallback = {};
+      texts.forEach(t => fallback[t] = t);
+      return res.json(fallback);
+    }
+    
+    const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
+    const target = langCodes[reqLang] || reqLang;
+    
+    // Robust parallel translation block
+    const promises = texts.map(async (text) => {
+      if (!text || text === '-') {
+        return { original: text, translated: text };
+      }
+      try {
+        const response = await translate(text, { to: target });
+        return { original: text, translated: response.text };
+      } catch (innerErr) {
+        console.error("Error translating:", text);
+        return { original: text, translated: text }; // fallback
+      }
+    });
+
+    const resolved = await Promise.all(promises);
+    const results = {};
+    resolved.forEach(r => {
+      results[r.original] = r.translated;
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Server Error:', error);
+    res.status(500).json({ error: 'Translation failed' });
+  }
+};

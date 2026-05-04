@@ -18,6 +18,7 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
+      <span class="nav-lang-display" id="nav-lang-display">English</span>
       <a href="/">Home</a>
     </div>
   </nav>
@@ -25,50 +26,54 @@
   <main class="step-main">
     <div class="step-container">
 
-      <!-- Progress indicator -->
       <div class="step-progress" id="step-progress">
         <div class="step-dot completed" data-step="1">
-          <span class="step-dot-inner">✓</span>
+          <span class="step-dot-inner">1</span>
+          <span class="step-dot-label">Language</span>
+        </div>
+        <div class="step-line filled"></div>
+        <div class="step-dot completed" data-step="2">
+          <span class="step-dot-inner">2</span>
           <span class="step-dot-label">Class</span>
         </div>
         <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="2">
-          <span class="step-dot-inner">2</span>
+        <div class="step-dot active" data-step="3">
+          <span class="step-dot-inner">3</span>
           <span class="step-dot-label">Board</span>
         </div>
         <div class="step-line"></div>
-        <div class="step-dot" data-step="3">
-          <span class="step-dot-inner">3</span>
+        <div class="step-dot" data-step="4">
+          <span class="step-dot-inner">4</span>
           <span class="step-dot-label">Subjects</span>
         </div>
       </div>
 
       <div class="step-header">
-        <a href="/classes" class="back-step-link" id="back-to-classes">← Back to Classes</a>
-        <h1 class="step-title">Select <span class="hero-highlight">Board</span></h1>
-        <p class="step-subtitle">Choose your education board to see relevant subjects</p>
+        <a href="/classes" class="back-step-link" id="back-to-classes" data-i18n="Back to Classes">← Back to Classes</a>
+        <h1 class="step-title"><span data-i18n="Select Board">Select Board</span></h1>
+        <p class="step-subtitle" data-i18n="Choose your education board to see relevant subjects">Choose your education board to see relevant subjects</p>
       </div>
 
       <div class="board-grid" id="board-grid">
         <a href="/subjects?grade=<%= selectedGrade %>&board=SSC" class="board-card" id="board-card-ssc">
           <div class="board-card-glow"></div>
           <span class="board-icon">🏫</span>
-          <h3 class="board-card-title">SSC</h3>
-          <p class="board-card-label">State Board</p>
+          <h3 class="board-card-title" data-i18n="SSC">SSC</h3>
+          <p class="board-card-label" data-i18n="State Board">State Board</p>
           <span class="board-card-arrow">→</span>
         </a>
         <a href="/subjects?grade=<%= selectedGrade %>&board=CBSE" class="board-card" id="board-card-cbse">
           <div class="board-card-glow"></div>
           <span class="board-icon">📘</span>
-          <h3 class="board-card-title">CBSE</h3>
-          <p class="board-card-label">Central Board</p>
+          <h3 class="board-card-title" data-i18n="CBSE">CBSE</h3>
+          <p class="board-card-label" data-i18n="Central Board">Central Board</p>
           <span class="board-card-arrow">→</span>
         </a>
         <a href="/subjects?grade=<%= selectedGrade %>&board=ICSE" class="board-card" id="board-card-icse">
           <div class="board-card-glow"></div>
           <span class="board-icon">🎓</span>
-          <h3 class="board-card-title">ICSE</h3>
-          <p class="board-card-label">Indian Certificate</p>
+          <h3 class="board-card-title" data-i18n="ICSE">ICSE</h3>
+          <p class="board-card-label" data-i18n="Indian Certificate">Indian Certificate</p>
           <span class="board-card-arrow">→</span>
         </a>
       </div>
@@ -83,5 +88,23 @@
     </div>
   </footer>
 
+  <script src="/js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const display = document.getElementById('nav-lang-display');
+      if (display) {
+        const lang = localStorage.getItem('appLang') || 'English';
+        const languageNames = {
+          'English': 'English',
+          'Hindi': 'हिंदी',
+          'Telugu': 'తెలుగు',
+          'Tamil': 'தமிழ்',
+          'Kannada': 'ಕನ್ನಡ',
+          'Malayalam': 'മലയാളം'
+        };
+        display.textContent = languageNames[lang] || lang;
+      }
+    });
+  </script>
 </body>
 </html>

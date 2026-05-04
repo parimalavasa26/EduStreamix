@@ -26,7 +26,8 @@ async function fetchBestVideo(topic, grade, language, subject) {
 
     // ── Step 1: Search YouTube ────────────────
     const subjectQuery = subject ? ` ${subject} ` : ' ';
-    const searchQuery = `${topic} class ${grade}${subjectQuery}${language}`;
+    // Use the same video regardless of language (rely on CC captions)
+    const searchQuery = `${topic} class ${grade}${subjectQuery}`;
     const searchRes = await axios.get(YT_SEARCH_URL, {
       params: {
         part:       'snippet',

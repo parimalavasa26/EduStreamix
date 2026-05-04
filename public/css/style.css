@@ -46,6 +46,8 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .nav-links{display:flex;align-items:center;gap:2rem}
 .nav-links a{font-size:.95rem;font-weight:500;color:var(--text-secondary);transition:color .3s}
 .nav-links a:hover{color:var(--text-primary)}
+.nav-lang-switcher{background:transparent;border:1px solid var(--border-glass);color:var(--text-secondary);font-family:var(--font-body);font-size:.9rem;padding:.3rem .6rem;border-radius:8px;outline:none;cursor:pointer}
+.nav-lang-switcher:focus{border-color:var(--accent-1)}
 
 /* ═══════════════════════════════════════
    HERO (Landing Page)
@@ -94,6 +96,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .features-cta{margin-top:3.5rem}
 
 /* ═══════════════════════════════════════
+<<<<<<< HEAD
    LANDING PAGE (Light Pastel / Powder Blue)
    ═══════════════════════════════════════ */
 .landing-body {
@@ -151,9 +154,34 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .landing-body .icon-4 { top: 25%; right: 20%; transform: rotate(20deg); font-size: 6rem; }
 
 /* Hero Text & Spotlight */
+=======
+   LANDING PAGE (Plain White)
+   ═══════════════════════════════════════ */
+.landing-body {
+  background: #ffffff;
+  color: var(--text-primary);
+  position: relative;
+}
+
+.landing-body .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+}
+.landing-body .nav-links a { color: var(--text-secondary); }
+.landing-body .nav-links a:hover { color: var(--text-primary); }
+
+.landing-body .hero-bg-orbs,
+.landing-body .watermark-icons,
+.landing-body .title-glow {
+  display: none;
+}
+
+>>>>>>> 9537bc4ee0a9becb32bf37f207cb20d90293b3b3
 .landing-body .hero-title {
   position: relative; z-index: 1; color: #1e293b;
 }
+<<<<<<< HEAD
 .landing-body .title-glow {
   position: absolute;
   top: 50%; left: 50%;
@@ -171,10 +199,20 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
   border: 1px solid rgba(108, 99, 255, 0.1);
   color: #475569;
   backdrop-filter: blur(16px);
+=======
+
+.landing-body .hero-subtitle { color: var(--text-secondary); }
+.landing-body .hero-tagline { color: var(--accent-1); }
+.landing-body .float-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+>>>>>>> 9537bc4ee0a9becb32bf37f207cb20d90293b3b3
 }
 
-/* Landing Features Glassmorphism */
 .landing-body .features { position: relative; z-index: 2; }
+<<<<<<< HEAD
 .landing-body .section-title { color: #1e293b; }
 .landing-body .section-subtitle { color: #475569; }
 .landing-body .feature-card {
@@ -195,6 +233,24 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 
 .landing-body .footer { border-top: 1px solid rgba(0, 0, 0, 0.06); position: relative; z-index: 2; }
 .landing-body .footer-copy { color: #64748b; }
+=======
+.landing-body .section-subtitle { color: var(--text-secondary); }
+.landing-body .feature-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.landing-body .feature-card p { color: var(--text-secondary); }
+.landing-body .feature-card:hover {
+  background: #f8f9fc;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.landing-body .footer { border-top: 1px solid rgba(0, 0, 0, 0.08); position: relative; z-index: 2; }
+.landing-body .footer-copy { color: var(--text-muted); }
+>>>>>>> 9537bc4ee0a9becb32bf37f207cb20d90293b3b3
 
 /* ═══════════════════════════════════════
    FOOTER
