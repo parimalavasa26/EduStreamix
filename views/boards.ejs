@@ -18,14 +18,7 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <select id="nav-lang-switcher" class="nav-lang-switcher">
-        <option value="English">English</option>
-        <option value="Hindi">Hindi</option>
-        <option value="Telugu">Telugu</option>
-        <option value="Tamil">Tamil</option>
-        <option value="Kannada">Kannada</option>
-        <option value="Malayalam">Malayalam</option>
-      </select>
+      <span class="nav-lang-display" id="nav-lang-display">English</span>
       <a href="/">Home</a>
     </div>
   </nav>
@@ -36,22 +29,22 @@
       <div class="step-progress" id="step-progress">
         <div class="step-dot completed" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label" data-i18n="Language">Language</span>
+          <span class="step-dot-label">Language</span>
         </div>
         <div class="step-line filled"></div>
         <div class="step-dot completed" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label" data-i18n="Class">Class</span>
+          <span class="step-dot-label">Class</span>
         </div>
         <div class="step-line filled"></div>
         <div class="step-dot active" data-step="3">
           <span class="step-dot-inner">3</span>
-          <span class="step-dot-label" data-i18n="Board">Board</span>
+          <span class="step-dot-label">Board</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" data-step="4">
           <span class="step-dot-inner">4</span>
-          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
+          <span class="step-dot-label">Subjects</span>
         </div>
       </div>
 
@@ -98,12 +91,18 @@
   <script src="/js/i18n.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const switcher = document.getElementById('nav-lang-switcher');
-      if (switcher) {
-        switcher.value = localStorage.getItem('appLang') || 'English';
-        switcher.addEventListener('change', (e) => {
-          if (window.applyLanguage) applyLanguage(e.target.value);
-        });
+      const display = document.getElementById('nav-lang-display');
+      if (display) {
+        const lang = localStorage.getItem('appLang') || 'English';
+        const languageNames = {
+          'English': 'English',
+          'Hindi': 'हिंदी',
+          'Telugu': 'తెలుగు',
+          'Tamil': 'தமிழ்',
+          'Kannada': 'ಕನ್ನಡ',
+          'Malayalam': 'മലയാളം'
+        };
+        display.textContent = languageNames[lang] || lang;
       }
     });
   </script>

@@ -16,27 +16,40 @@ let allLocales = {}; // Cache all locales
 async function initI18n() {
   const savedLang = localStorage.getItem('appLang') || 'English';
   currentLangCode = langCodes[savedLang] || 'en';
-  
-  // Preload all locales at startup
-  await Promise.all(
-    Object.values(langCodes).map(async (code) => {
-      try {
-        const res = await fetch(`/locales/${code}.json`);
-        allLocales[code] = await res.json();
-      } catch (e) {
-        console.error(`Failed to load locale: ${code}`, e);
-        allLocales[code] = {};
-      }
-    })
-  );
-
-  applyLanguage(savedLang);
+  await applyLanguage(savedLang);
 }
 
-function applyLanguage(langName) {
+async function loadLocale(code) {
+  if (allLocales[code]) return allLocales[code];
+  
+  // Try localStorage cache first
+  const cached = localStorage.getItem('locale_' + code);
+  if (cached) {
+    try {
+      allLocales[code] = JSON.parse(cached);
+      return allLocales[code];
+    } catch(e) {}
+  }
+  
+  // Fetch from server if not cached
+  try {
+    const res = await fetch(`/locales/${code}.json`);
+    const data = await res.json();
+    allLocales[code] = data;
+    localStorage.setItem('locale_' + code, JSON.stringify(data));
+    return data;
+  } catch (e) {
+    console.error(`Failed to load locale: ${code}`, e);
+    return {};
+  }
+}
+
+async function applyLanguage(langName) {
   const code = langCodes[langName] || 'en';
   currentLangCode = code;
-  i18nDict = allLocales[code] || {};
+  
+  // Lazy load the dictionary
+  i18nDict = await loadLocale(code);
   localStorage.setItem('appLang', langName);
 
   // Translate all DOM elements with data-i18n
@@ -54,22 +67,14 @@ function applyLanguage(langName) {
   });
 
   // Also broadcast event so JS generated elements can update
+  window.i18nReady = true;
   document.dispatchEvent(new CustomEvent('languageChanged', { detail: langName }));
 }
 
 function t(key) {
-  if (i18nDict[key]) return i18nDict[key];
-  if (currentLangCode === 'en') return key;
-  
-  // Strict language lock: fallback to a placeholder in the requested language
-  const fallbacks = {
-    'hi': '[अनुवाद उपलब्ध नहीं है]',
-    'te': '[అనువాదం అందుబాటులో లేదు]',
-    'ta': '[மொழிபெயர்ப்பு கிடைக்கவில்லை]',
-    'kn': '[ಅನುವಾದ ಲಭ್ಯವಿಲ್ಲ]',
-    'ml': '[വിവർത്തനം ലഭ്യമല്ല]'
-  };
-  return fallbacks[currentLangCode] || '[Translation unavailable]';
+  if (i18nDict && i18nDict[key]) return i18nDict[key];
+  if (allLocales['en'] && allLocales['en'][key]) return allLocales['en'][key];
+  return key;
 }
 
 // Call on startup

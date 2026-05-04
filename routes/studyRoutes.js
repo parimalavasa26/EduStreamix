@@ -18,6 +18,9 @@ router.get('/study',    ctrl.renderStudy);
 router.get('/api/subjects', ctrl.getSubjects);
 router.get('/api/chapters', ctrl.getChapters);
 router.get('/api/video',    ctrl.getVideo);
+
+// Translation endpoint
+router.post('/translate-batch', ctrl.translateBatch);
 router.post('/api/upload-pdf', ctrl.uploadPdf);
 
 // ── Admin ───────────────────────────────────

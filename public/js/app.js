@@ -24,22 +24,145 @@
 
   const videoSection = document.getElementById('video-section');
 
+  async function translateChaptersDeep(chapters, lang) {
+    if (lang === 'English' || lang === 'en') return chapters;
+
+    // Collect all unique strings
+    const textsToTranslate = [];
+    
+    if (SUBJECT && !textsToTranslate.includes(SUBJECT)) textsToTranslate.push(SUBJECT);
+
+    chapters.forEach(ch => {
+      if (ch.unitName && !textsToTranslate.includes(ch.unitName)) textsToTranslate.push(ch.unitName);
+      if (ch.chapterName && !textsToTranslate.includes(ch.chapterName)) textsToTranslate.push(ch.chapterName);
+      if (ch.type && !textsToTranslate.includes(ch.type)) textsToTranslate.push(ch.type);
+    });
+
+    if (textsToTranslate.length === 0) return chapters;
+
+    try {
+      const res = await fetch('/translate-batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texts: textsToTranslate, targetLang: lang })
+      });
+      const translations = await res.json();
+
+      const dict = {};
+      textsToTranslate.forEach((txt) => {
+        // Enforce dict mapping. Never fallback to English if translation exists!
+        if (translations[txt] && translations[txt] !== txt) {
+          dict[txt] = translations[txt];
+        }
+      });
+
+      // Update Subject Name globally via dict mapping strictly
+      if (dict[SUBJECT]) {
+        const subjDisplay = document.getElementById('subject-display');
+        if (subjDisplay) subjDisplay.textContent = dict[SUBJECT];
+      }
+
+      const mappedChapters = chapters.map(ch => ({
+        ...ch,
+        unitName: dict[ch.unitName] || ch.unitName,
+        chapterName: dict[ch.chapterName] || ch.chapterName,
+        type: dict[ch.type] || ch.type,
+        lessonNo: ch.lessonNo || '-'
+      }));
+
+      console.log("Dictionary Mapping:", dict);
+      console.log("Mapped unitNames:", mappedChapters.map(c => c.unitName));
+      console.log("Mapped chapter titles:", mappedChapters.map(c => c.chapterName));
+
+      return mappedChapters;
+    } catch (e) {
+      console.error('Batch translation failed:', e);
+      return chapters;
+    }
+  }
+
+  async function getFinalChapters(grade, board, subject, selectedLanguage) {
+    const res = await fetch('/api/chapters?grade=' + grade + '&board=' + board + '&subject=' + encodeURIComponent(subject));
+    const data = await res.json();
+    if (!data.chapters || !data.chapters.length) return [];
+    
+    if (selectedLanguage === 'English' || selectedLanguage === 'en') {
+      return data.chapters;
+    }
+    
+    // Use v2 cache key to bust any previously poisoned English caches!
+    const cacheKey = `chapters_v2_${selectedLanguage}_${grade}_${board}_${subject}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch(e) {}
+    }
+    
+    let isDone = false;
+    const translationPromise = translateChaptersDeep(data.chapters, selectedLanguage)
+      .then(translated => {
+        isDone = true;
+        // Temporary Debug Safety
+        console.log("Selected Language:", selectedLanguage);
+        console.log("Translated Chapters:", translated);
+        
+        // Only cache if translation was successful
+        if (window.i18nReady) {
+          localStorage.setItem(cacheKey, JSON.stringify(translated));
+        }
+        return translated;
+      })
+      .catch(e => {
+        console.error(e);
+        isDone = true;
+        return data.chapters;
+      });
+
+    // 3 Second Maximum Loading Limit!
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        if (!isDone) resolve(data.chapters);
+      }, 3000);
+    });
+
+    const result = await Promise.race([translationPromise, timeoutPromise]);
+
+    // If it timed out, result is English. We setup a listener to update the UI when the slow translation finishes.
+    if (result === data.chapters && !isDone) {
+      console.warn("Translation taking longer than 3s. Falling back to English temporarily.");
+      translationPromise.then(finalTranslated => {
+        if (LANGUAGE === selectedLanguage) {
+          console.log("Background translation finished! Re-rendering UI.");
+          showChapters(); // Safe to recall, as it will instantly hit the cached data now!
+        }
+      });
+    }
+
+    return result;
+  }
+
   // ── Load Chapters on Init ─────────────────
   async function showChapters() {
     hideAllSections();
     chaptersSection.style.display = '';
-    chaptersList.innerHTML = Array(6).fill('<div class="skeleton-item"></div>').join('');
+    chaptersList.innerHTML = `
+      <div class="loader-spinner" style="margin: 0 auto;"></div>
+      <p style="text-align:center; margin-top:1rem; color:var(--text-secondary);" data-i18n="Translating...">Translating...</p>
+      ${Array(3).fill('<div class="skeleton-item" style="margin-top:1rem;"></div>').join('')}
+    `;
     try {
-      const res = await fetch('/api/chapters?grade=' + GRADE + '&board=' + BOARD + '&subject=' + encodeURIComponent(SUBJECT));
-      const data = await res.json();
-      if (!data.chapters || !data.chapters.length) {
+      const finalChapters = await getFinalChapters(GRADE, BOARD, SUBJECT, LANGUAGE);
+      
+      if (!finalChapters || !finalChapters.length) {
         chaptersList.innerHTML = '<p class="no-data-msg">No chapters found.</p>';
         return;
       }
+
       chaptersList.innerHTML = '';
       
       const units = {};
-      data.chapters.forEach(ch => {
+      finalChapters.forEach(ch => {
         const u = ch.unitName || 'General';
         if (!units[u]) units[u] = [];
         units[u].push(ch);
@@ -50,14 +173,24 @@
         table.className = 'chapters-table';
         
         const thead = document.createElement('thead');
+        
+        // Use the ALREADY TRANSLATED unitName from the data!
+        // Do NOT pass it through window.t() again!
+        const unitNameLabel = unitName;
+        
+        // Translate static UI labels
+        const lessonNoLabel = window.t ? window.t('Lesson No.') : 'Lesson No.';
+        const chapterTitleLabel = window.t ? window.t('Chapter Title') : 'Chapter Title';
+        const typeLabel = window.t ? window.t('Type') : 'Type';
+
         thead.innerHTML = `
           <tr class="unit-title-row">
-            <th colspan="3" data-i18n="${unitName}">${window.t ? window.t(unitName) : unitName}</th>
+            <th colspan="3">${unitNameLabel}</th>
           </tr>
           <tr class="col-headers-row">
-            <th data-i18n="Lesson No.">${window.t ? window.t('Lesson No.') : 'Lesson No.'}</th>
-            <th data-i18n="Chapter Title">${window.t ? window.t('Chapter Title') : 'Chapter Title'}</th>
-            <th data-i18n="Type">${window.t ? window.t('Type') : 'Type'}</th>
+            <th>${lessonNoLabel}</th>
+            <th>${chapterTitleLabel}</th>
+            <th>${typeLabel}</th>
           </tr>
         `;
         table.appendChild(thead);
@@ -72,9 +205,9 @@
           });
           
           tr.innerHTML = `
-            <td class="col-lesson" data-i18n="${ch.lessonNo || '-'}">${window.t ? window.t(ch.lessonNo || '-') : (ch.lessonNo || '-')}</td>
-            <td class="col-title" data-i18n="${ch.chapterName || '-'}">${window.t ? window.t(ch.chapterName || '-') : (ch.chapterName || '-')}</td>
-            <td class="col-type" data-i18n="${ch.type || '-'}">${window.t ? window.t(ch.type || '-') : (ch.type || '-')}</td>
+            <td class="col-lesson">${ch.lessonNo || '-'}</td>
+            <td class="col-title">${ch.chapterName || '-'}</td>
+            <td class="col-type">${ch.type || '-'}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -83,6 +216,7 @@
         chaptersList.appendChild(table);
       }
     } catch (e) {
+      console.error(e);
       chaptersList.innerHTML = '<p class="no-data-msg error-msg">Error loading chapters.</p>';
     }
   }
@@ -114,7 +248,6 @@
       metaEl.innerHTML = '';
 
       // Reset components
-      document.getElementById('key-moments').style.display = 'none';
       document.getElementById('quiz-section').style.display = 'none';
     }
 
@@ -154,6 +287,7 @@
         playerVars: {
           autoplay: 1,
           rel: 0,
+          modestbranding: 1,
           cc_load_policy: 1,
           hl: code,
           cc_lang_pref: code
@@ -180,7 +314,6 @@
       metaEl.innerHTML = meta;
 
       if (!instantSwitch) {
-        showKeyMoments();
         showQuiz();
       }
     } catch (e) {
@@ -188,38 +321,6 @@
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
     }
   }
-
-  // ── Key Moments ───────────────────────────
-  function showKeyMoments() {
-    const momentsSection = document.getElementById('key-moments');
-    const momentsList = document.getElementById('key-moments-list');
-    
-    const moments = currentChapterData.keyMoments || [];
-    if (moments.length === 0) return;
-
-    momentsSection.style.display = '';
-    momentsList.innerHTML = '';
-
-    moments.forEach(m => {
-      const btn = document.createElement('button');
-      btn.className = 'key-moment-btn';
-      btn.innerHTML = `<span class="moment-time">${m.timestamp}</span> <span class="moment-title">${m.title}</span>`;
-      
-      btn.onclick = () => {
-        const parts = m.timestamp.split(':');
-        let seconds = 0;
-        if (parts.length === 2) seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        else if (parts.length === 3) seconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
-        
-        if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
-          ytPlayer.seekTo(seconds, true);
-          ytPlayer.playVideo();
-        }
-      };
-      momentsList.appendChild(btn);
-    });
-  }
-
 
   // ── Quiz ───────────────────────────────────
   function showQuiz() {
@@ -304,18 +405,17 @@
       }
     }
 
-    // Also re-render dynamically generated elements like chapters and quiz
-    if (chaptersSection.style.display !== 'none') {
+    // Always re-render dynamically generated elements like chapters and quiz
+    if (chaptersSection.style.display !== 'none' || !window.chaptersInitiallyLoaded) {
+      window.chaptersInitiallyLoaded = true;
       showChapters();
     }
-    
-    // The rest of the UI (quiz questions, static buttons) will automatically be translated 
-    // by i18n.js iterating over [data-i18n] on document scope, triggered right before this event.
   });
 
   // ── Back Buttons ──────────────────────────
   document.getElementById('back-from-video').addEventListener('click', showChapters);
 
   // ── Init ───────────────────────────────────
-  showChapters();
+  // showChapters() is intentionally not called here anymore.
+  // It waits for 'languageChanged' event from i18n.js to ensure window.t is fully ready before caching translations!
 })();

@@ -6,6 +6,7 @@ const Subject = require('../models/Subject');
 const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
+const translate = require('google-translate-api-x');
 
 // ── Curriculum mapping (example subjects per class + board) ──
 const CURRICULUM = {
@@ -427,5 +428,54 @@ exports.uploadPdf = async (req, res) => {
   } catch (error) {
     console.error('Error uploading PDF:', error);
     res.status(500).json({ error: 'Failed to upload PDF' });
+  }
+};
+
+/**
+ * POST /translate-batch
+ * Batch translates array of strings
+ */
+exports.translateBatch = async (req, res) => {
+  try {
+    const { texts, lang, targetLang } = req.body;
+    const reqLang = targetLang || lang;
+
+    if (!texts || !Array.isArray(texts)) {
+      return res.status(400).json({ error: "Invalid texts array" });
+    }
+
+    if (reqLang === 'en' || reqLang === 'English') {
+      const fallback = {};
+      texts.forEach(t => fallback[t] = t);
+      return res.json(fallback);
+    }
+    
+    const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
+    const target = langCodes[reqLang] || reqLang;
+    
+    // Robust parallel translation block
+    const promises = texts.map(async (text) => {
+      if (!text || text === '-') {
+        return { original: text, translated: text };
+      }
+      try {
+        const response = await translate(text, { to: target });
+        return { original: text, translated: response.text };
+      } catch (innerErr) {
+        console.error("Error translating:", text);
+        return { original: text, translated: text }; // fallback
+      }
+    });
+
+    const resolved = await Promise.all(promises);
+    const results = {};
+    resolved.forEach(r => {
+      results[r.original] = r.translated;
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Server Error:', error);
+    res.status(500).json({ error: 'Translation failed' });
   }
 };
