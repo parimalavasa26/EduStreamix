@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Study <%= selectedSubject || '' %> chapters on EduStreamix." />
-  <title><%= selectedSubject || 'Study' %> — EduStreamix</title>
+  <meta name="description" content="Study <%= displaySubject || '' %> chapters on EduStreamix." />
+  <title><%= displaySubject || 'Study' %> — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -29,7 +29,7 @@
       <!-- HEADER -->
       <div class="study-page-header">
         <a href="/subjects?grade=<%= selectedGrade %>&board=<%= selectedBoard %>&language=<%= selectedLanguage %>" class="back-home-link" id="back-to-subjects-link" data-i18n="Back to Subjects">← Back to Subjects</a>
-        <h1 class="study-page-title"><span class="hero-highlight" id="subject-display"><%= selectedSubject || 'Subject' %></span></h1>
+        <h1 class="study-page-title"><span class="hero-highlight" id="subject-display"><%= displaySubject || 'Subject' %></span></h1>
       </div>
 
       <!-- CHAPTERS -->
@@ -88,6 +88,7 @@
     window.__GRADE__   = <%= selectedGrade || 8 %>;
     window.__BOARD__   = '<%= selectedBoard || "CBSE" %>';
     window.__SUBJECT__ = '<%= selectedSubject || "" %>';
+    window.__DISPLAY_SUBJECT__ = '<%= displaySubject || "" %>';
     window.__LANGUAGE__ = '<%= selectedLanguage || "English" %>';
   </script>
   <script src="/js/quizData.js"></script>

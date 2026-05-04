@@ -7,6 +7,7 @@
   const GRADE = window.__GRADE__;
   const BOARD = window.__BOARD__;
   const SUBJECT = window.__SUBJECT__;
+  const DISPLAY_SUBJECT = window.__DISPLAY_SUBJECT__ || SUBJECT;
   let LANGUAGE = window.__LANGUAGE__ || 'English';
   let currentChapterData = null;
   let ytPlayer = null;
@@ -24,122 +25,22 @@
 
   const videoSection = document.getElementById('video-section');
 
-  async function translateChaptersDeep(chapters, lang) {
-    if (lang === 'English' || lang === 'en') return chapters;
-
-    // Collect all unique strings
-    const textsToTranslate = [];
-    
-    if (SUBJECT && !textsToTranslate.includes(SUBJECT)) textsToTranslate.push(SUBJECT);
-
-    chapters.forEach(ch => {
-      if (ch.unitName && !textsToTranslate.includes(ch.unitName)) textsToTranslate.push(ch.unitName);
-      if (ch.chapterName && !textsToTranslate.includes(ch.chapterName)) textsToTranslate.push(ch.chapterName);
-      if (ch.type && !textsToTranslate.includes(ch.type)) textsToTranslate.push(ch.type);
-    });
-
-    if (textsToTranslate.length === 0) return chapters;
-
-    try {
-      const res = await fetch('/translate-batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texts: textsToTranslate, targetLang: lang })
-      });
-      const translations = await res.json();
-
-      const dict = {};
-      textsToTranslate.forEach((txt) => {
-        // Enforce dict mapping. Never fallback to English if translation exists!
-        if (translations[txt] && translations[txt] !== txt) {
-          dict[txt] = translations[txt];
-        }
-      });
-
-      // Update Subject Name globally via dict mapping strictly
-      if (dict[SUBJECT]) {
-        const subjDisplay = document.getElementById('subject-display');
-        if (subjDisplay) subjDisplay.textContent = dict[SUBJECT];
-      }
-
-      const mappedChapters = chapters.map(ch => ({
-        ...ch,
-        unitName: dict[ch.unitName] || ch.unitName,
-        chapterName: dict[ch.chapterName] || ch.chapterName,
-        type: dict[ch.type] || ch.type,
-        lessonNo: ch.lessonNo || '-'
-      }));
-
-      console.log("Dictionary Mapping:", dict);
-      console.log("Mapped unitNames:", mappedChapters.map(c => c.unitName));
-      console.log("Mapped chapter titles:", mappedChapters.map(c => c.chapterName));
-
-      return mappedChapters;
-    } catch (e) {
-      console.error('Batch translation failed:', e);
-      return chapters;
-    }
-  }
-
   async function getFinalChapters(grade, board, subject, selectedLanguage) {
-    const res = await fetch('/api/chapters?grade=' + grade + '&board=' + board + '&subject=' + encodeURIComponent(subject));
-    const data = await res.json();
-    if (!data.chapters || !data.chapters.length) return [];
+    const cacheKey = `chapters_v4_${selectedLanguage}_${grade}_${board}_${subject}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      try { return JSON.parse(cached); } catch(e) {}
+    }
     
-    if (selectedLanguage === 'English' || selectedLanguage === 'en') {
+    const params = new URLSearchParams({ grade, board, subject, lang: selectedLanguage });
+    const res = await fetch('/api/chapters?' + params.toString());
+    const data = await res.json();
+    
+    if (data.chapters) {
+      sessionStorage.setItem(cacheKey, JSON.stringify(data.chapters));
       return data.chapters;
     }
-    
-    // Use v3 cache key to bust the old english transliteration cache!
-    const cacheKey = `chapters_v3_${selectedLanguage}_${grade}_${board}_${subject}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch(e) {}
-    }
-    
-    let isDone = false;
-    const translationPromise = translateChaptersDeep(data.chapters, selectedLanguage)
-      .then(translated => {
-        isDone = true;
-        // Temporary Debug Safety
-        console.log("Selected Language:", selectedLanguage);
-        console.log("Translated Chapters:", translated);
-        
-        // Only cache if translation was successful
-        if (window.i18nReady) {
-          localStorage.setItem(cacheKey, JSON.stringify(translated));
-        }
-        return translated;
-      })
-      .catch(e => {
-        console.error(e);
-        isDone = true;
-        return data.chapters;
-      });
-
-    // 3 Second Maximum Loading Limit!
-    const timeoutPromise = new Promise((resolve) => {
-      setTimeout(() => {
-        if (!isDone) resolve(data.chapters);
-      }, 3000);
-    });
-
-    const result = await Promise.race([translationPromise, timeoutPromise]);
-
-    // If it timed out, result is English. We setup a listener to update the UI when the slow translation finishes.
-    if (result === data.chapters && !isDone) {
-      console.warn("Translation taking longer than 3s. Falling back to English temporarily.");
-      translationPromise.then(finalTranslated => {
-        if (LANGUAGE === selectedLanguage) {
-          console.log("Background translation finished! Re-rendering UI.");
-          showChapters(); // Safe to recall, as it will instantly hit the cached data now!
-        }
-      });
-    }
-
-    return result;
+    return [];
   }
 
   // ── Load Chapters on Init ─────────────────
@@ -148,7 +49,6 @@
     chaptersSection.style.display = '';
     chaptersList.innerHTML = `
       <div class="loader-spinner" style="margin: 0 auto;"></div>
-      <p style="text-align:center; margin-top:1rem; color:var(--text-secondary);" data-i18n="Translating...">Translating...</p>
       ${Array(3).fill('<div class="skeleton-item" style="margin-top:1rem;"></div>').join('')}
     `;
     try {
@@ -256,7 +156,11 @@
 
     try {
       const params = new URLSearchParams({
-        chapter: currentChapterData.chapterName, grade: GRADE, language: selectedLanguage, board: BOARD, subject: SUBJECT
+        chapter: currentChapterData.originalChapterName || currentChapterData.chapterName, 
+        grade: GRADE, 
+        language: selectedLanguage, 
+        board: BOARD, 
+        subject: SUBJECT
       });
       const res = await fetch('/api/video?' + params.toString());
       const data = await res.json();
@@ -306,7 +210,7 @@
       });
       
       loader.style.display = 'none';
-      const defaultTitle = currentChapterData.chapterName + ' — ' + SUBJECT;
+      const defaultTitle = currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT;
       titleEl.textContent = data.video.title || defaultTitle;
       titleEl.removeAttribute('data-i18n'); // Use actual video title or translated string
 
@@ -348,7 +252,7 @@
     // Pick random 10 questions (or less if pool is smaller)
     let shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
 
-    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div><p style="text-align:center; margin-top:1rem; color:var(--text-secondary);" data-i18n="Translating quiz...">Translating quiz...</p>';
+    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div>';
 
     // Translate questions if language is not English
     if (LANGUAGE !== 'English' && LANGUAGE !== 'en') {

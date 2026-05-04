@@ -3,10 +3,70 @@
    ────────────────────────────────────────────── */
 
 const Subject = require('../models/Subject');
+const TranslationCache = require('../models/TranslationCache');
 const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
 const translate = require('google-translate-api-x');
+
+const LANG_CODES = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
+
+async function getTranslatedTexts(texts, targetLang) {
+  if (!texts || texts.length === 0 || targetLang === 'en' || targetLang === 'English') {
+    const fallback = {};
+    texts.forEach(t => fallback[t] = t);
+    return fallback;
+  }
+
+  const target = LANG_CODES[targetLang] || targetLang;
+  const uniqueTexts = [...new Set(texts.filter(t => t && t !== '-'))];
+  const results = {};
+  
+  // 1. Check Cache
+  const cachedDocs = await TranslationCache.find({ 
+    sourceText: { $in: uniqueTexts }, 
+    targetLang: target 
+  }).lean();
+  
+  const toTranslate = [];
+  uniqueTexts.forEach(t => {
+    const found = cachedDocs.find(c => c.sourceText === t);
+    if (found) results[t] = found.translatedText;
+    else toTranslate.push(t);
+  });
+
+  // 2. Translate Missing
+  if (toTranslate.length > 0) {
+    for (let i = 0; i < toTranslate.length; i += 5) {
+      const chunk = toTranslate.slice(i, i + 5);
+      try {
+        const response = await translate(chunk, { to: target });
+        const resArray = Array.isArray(response) ? response : [response];
+        
+        const newCacheDocs = [];
+        chunk.forEach((t, j) => {
+          results[t] = resArray[j].text;
+          newCacheDocs.push({ sourceText: t, targetLang: target, translatedText: resArray[j].text });
+        });
+        
+        // Save to cache
+        if (newCacheDocs.length > 0) {
+          await TranslationCache.insertMany(newCacheDocs, { ordered: false }).catch(() => {});
+        }
+      } catch (err) {
+        console.error("Backend translation error:", err.message || err);
+        chunk.forEach(t => { results[t] = t; }); // fallback
+      }
+    }
+  }
+
+  // Ensure all original texts are in results
+  texts.forEach(t => {
+    if (!results[t]) results[t] = t;
+  });
+
+  return results;
+}
 
 // ── Curriculum mapping (example subjects per class + board) ──
 const CURRICULUM = {
@@ -81,22 +141,32 @@ exports.renderSubjects = (req, res) => {
  * GET /study  — Render study page (chapters, video player)
  * Query params: grade, board, subject
  */
-exports.renderStudy = (req, res) => {
+exports.renderStudy = async (req, res) => {
   const { grade, board, subject, language } = req.query;
+  let displaySubject = subject || 'Subject';
+  
+  if (language && language !== 'English' && language !== 'en') {
+     try {
+       const translations = await getTranslatedTexts([displaySubject], language);
+       displaySubject = translations[displaySubject] || displaySubject;
+     } catch(e) {}
+  }
+
   res.render('study', {
     selectedGrade:    grade || null,
     selectedBoard:    board || null,
     selectedSubject:  subject || null,
+    displaySubject:   displaySubject,
     selectedLanguage: language || null
   });
 };
 
 /**
- * GET /api/subjects?grade=8&board=CBSE
- * Returns list of subjects for a given class and board
+ * GET /api/subjects?grade=8&board=CBSE&lang=Telugu
+ * Returns list of subjects for a given class and board, translated if needed.
  */
-exports.getSubjects = (req, res) => {
-  const { grade, board } = req.query;
+exports.getSubjects = async (req, res) => {
+  const { grade, board, lang } = req.query;
 
   if (!grade || !board) {
     return res.status(400).json({ error: 'grade and board are required' });
@@ -109,15 +179,21 @@ exports.getSubjects = (req, res) => {
     return res.status(404).json({ error: 'No subjects found for this class and board' });
   }
 
-  res.json({ grade: gradeNum, board: board.toUpperCase(), subjects });
+  try {
+    const translations = await getTranslatedTexts(subjects, lang || 'English');
+    const translatedSubjects = subjects.map(s => translations[s] || s);
+    res.json({ grade: gradeNum, board: board.toUpperCase(), subjects: translatedSubjects, originalSubjects: subjects });
+  } catch (err) {
+    res.json({ grade: gradeNum, board: board.toUpperCase(), subjects, originalSubjects: subjects });
+  }
 };
 
 /**
- * GET /api/chapters?grade=8&board=CBSE&subject=Mathematics
- * Returns chapters from MongoDB, or a default list if not seeded
+ * GET /api/chapters?grade=8&board=CBSE&subject=Mathematics&lang=Telugu
+ * Returns chapters from MongoDB, translated if needed
  */
 exports.getChapters = async (req, res) => {
-  const { grade, board, subject } = req.query;
+  const { grade, board, subject, lang } = req.query;
 
   if (!grade || !board || !subject) {
     return res.status(400).json({ error: 'grade, board, and subject are required' });
@@ -125,6 +201,7 @@ exports.getChapters = async (req, res) => {
 
   const gradeNum = parseInt(grade, 10);
   const boardUp = board.toUpperCase();
+  let chapters = [];
 
   try {
     const doc = await Subject.findOne(
@@ -133,7 +210,6 @@ exports.getChapters = async (req, res) => {
     ).lean();
 
     if (doc && doc.units && doc.units.length > 0) {
-      const chapters = [];
       doc.units.forEach(unit => {
         unit.chapters.forEach(ch => {
           chapters.push({ 
@@ -145,23 +221,42 @@ exports.getChapters = async (req, res) => {
             pdfTitle: ch.pdfTitle,
             keyMoments: ch.keyMoments,
             quizQuestions: ch.quizQuestions,
-            summary: ch.summary
+            summary: ch.summary,
+            originalChapterName: ch.chapterName // Keep original for video fetching
           });
         });
       });
-      return res.json({ grade: gradeNum, board: boardUp, subject, chapters });
     }
   } catch (err) {
     console.warn('getChapters DB lookup failed (MongoDB may be offline):', err.message);
   }
 
-  // Fallback: return default chapters when DB is unavailable or not seeded
-  res.json({
-    grade: gradeNum,
-    board: boardUp,
-    subject,
-    chapters: _getDefaultChapters(subject)
-  });
+  if (chapters.length === 0) {
+    chapters = _getDefaultChapters(subject).map(ch => ({ ...ch, originalChapterName: ch.chapterName }));
+  }
+
+  // Translate
+  try {
+    const targetLang = lang || 'English';
+    if (targetLang !== 'English' && targetLang !== 'en') {
+      const textsToTranslate = [];
+      chapters.forEach(ch => {
+        textsToTranslate.push(ch.unitName, ch.chapterName, ch.type);
+      });
+      const translations = await getTranslatedTexts(textsToTranslate, targetLang);
+      
+      chapters = chapters.map(ch => ({
+        ...ch,
+        unitName: translations[ch.unitName] || ch.unitName,
+        chapterName: translations[ch.chapterName] || ch.chapterName,
+        type: translations[ch.type] || ch.type
+      }));
+    }
+  } catch (err) {
+    console.warn('Translation failed:', err.message);
+  }
+
+  res.json({ grade: gradeNum, board: boardUp, subject, chapters });
 };
 
 /**
@@ -444,42 +539,7 @@ exports.translateBatch = async (req, res) => {
       return res.status(400).json({ error: "Invalid texts array" });
     }
 
-    if (reqLang === 'en' || reqLang === 'English') {
-      const fallback = {};
-      texts.forEach(t => fallback[t] = t);
-      return res.json(fallback);
-    }
-    
-    const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
-    const target = langCodes[reqLang] || reqLang;
-    
-    // True array batch translation
-    const validTexts = [];
-    const results = {};
-    
-    texts.forEach(t => {
-      if (!t || t === '-') results[t] = t;
-      else validTexts.push(t);
-    });
-
-    if (validTexts.length > 0) {
-      // Chunk validTexts into chunks of 5 to avoid API length limits
-      for (let i = 0; i < validTexts.length; i += 5) {
-        const chunk = validTexts.slice(i, i + 5);
-        try {
-          const response = await translate(chunk, { to: target });
-          const resArray = Array.isArray(response) ? response : [response];
-          
-          chunk.forEach((t, j) => {
-            results[t] = resArray[j].text;
-          });
-        } catch (err) {
-          console.error("Batch translation error:", err.message || err);
-          chunk.forEach(t => { results[t] = t; }); // fallback
-        }
-      }
-    }
-
+    const results = await getTranslatedTexts(texts, reqLang);
     res.json(results);
   } catch (error) {
     console.error('Server Error:', error);
