@@ -1,7 +1,7 @@
 {
-  "name": "edustreamx",
+  "name": "edustreamix",
   "version": "1.0.0",
-  "description": "EduStreamX — The distraction-free smart learning platform",
+  "description": "EduStreamix — The distraction-free smart learning platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
