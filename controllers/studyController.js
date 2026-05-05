@@ -21,8 +21,8 @@ const CURRICULUM = {
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   },
   10: {
-    CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC:  ['Mathematics', 'Physical Science', 'Biological Science', 'Social Studies', 'English'],
+    CBSE: ['Mathematics', 'Science', 'History', 'Geography', 'Political Science', 'Economics'],
+    SSC:  ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Telugu', 'Hindi-1', 'Hindi-2', 'English', 'Telugu-2'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   }
 };
@@ -160,7 +160,7 @@ exports.getChapters = async (req, res) => {
     grade: gradeNum,
     board: boardUp,
     subject,
-    chapters: _getDefaultChapters(subject)
+    chapters: _getDefaultChapters(subject, gradeNum, boardUp)
   });
 };
 
@@ -316,8 +316,8 @@ async function _cacheVideo(grade, board, subject, chapterName, language, video) 
 /**
  * Default chapters when MongoDB isn't seeded yet.
  */
-function _getDefaultChapters(subject) {
-  const defaults = {
+function _getDefaultChapters(subject, grade, board) {
+  let defaults = {
     'Mathematics':      ['Number Systems', 'Algebra', 'Geometry', 'Mensuration', 'Statistics'],
     'Science':          ['Force and Motion', 'Light', 'Chemical Reactions', 'Cell Biology', 'Ecosystem'],
     'Social Science':   ['Indian History', 'Geography', 'Civics', 'Economics'],
@@ -332,6 +332,59 @@ function _getDefaultChapters(subject) {
     'Physical Science': ['Kinematics', 'Heat', 'Electricity', 'Chemical Reactions', 'Acids and Bases'],
     'Biological Science': ['Cell Biology', 'Plant Kingdom', 'Animal Kingdom', 'Human Physiology', 'Ecology']
   };
+
+  if (grade === 10 && board === 'CBSE') {
+    defaults = {
+      'Mathematics': [
+        "Number Systems", "Algebra", "Coordinate Geometry", "Geometry", "Trigonometry", "Mensuration", "Statistics and Probability"
+      ],
+      'Science': [
+        "Chemical Substances - Nature and Behaviour", "World of Living", "Natural Phenomena", "Effects of Current", "Natural Resources"
+      ],
+      'History': [
+        "The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "The Age of Industrialisation", "Print Culture and the Modern World"
+      ],
+      'Geography': [
+        "Resources and Development", "Forest and Wildlife Resources", "Water Resources", "Agriculture", "Minerals and Energy Resources", "Manufacturing Industries", "Lifelines of National Economy"
+      ],
+      'Political Science': [
+        "Power Sharing", "Federalism", "Gender, Religion and Caste", "Political Parties", "Outcomes of Democracy"
+      ],
+      'Economics': [
+        "Development", "Sectors of the Indian Economy", "Money and Credit", "Globalisation and the Indian Economy", "Consumer Rights"
+      ]
+    };
+  } else if (grade === 10 && board === 'SSC') {
+    defaults = {
+      'Mathematics': [
+        "Real Numbers", "Sets", "Polynomials", "Linear Equations in Two Variables", "Quadratic Equations", "Progressions", "Coordinate Geometry", "Similar Triangles", "Tangents and Secants to Circles", "Mensuration", "Trigonometry", "Applications of Trigonometry", "Probability", "Statistics"
+      ],
+      'Physics': [
+        "Reflection of Light at Curved Surfaces", "Refraction of Light at Curved Surfaces", "Human Eye and Colourful World", "Electric Current", "Electromagnetism", "Chemical Equations", "Acids, Bases and Salts", "Structure of Atom", "Classification of Elements–the Periodic Table", "Chemical Bonding", "Principles of Metallurgy", "Carbon and Its Compounds"
+      ],
+      'Biology': [
+        "Nutrition", "Respiration", "Transportation", "Excretion", "Coordination", "Reproduction", "Heredity and Evolution", "Our Environment", "Natural Resources"
+      ],
+      'Social Studies': [
+        "India: Relief Features", "Ideas of Development", "Production and Employment", "Climate of India", "Indian Rivers and Water Resources", "The Population", "Settlements and Migration", "Rampur: A Village Economy", "Globalisation", "Food Security", "Sustainable Development with Equity", "World Between the World Wars", "National Liberation Movements in the Colonies", "National Movement in India – Partition & Independence (1939–1947)", "The Making of Independent India’s Constitution", "Election Process in India", "Independent India (1947–77)", "Emerging Political Trends (1977–2000)", "Post-War World and India", "Social Movements in Our Times", "The Movement for the Formation of Telangana State"
+      ],
+      'Telugu': [
+        "దానశీలము", "ఎవరికి బాధ మించదు", "వీర తెలంగాణ", "కృష్ణదేవరాయలు", "నగరగీతం", "భాగ్యోదయం", "శతక మాధుర్యం", "లక్ష్మీదేవి", "టీవీభాష్యం", "గోలకొండ పట్టణం", "భిక్ష", "భూమిక", "రామాయణం"
+      ],
+      'Hindi-2': [
+        "बरसते बादल", "ईदगाह", "माँ मुझे आने दे", "कण-कण का अधिकारी", "लोकगीत", "अंतर्राष्ट्रीय स्तर पर हिंदी", "भक्ति पद", "स्वराज्य की नींव", "दक्षिणी गंगा गोदावरी", "नीति दोहे", "जल ही जीवन है", "धरती के सवाल, अंतरिक्ष के जवाब"
+      ],
+      'English': [
+        "Attitude is Altitude", "Every Success Story is also a Story of Great Failures", "I Will Do It", "The Dear Departed – I", "The Dear Departed – II", "The Brave Potter", "The Journey", "Another Woman", "The Never Never Nest", "Rendezvous with Ray", "Maya Bazaar", "A Tribute", "The Storeyed House – I", "The Storeyed House – II", "Abandoned", "Environment", "Or Will the Dreamer Wake", "My Childhood", "A Plea for India", "Unity in Diversity", "Jamaican Fragment", "Once Upon a Time", "What is My Name?"
+      ],
+      'Hindi-1': [
+        "सुंदर भारत", "नेताजी का चश्मा", "एक कहानी यह भी", "मंगल, मानव और मशीन", "कविता", "गोपी का फूल", "राम-लक्ष्मण-परशुराम संवाद", "बड़े भाई साहब", "अभिव्यक्ति"
+      ],
+      'Telugu-2': [
+        "భారతదేశ రత్నాలు", "పర్యావరణం", "ధర్మాలు", "బాలసురక్షిత పథకం", "సత్కర్మలు", "మహిళా సాధికారత", "పరోపకారం", "వ్యవసాయ పథకాలు"
+      ]
+    };
+  }
 
   return (defaults[subject] || ['Chapter 1', 'Chapter 2', 'Chapter 3'])
     .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name, type: 'General Topic' }));
