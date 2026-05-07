@@ -81,10 +81,7 @@
         // Translate static UI labels
         const lessonNoLabel = window.t ? window.t('Lesson No.') : 'Lesson No.';
         const chapterTitleLabel = window.t ? window.t('Chapter Title') : 'Chapter Title';
-        const typeLabel = window.t ? window.t('Type') : 'Type';
-
-        const hideType = (GRADE == 8 && BOARD === 'SSC');
-        const colspan = hideType ? 2 : 3;
+        const colspan = 2;
 
         thead.innerHTML = `
           <tr class="unit-title-row">
@@ -93,7 +90,6 @@
           <tr class="col-headers-row">
             <th>${lessonNoLabel}</th>
             <th>${chapterTitleLabel}</th>
-            ${hideType ? '' : `<th>${typeLabel}</th>`}
           </tr>
         `;
         table.appendChild(thead);
@@ -110,7 +106,6 @@
           tr.innerHTML = `
             <td class="col-lesson">${ch.lessonNo || '-'}</td>
             <td class="col-title">${ch.chapterName || '-'}</td>
-            ${hideType ? '' : `<td class="col-type">${ch.type || '-'}</td>`}
           `;
           tbody.appendChild(tr);
         });

@@ -132,7 +132,109 @@ const VIDEO_DATA = [
   { grade: "8", board: "SSC", subject: "English", chapter: "I Can Take Care of Myself", url: "https://www.youtube.com/embed/ru41LK69oHI", language: "English" },
   { grade: "8", board: "SSC", subject: "English", chapter: "Dr. Dwarakanath Kotnis", url: "https://www.youtube.com/embed/vNxt5Sy8l4Y", language: "English" },
   { grade: "8", board: "SSC", subject: "English", chapter: "Be Thankful (Poem)", url: "https://www.youtube.com/embed/awd8suTeJqA", language: "English" },
-  { grade: "8", board: "SSC", subject: "English", chapter: "The Dead Rat", url: "https://www.youtube.com/embed/p8Z2Ww_ZqJs", language: "English" }
+  { grade: "8", board: "SSC", subject: "English", chapter: "The Dead Rat", url: "https://www.youtube.com/embed/p8Z2Ww_ZqJs", language: "English" },
+
+  // --- CLASS 8 CBSE MATHEMATICS ---
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Rational Numbers", url: "https://www.youtube.com/embed/GJnvCdnrgqQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Powers and Exponents", url: "https://www.youtube.com/embed/ecYhV199gTU", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Squares and Square Roots", url: "https://www.youtube.com/embed/7iqAutdX2gs", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Cubes and Cube Roots", url: "https://www.youtube.com/embed/k_AYwXoSmzA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Algebraic Expressions", url: "https://www.youtube.com/embed/w95HxoKU-GE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Linear Equations in One Variable", url: "https://www.youtube.com/embed/FdS7KIVfks0", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Understanding Quadrilaterals", url: "https://www.youtube.com/embed/aWQ1HeuwJvA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Practical Geometry", url: "https://www.youtube.com/embed/z3gDmpLA1tY", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Mensuration", url: "https://www.youtube.com/embed/YpP6XEV0B34", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Data Handling", url: "https://www.youtube.com/embed/01nxKH9PNIs", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Introduction to Graphs", url: "https://www.youtube.com/embed/g0QNYwKZmA0", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Comparing Quantities", url: "https://www.youtube.com/embed/kC-zI5CzSUc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Direct and Inverse Proportions", url: "https://www.youtube.com/embed/oCx6f3wNP1w", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Mathematics", chapter: "Visualising Patterns", url: "https://www.youtube.com/embed/PxUHLlnBuCA", language: "English" },
+
+  // --- CLASS 8 CBSE SCIENCE ---
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Force and Pressure", url: "https://www.youtube.com/embed/8xsLE8uJC_g", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Friction", url: "https://www.youtube.com/embed/er_kINOBvok", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Sound", url: "https://www.youtube.com/embed/EEbtmrrqbsY", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Chemical Effects of Electric Current", url: "https://www.youtube.com/embed/jwIo9VH_MIk", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Synthetic Fibres and Plastics", url: "https://www.youtube.com/embed/ff6wvfel0MQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Metals and Non-Metals", url: "https://www.youtube.com/embed/M4QmQ9kqN3o", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Coal and Petroleum", url: "https://www.youtube.com/embed/cH526RVUKzQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Combustion and Flame", url: "https://www.youtube.com/embed/cNusSGb7yco", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Cell - Structure and Functions", url: "https://www.youtube.com/embed/NHl650-hoqs", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Reproduction in Animals", url: "https://www.youtube.com/embed/4IjFB2bn2zg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Reaching the Age of Adolescence", url: "https://www.youtube.com/embed/t797kpqCJnE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Microorganisms: Friend and Foe", url: "https://www.youtube.com/embed/wE7j3BIADVI", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Pollution of Air and Water", url: "https://www.youtube.com/embed/76snt7DG57U", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Some Natural Phenomena", url: "https://www.youtube.com/embed/6QDUv19mH70", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Light", url: "https://www.youtube.com/embed/gOb0tjuG-rc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Stars and The Solar System", url: "https://www.youtube.com/embed/IjdVNCDzbYE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Science", chapter: "Conservation of Plants and Animals", url: "https://www.youtube.com/embed/ppOhTADdOFE", language: "English" },
+
+  // --- CLASS 8 CBSE HINDI ---
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "स्वदेश", url: "https://www.youtube.com/embed/VIIDwz5m_V8", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "दो गौरैया", url: "https://www.youtube.com/embed/mn8xvs1Z2hc", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "मित्रलाभ", url: "https://www.youtube.com/embed/9ngCtfJR6xI", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "एक आशीर्वाद", url: "https://www.youtube.com/embed/GOl5UOeVyio", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "हरिद्वार", url: "https://www.youtube.com/embed/nR6sS2CqI40", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "कबीर के दोहे", url: "https://www.youtube.com/embed/3BseCMi8QY8", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "कदम मिलाकर चलना होगा", url: "https://www.youtube.com/embed/QgaeXSGjJd8", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "एक टोकरी भर मिट्टी", url: "https://www.youtube.com/embed/hWzITfJPdC8", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "मत बाँधो", url: "https://www.youtube.com/embed/DirLvi-PxdM", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "नए मेहमान", url: "https://www.youtube.com/embed/WK23IxCas4k", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "आदमी के अनुपात", url: "https://www.youtube.com/embed/4gRBas0p1Hw", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "तरुण के स्वप्न", url: "https://www.youtube.com/embed/VzcIxy9m46Y", language: "Hindi" },
+  { grade: "8", board: "CBSE", subject: "Hindi", chapter: "भारती जब विषय करो", url: "https://www.youtube.com/embed/SaZrj3IIRqk", language: "Hindi" },
+
+  // --- CLASS 8 CBSE ENGLISH ---
+  { grade: "8", board: "CBSE", subject: "English", chapter: "The Wit that Won Hearts", url: "https://www.youtube.com/embed/aY2tXGalnAA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "A Concrete Example", url: "https://www.youtube.com/embed/tqNKxgPF13U", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Wisdom Paves the Way", url: "https://www.youtube.com/embed/Gdv5FXcVdPk", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", url: "https://www.youtube.com/embed/CJL6tPrdeZA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Somebody’s Mother", url: "https://www.youtube.com/embed/T8J1lzv3Lx0", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Verghese Kurien – I Too Had a Dream", url: "https://www.youtube.com/embed/Y3LeKopfeGQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "The Case of the Fifth Word", url: "https://www.youtube.com/embed/Cfn_f6dyHFE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "The Magic Brush of Dreams", url: "https://www.youtube.com/embed/FHC4EZYwIGk", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Spectacular Wonders", url: "https://www.youtube.com/embed/3F7xQ5WQGUQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "The Cherry Tree", url: "https://www.youtube.com/embed/4uPle37bKOM", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Harvest Hymn", url: "https://www.youtube.com/embed/4iaInTuRHXo", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Waiting for the Rain", url: "https://www.youtube.com/embed/aNnsRW_MjNc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Feathered Friend", url: "https://www.youtube.com/embed/eEZVXGfZvdg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Magnifying Glass", url: "https://www.youtube.com/embed/YGIZ-vV1OV0", language: "English" },
+  { grade: "8", board: "CBSE", subject: "English", chapter: "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science", url: "https://www.youtube.com/embed/pZ-HLRtyCIM", language: "English" },
+
+  // --- CLASS 8 CBSE SOCIAL SCIENCE ---
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "How, When and Where", url: "https://www.youtube.com/embed/DcNTEVNItAo", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "From Trade to Territory", url: "https://www.youtube.com/embed/LL3Pkjg2kjM", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Ruling the Countryside", url: "https://www.youtube.com/embed/_SASgYGUcpY", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Tribals, Dikus and the Vision of a Golden Age", url: "https://www.youtube.com/embed/xiEEeJJPIKo", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "When People Rebel (1857 and After)", url: "https://www.youtube.com/embed/vsBdAjbs8bc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Colonialism and the City", url: "https://www.youtube.com/embed/tjLKKct8iHA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Weavers, Iron Smelters and Factory Owners", url: "https://www.youtube.com/embed/k-EkcoKLKcE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Civilising the “Native”, Educating the Nation", url: "https://www.youtube.com/embed/Gggd-TZO1W8", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Women, Caste and Reform", url: "https://www.youtube.com/embed/XJtZ3-H-jGM", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "The Changing World of Visual Arts", url: "https://www.youtube.com/embed/rbF-NAUNOrg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "The Making of the National Movement (1870–1947)", url: "https://www.youtube.com/embed/J3H5L6Vawec", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "India After Independence", url: "https://www.youtube.com/embed/DkHLZPJcARA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Resources", url: "https://www.youtube.com/embed/8i0UG-XUlFI", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Land, Soil, Water, Natural Vegetation and Wildlife Resources", url: "https://www.youtube.com/embed/SNsLP1rbBHk", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Mineral and Power Resources", url: "https://www.youtube.com/embed/1PT412oAPX4", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Agriculture", url: "https://www.youtube.com/embed/f8pCwkRdk48", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Industries", url: "https://www.youtube.com/embed/Pi3FWHyqgqc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Human Resources", url: "https://www.youtube.com/embed/Z23INTYZ4Pg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "The Indian Constitution", url: "https://www.youtube.com/embed/PAZDz1-WTgQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Understanding Secularism", url: "https://www.youtube.com/embed/kmxfbf9wxRE", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Why Do We Need a Parliament?", url: "https://www.youtube.com/embed/X-Mt8mL96kU", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Understanding Laws", url: "https://www.youtube.com/embed/trAKiKpJJNo", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Judiciary", url: "https://www.youtube.com/embed/tueiEGnmUTQ", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Understanding Our Criminal Justice System", url: "https://www.youtube.com/embed/uv9Q0OrLTuA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Understanding Marginalisation", url: "https://www.youtube.com/embed/_6zTgG1aMC4", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Confronting Marginalisation", url: "https://www.youtube.com/embed/ZeI041qla5Y", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Public Facilities", url: "https://www.youtube.com/embed/spVPJDE4Qgc", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Law and Social Justice", url: "https://www.youtube.com/embed/VHcTATnnVfA", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "The Story of Village Palampur", url: "https://www.youtube.com/embed/tnXaHSg-PFU", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Role of the Government in Health", url: "https://www.youtube.com/embed/PlfhC7VSPeg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "How the Markets Work", url: "https://www.youtube.com/embed/k2T-bcobz_8", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Globalisation and the Indian Economy", url: "https://www.youtube.com/embed/PK2YonJyUeg", language: "English" },
+  { grade: "8", board: "CBSE", subject: "Social Science", chapter: "Public Distribution System", url: "https://www.youtube.com/embed/EmsfXYIlA0c", language: "English" }
 ];
 
 async function seedVideos() {
@@ -140,8 +242,8 @@ async function seedVideos() {
     console.log('Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGO_URI);
     
-    console.log('Clearing existing video data for Class 8 SSC...');
-    await Video.deleteMany({ grade: "8", board: "SSC" });
+    console.log('Clearing existing video data for Class 8 (SSC & CBSE)...');
+    await Video.deleteMany({ grade: "8", board: { $in: ["SSC", "CBSE"] } });
 
     console.log('Inserting new video links...');
     await Video.insertMany(VIDEO_DATA);

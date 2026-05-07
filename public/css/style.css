@@ -308,7 +308,6 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .chapter-row td{color:var(--text-primary);font-size:0.95rem;vertical-align:middle}
 .col-lesson{text-align:center;font-weight:600;width:120px}
 .col-title{font-weight:500}
-.col-type{color:var(--text-secondary)}
 
 /* Video */
 .video-section{animation:fadeInUp .5s var(--ease-out) both}

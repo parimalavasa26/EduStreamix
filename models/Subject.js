@@ -30,7 +30,6 @@ const quizQuestionSchema = new mongoose.Schema({
 const chapterSchema = new mongoose.Schema({
   lessonNo:    { type: String, default: '' },
   chapterName: { type: String, required: true },
-  type:        { type: String, default: '' },
   videos:      [videoSchema],
   pdfUrl:      { type: String, default: '' },
   pdfTitle:    { type: String, default: '' },

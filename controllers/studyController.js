@@ -14,7 +14,7 @@ const CURRICULUM = {
   8: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'Hindi', 'English'],
     SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
-    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
+    ICSE: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Social Studies']
   },
   9: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
@@ -184,7 +184,12 @@ exports.getVideo = async (req, res) => {
 
   // ── 0. Check the new Video model first (Highest Priority) ──
   try {
-    const directVideo = await Video.findOne({ chapter: chapter });
+    const directVideo = await Video.findOne({ 
+      grade: String(gradeNum), 
+      board: board ? board.toUpperCase() : 'SSC', 
+      subject: subject,
+      chapter: chapter 
+    });
     if (directVideo) {
       // Extract video ID from URL if possible
       let vidId = directVideo.url.split('embed/')[1] || directVideo.url.split('v=')[1] || directVideo.url;
@@ -456,7 +461,7 @@ function _getDefaultChapters(subject, grade, board) {
   }
 
   return (defaults[subject] || ['Chapter 1', 'Chapter 2', 'Chapter 3'])
-    .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name, type: 'General Topic' }));
+    .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name }));
 }
 
 /**
