@@ -155,15 +155,29 @@
     }
 
     try {
-      const params = new URLSearchParams({
-        chapter: currentChapterData.originalChapterName || currentChapterData.chapterName, 
-        grade: GRADE, 
-        language: selectedLanguage, 
-        board: BOARD, 
-        subject: SUBJECT
-      });
-      const res = await fetch('/api/video?' + params.toString());
-      const data = await res.json();
+      let data = null;
+
+      // 1. Check if video is already in currentChapterData (returned by getChapters)
+      if (currentChapterData && currentChapterData.videos) {
+        const cached = currentChapterData.videos.find(v => v.language === selectedLanguage);
+        if (cached && cached.youtubeVideoId) {
+          console.log('Using pre-connected video from chapter data:', cached.youtubeVideoId);
+          data = { cached: true, video: cached };
+        }
+      }
+
+      // 2. Fallback to API if not found in pre-connected data
+      if (!data) {
+        const params = new URLSearchParams({
+          chapter: currentChapterData.originalChapterName || currentChapterData.chapterName, 
+          grade: GRADE, 
+          language: selectedLanguage, 
+          board: BOARD, 
+          subject: SUBJECT
+        });
+        const res = await fetch('/api/video?' + params.toString());
+        data = await res.json();
+      }
 
       if (!data.video) {
         titleEl.textContent = 'No video found';

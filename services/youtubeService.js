@@ -3,10 +3,23 @@
    ────────────────────────────────────────────── */
 
 const axios = require('axios');
+const Config = require('../models/Config');
 
 const YT_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search';
 const YT_VIDEOS_URL = 'https://www.googleapis.com/youtube/v3/videos';
-const API_KEY = process.env.YT_API_KEY;
+
+/**
+ * Helper to get API Key from MongoDB or Environment
+ */
+async function getApiKey() {
+  try {
+    const config = await Config.findOne({ key: 'YT_API_KEY' });
+    if (config && config.value) return config.value;
+  } catch (e) {
+    console.warn('Could not fetch API key from DB:', e.message);
+  }
+  return process.env.YT_API_KEY;
+}
 
 /**
  * Fetch the best embeddable YouTube video for a given topic, grade, and language.
@@ -19,7 +32,8 @@ const API_KEY = process.env.YT_API_KEY;
  */
 async function fetchBestVideo(topic, grade, language, subject) {
   try {
-    if (!API_KEY || API_KEY === 'YOUR_YOUTUBE_API_KEY_HERE') {
+    const apiKey = await getApiKey();
+    if (!apiKey || apiKey === 'YOUR_YOUTUBE_API_KEY_HERE') {
       console.warn('⚠️  YouTube API key not set. Returning placeholder.');
       return _placeholderVideo(topic, grade, language);
     }
@@ -35,7 +49,7 @@ async function fetchBestVideo(topic, grade, language, subject) {
         type:       'video',
         videoEmbeddable: 'true',
         maxResults: 10,
-        key:        API_KEY
+        key:        apiKey
       }
     });
 
@@ -50,7 +64,7 @@ async function fetchBestVideo(topic, grade, language, subject) {
       params: {
         part: 'statistics,snippet,status',
         id:   videoIds.join(','),
-        key:  API_KEY
+        key:  apiKey
       }
     });
 

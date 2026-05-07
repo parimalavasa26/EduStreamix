@@ -103,6 +103,58 @@
       </form>
       <div id="statusMessage" class="status-msg"></div>
     </div>
+
+    <div class="admin-container" style="margin-top: 30px;">
+      <h1>🔗 Link YouTube Video</h1>
+      <form id="linkYoutubeForm">
+        <div class="form-group">
+          <label>Grade / Class</label>
+          <input type="number" id="ytGrade" required placeholder="e.g. 8">
+        </div>
+        <div class="form-group">
+          <label>Board</label>
+          <input type="text" id="ytBoard" required placeholder="e.g. CBSE">
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" id="ytSubject" required placeholder="e.g. Mathematics">
+        </div>
+        <div class="form-group">
+          <label>Chapter Name</label>
+          <input type="text" id="ytChapterName" required placeholder="e.g. Number Systems">
+        </div>
+        <div class="form-group">
+          <label>Language</label>
+          <select id="ytLanguage">
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Kannada">Kannada</option>
+            <option value="Malayalam">Malayalam</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>YouTube URL or ID</label>
+          <input type="text" id="youtubeUrl" required placeholder="e.g. https://www.youtube.com/watch?v=...">
+        </div>
+        
+        <button type="submit" class="btn-upload" id="linkBtn">Link Video</button>
+      </form>
+      <div id="ytStatusMessage" class="status-msg"></div>
+    </div>
+
+    <div class="admin-container" style="margin-top: 30px;">
+      <h1>⚙️ Global Settings</h1>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label>YouTube API Key</label>
+          <input type="password" id="ytApiKeyInput" placeholder="Enter your Google Cloud API Key">
+        </div>
+        <button type="submit" class="btn-upload" id="saveSettingsBtn">Save Settings</button>
+      </form>
+      <div id="settingsStatusMessage" class="status-msg"></div>
+    </div>
   </main>
 
   <script>
@@ -174,8 +226,95 @@
       reader.readAsDataURL(file);
     });
 
-    function showStatus(msg, type) {
-      const statusEl = document.getElementById('statusMessage');
+    // YouTube Linking
+    document.getElementById('linkYoutubeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const grade = document.getElementById('ytGrade').value;
+      const board = document.getElementById('ytBoard').value;
+      const subject = document.getElementById('ytSubject').value;
+      const chapterName = document.getElementById('ytChapterName').value;
+      const language = document.getElementById('ytLanguage').value;
+      const youtubeUrl = document.getElementById('youtubeUrl').value;
+      const statusMsg = document.getElementById('ytStatusMessage');
+      const linkBtn = document.getElementById('linkBtn');
+
+      linkBtn.disabled = true;
+      linkBtn.textContent = 'Linking...';
+      showStatus('', '', 'ytStatusMessage');
+
+      try {
+        const res = await fetch('/api/link-youtube', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            grade,
+            board,
+            subject,
+            chapterName,
+            language,
+            youtubeUrl
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showStatus('Video linked successfully! ID: ' + data.video.youtubeVideoId, 'success', 'ytStatusMessage');
+          document.getElementById('linkYoutubeForm').reset();
+        } else {
+          showStatus('Error: ' + data.error, 'error', 'ytStatusMessage');
+        }
+      } catch (error) {
+        showStatus('Linking failed. Please try again.', 'error', 'ytStatusMessage');
+      } finally {
+        linkBtn.disabled = false;
+        linkBtn.textContent = 'Link Video';
+      }
+    });
+
+    // Settings
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const apiKey = document.getElementById('ytApiKeyInput').value;
+      const btn = document.getElementById('saveSettingsBtn');
+      
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: 'YT_API_KEY', value: apiKey })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showStatus('API Key saved successfully!', 'success', 'settingsStatusMessage');
+        } else {
+          showStatus('Error saving API key.', 'error', 'settingsStatusMessage');
+        }
+      } catch (e) {
+        showStatus('Failed to save settings.', 'error', 'settingsStatusMessage');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Settings';
+      }
+    });
+
+    // Load initial settings
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json();
+        if (data.YT_API_KEY) {
+          document.getElementById('ytApiKeyInput').placeholder = 'API Key is set (●●●●●●●●)';
+        }
+      } catch (e) {}
+    }
+    loadSettings();
+
+    function showStatus(msg, type, elementId = 'statusMessage') {
+      const statusEl = document.getElementById(elementId);
       if (!msg) {
         statusEl.style.display = 'none';
         return;
