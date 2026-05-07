@@ -11,8 +11,8 @@ const translate = require('google-translate-api-x');
 // ── Curriculum mapping (example subjects per class + board) ──
 const CURRICULUM = {
   8: {
-    CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC:  ['Mathematics', 'General Science', 'Social Studies', 'English', 'Telugu'],
+    CBSE: ['Mathematics', 'Science', 'Social Science', 'Hindi', 'English'],
+    SSC:  ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   },
   9: {
@@ -333,7 +333,49 @@ function _getDefaultChapters(subject, grade, board) {
     'Biological Science': ['Cell Biology', 'Plant Kingdom', 'Animal Kingdom', 'Human Physiology', 'Ecology']
   };
 
-  if (grade === 10 && board === 'CBSE') {
+  if (grade === 8 && board === 'CBSE') {
+    defaults = {
+      'Mathematics': [
+        "Rational Numbers", "Powers and Exponents", "Squares and Square Roots", "Cubes and Cube Roots", "Algebraic Expressions", "Linear Equations in One Variable", "Understanding Quadrilaterals", "Practical Geometry", "Mensuration", "Data Handling", "Introduction to Graphs", "Comparing Quantities", "Direct and Inverse Proportions", "Visualising Patterns"
+      ],
+      'Science': [
+        "Force and Pressure", "Friction", "Sound", "Chemical Effects of Electric Current", "Synthetic Fibres and Plastics", "Metals and Non-Metals", "Coal and Petroleum", "Combustion and Flame", "Cell - Structure and Functions", "Reproduction in Animals", "Reaching the Age of Adolescence", "Microorganisms: Friend and Foe", "Pollution of Air and Water", "Some Natural Phenomena", "Light", "Stars and The Solar System", "Conservation of Plants and Animals"
+      ],
+      'Social Science': [
+        "How, When and Where", "From Trade to Territory", "Ruling the Countryside", "Tribals, Dikus and the Vision of a Golden Age", "When People Rebel (1857 and After)", "Colonialism and the City", "Weavers, Iron Smelters and Factory Owners", "Civilising the “Native”, Educating the Nation", "Women, Caste and Reform", "The Changing World of Visual Arts", "The Making of the National Movement (1870–1947)", "India After Independence", "Resources", "Land, Soil, Water, Natural Vegetation and Wildlife Resources", "Mineral and Power Resources", "Agriculture", "Industries", "Human Resources", "The Indian Constitution", "Understanding Secularism", "Why Do We Need a Parliament?", "Understanding Laws", "Judiciary", "Understanding Our Criminal Justice System", "Understanding Marginalisation", "Confronting Marginalisation", "Public Facilities", "Law and Social Justice", "The Story of Village Palampur", "Role of the Government in Health", "How the Markets Work", "Globalisation and the Indian Economy", "Public Distribution System"
+      ],
+      'Hindi': [
+        "स्वदेश", "दो गौरैया", "मित्रलाभ", "एक आशीर्वाद", "हरिद्वार", "कबीर के दोहे", "कदम मिलाकर चलना होगा", "एक टोकरी भर मिट्टी", "मत बाँधो", "नए मेहमान", "आदमी के अनुपात", "तरुण के स्वप्न", "भारती जब विषय करो"
+      ],
+      'English': [
+        "The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody’s Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "The Cherry Tree", "Harvest Hymn", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"
+      ]
+    };
+  } else if (grade === 8 && board === 'SSC') {
+    defaults = {
+      'Mathematics': [
+        "Rational Numbers", "Linear Equations in One Variable", "Construction of Quadrilaterals", "Exponents and Powers", "Comparing Quantities using Proportion", "Square Roots and Cube Roots", "Frequency Distribution Tables and Graphs", "Exploring Geometrical Figures", "Area of Plane Figures", "Direct and Inverse Proportions", "Algebraic Expressions", "Factorisation", "Visualizing 3-D in 2-D", "Surface Areas and Volumes (Cube-Cuboid)", "Playing with Numbers"
+      ],
+      'Physics': [
+        "Force", "Friction", "Synthetic Fibres and Plastics", "Metals and Non metals", "Sound", "Reflection of Light at plane surfaces", "Coal and Petroleum", "Combustion, Fuels and flame", "Electrical Conductivity of Liquids", "Some natural phenomena", "Stars and the Solar system", "Graphs of Motion"
+      ],
+      'Biology': [
+        "What is Science ?", "Cell - The Basic Unit of Life", "Microbial World -1", "Microbial World - 2", "Reproduction in Animals", "Adolescence", "Biodiversity and its Conservation", "Different Ecosystems", "Food Production from plants", "Food Production from animals", "Not for Drinking - Not for Breathing", "Why do we fall ill ?"
+      ],
+      'Social Studies': [
+        "Reading and Analysis of Maps", "Energy from the Sun", "Earth Movements and Seasons", "The Polar Regions", "Forests : Using and Protecting Them", "Minerals and Mining", "Money and Banking", "Impact of Technology on Livelihoods", "Public Health and the Government", "Landlords and Tenants under the British and the Nizam", "National Movement – The Early Phase – 1885-1919", "National Movement – The Last Phase 1919-1947", "Freedom Movement in Hyderabad State", "The Indian Constitution", "Parliament and Central Government", "Law and Justice – A Case Study", "Abolition of Zamindari System", "Understanding Poverty", "Rights Approach to Development", "Social and Religious Reform Movements", "Understanding Secularism", "Performing Arts and Artistes in Modern Times", "Film and Print Media", "Sports : Nationalism and Commerce", "Disaster management"
+      ],
+      'Hindi': [
+        "बरसते बादल", "लाख की चूड़ियाँ", "बस की यात्रा", "दीवानों की हस्ती", "खेल जहाँ, मैदान वहाँ", "चिड़ियों की अनूठी दुनिया", "अरमान", "कामचोर", "क्या निराश हुआ जाए", "शुक्रिया निकुम्भ सर", "कबीर की साखियाँ", "जब सिनेमा ने बोलना सीखा", "दो कलाकार", "सुदामा चरित", "जहाँ पहिया है", "पानी की कहानी", "हमारा संकल्प", "सूरदास के पद", "बाज़ और साँप", "पहाड़ से ऊँचा आदमी"
+      ],
+      'Telugu': [
+        "త్యాగనిరతి", "సముద్ర ప్రయాణం", "బండారి బసవన్న", "అసామాన్యులు", "శతకసుధ", "తెలుగు జానపద గేయాలు", "మంజీరా", "చిన్నప్పుడే", "అమరులు", "సింగరేణి", "కాపుబిడ్డ", "మాట్లాడే నాగలి"
+      ],
+      'English': [
+        "The Tattered Blanket", "My Mother (Poem)", "Letter to a Friend", "Oliver Asks for More", "The Cry of Children (Poem)", "Reaching the Unreached", "The Selfish Giant (Part I)", "The Selfish Giant (Part II)", "The Garden Within (Poem)", "The Fun They Had", "Preteen Pretext (Poem)", "The Computer Game", "The Treasure Within – Part I", "The Treasure Within – Part II", "They Literally Build the Nation", "The Story of Ikat", "The Earthen Goblet (Poem)", "Maestro with a Mission", "Bonsai Life – Part I", "Bonsai Life – Part II", "I Can Take Care of Myself", "Dr. Dwarakanath Kotnis", "Be Thankful (Poem)", "The Dead Rat"
+      ]
+    };
+  } else if (grade === 10 && board === 'CBSE') {
     defaults = {
       'Mathematics': [
         "Number Systems", "Algebra", "Coordinate Geometry", "Geometry", "Trigonometry", "Mensuration", "Statistics and Probability"
