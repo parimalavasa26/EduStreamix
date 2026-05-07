@@ -87,7 +87,8 @@ exports.renderStudy = (req, res) => {
     selectedGrade:    grade || null,
     selectedBoard:    board || null,
     selectedSubject:  subject || null,
-    selectedLanguage: language || null
+    selectedLanguage: language || null,
+    displaySubject:   subject || null
   });
 };
 
