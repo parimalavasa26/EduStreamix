@@ -13,18 +13,18 @@ const SSC_DATA = [
       {
         unitName: "General",
         chapters: [
-          { lessonNo: "1", chapterName: "త్యాగగుణం", type: "Language" },
-          { lessonNo: "2", chapterName: "యాత్రానుభవం", type: "Language" },
-          { lessonNo: "3", chapterName: "భక్తి తత్పరత", type: "Language" },
-          { lessonNo: "4", chapterName: "శ్రమ సౌందర్యం", type: "Language" },
-          { lessonNo: "5", chapterName: "నైతిక విలువలు", type: "Language" },
-          { lessonNo: "6", chapterName: "సంస్కృతి", type: "Language" },
-          { lessonNo: "7", chapterName: "నదీ ప్రశంస", type: "Language" },
-          { lessonNo: "8", chapterName: "సామాజిక స్పృహ", type: "Language" },
-          { lessonNo: "9", chapterName: "ఉద్యమ స్ఫూర్తి", type: "Language" },
-          { lessonNo: "10", chapterName: "సహజ సంపద", type: "Language" },
-          { lessonNo: "11", chapterName: "రైతు జీవితం", type: "Language" },
-          { lessonNo: "12", chapterName: "జంతు ప్రేమ", type: "Language" }
+          { lessonNo: "1", chapterName: "త్యాగనిరతి", type: "Language" },
+          { lessonNo: "2", chapterName: "సముద్ర ప్రయాణం", type: "Language" },
+          { lessonNo: "3", chapterName: "బండారి బసవన్న", type: "Language" },
+          { lessonNo: "4", chapterName: "అసామాన్యులు", type: "Language" },
+          { lessonNo: "5", chapterName: "శతకసుధ", type: "Language" },
+          { lessonNo: "6", chapterName: "తెలుగు జానపద గేయాలు", type: "Language" },
+          { lessonNo: "7", chapterName: "మంజీరా", type: "Language" },
+          { lessonNo: "8", chapterName: "చిన్నప్పుడే", type: "Language" },
+          { lessonNo: "9", chapterName: "అమరులు", type: "Language" },
+          { lessonNo: "10", chapterName: "సింగరేణి", type: "Language" },
+          { lessonNo: "11", chapterName: "కాపుబిడ్డ", type: "Language" },
+          { lessonNo: "12", chapterName: "మాట్లాడే నాగలి", type: "Language" }
         ]
       }
     ]
@@ -140,21 +140,21 @@ const SSC_DATA = [
       {
         unitName: "General",
         chapters: [
-          { lessonNo: "1", chapterName: "Rational Numbers", type: "Unit 1" },
-          { lessonNo: "2", chapterName: "Linear Equations in One Variable", type: "Unit 2" },
-          { lessonNo: "3", chapterName: "Construction of Quadrilaterals", type: "Unit 3" },
-          { lessonNo: "4", chapterName: "Exponents and Powers", type: "Unit 4" },
-          { lessonNo: "5", chapterName: "Comparing Quantities using Proportion", type: "Unit 5" },
-          { lessonNo: "6", chapterName: "Square Roots and Cube Roots", type: "Unit 6" },
-          { lessonNo: "7", chapterName: "Frequency Distribution Tables and Graphs", type: "Unit 7" },
-          { lessonNo: "8", chapterName: "Exploring Geometrical Figures", type: "Unit 8" },
-          { lessonNo: "9", chapterName: "Area of Plane Figures", type: "Unit 9" },
-          { lessonNo: "10", chapterName: "Direct and Inverse Proportions", type: "Unit 10" },
-          { lessonNo: "11", chapterName: "Algebraic Expressions", type: "Unit 11" },
-          { lessonNo: "12", chapterName: "Factorisation", type: "Unit 12" },
-          { lessonNo: "13", chapterName: "Visualizing 3-D in 2-D", type: "Unit 13" },
-          { lessonNo: "14", chapterName: "Surface Areas and Volumes (Cube-Cuboid)", type: "Unit 14" },
-          { lessonNo: "15", chapterName: "Playing with Numbers", type: "Unit 15" }
+          { lessonNo: "1", chapterName: "Rational Numbers", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "GJnvCdnrgqQ", title: "Rational Numbers" }] },
+          { lessonNo: "2", chapterName: "Linear Equations in One Variable", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "_YkILElUy78", title: "Linear Equations in One Variable" }] },
+          { lessonNo: "3", chapterName: "Construction of Quadrilaterals", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "KJSAgTenbHk", title: "Construction of Quadrilaterals" }] },
+          { lessonNo: "4", chapterName: "Exponents and Powers", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "kxo6TfPUXA0", title: "Exponents and Powers" }] },
+          { lessonNo: "5", chapterName: "Comparing Quantities", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "C_pVYSHv0mk", title: "Comparing Quantities" }] },
+          { lessonNo: "6", chapterName: "Square Roots and Cube Roots", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "UeXx3H-rxFg", title: "Square Roots and Cube Roots" }] },
+          { lessonNo: "7", chapterName: "Frequency Distribution Tables and Graphs", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "PhbwrW6cg-k", title: "Frequency Distribution Tables and Graphs" }] },
+          { lessonNo: "8", chapterName: "Exploring Geometrical Figures", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "3qYtJJQoIQc", title: "Exploring Geometrical Figures" }] },
+          { lessonNo: "9", chapterName: "Area of Plane Figures", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "acZ31AQSYZY", title: "Area of Plane Figures" }] },
+          { lessonNo: "10", chapterName: "Direct and Inverse Proportions", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "wqbOcpbZeDI", title: "Direct and Inverse Proportions" }] },
+          { lessonNo: "11", chapterName: "Algebraic Expressions", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "c0NgtjfTJBo", title: "Algebraic Expressions" }] },
+          { lessonNo: "12", chapterName: "Factorisation", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "1LibHHbAL28", title: "Factorisation" }] },
+          { lessonNo: "13", chapterName: "Visualizing 3-D in 2-D", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "QZ8oez8eUfA", title: "Visualizing 3-D in 2-D" }] },
+          { lessonNo: "14", chapterName: "Surface Areas and Volumes", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "2rp_-h6PnFo", title: "Surface Areas and Volumes" }] },
+          { lessonNo: "15", chapterName: "Playing with Numbers", type: "Mathematics", videos: [{ language: "English", youtubeVideoId: "TgLC7rnGCCQ", title: "Playing with Numbers" }] }
         ]
       }
     ]

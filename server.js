@@ -8,6 +8,7 @@ const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const studyRoutes = require('./routes/studyRoutes');
+const videoRoutes = require('./routes/videoRoutes');
 
 // ── Global Error Protection ─────────────────
 process.on("uncaughtException", (err) => {
@@ -34,6 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Routes ──────────────────────────────────
 app.use('/', studyRoutes);
+app.use('/', videoRoutes);
 
 // ── 404 Handler ─────────────────────────────
 app.use((req, res) => {

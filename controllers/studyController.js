@@ -3,6 +3,7 @@
    ────────────────────────────────────────────── */
 
 const Subject = require('../models/Subject');
+const Video = require('../models/Video');
 const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
@@ -181,7 +182,31 @@ exports.getVideo = async (req, res) => {
 
   const gradeNum = parseInt(grade, 10);
 
-  // ── Check MongoDB cache first ─────────────
+  // ── 0. Check the new Video model first (Highest Priority) ──
+  try {
+    const directVideo = await Video.findOne({ chapter: chapter });
+    if (directVideo) {
+      // Extract video ID from URL if possible
+      let vidId = directVideo.url.split('embed/')[1] || directVideo.url.split('v=')[1] || directVideo.url;
+      if (vidId.includes('&')) vidId = vidId.split('&')[0];
+      if (vidId.includes('?')) vidId = vidId.split('?')[0];
+
+      return res.json({
+        cached: true,
+        video: {
+          youtubeVideoId: vidId,
+          title: `${chapter} (${directVideo.language})`,
+          embedUrl: directVideo.url,
+          viewCount: 0,
+          likeCount: 0
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Video model lookup failed:', err.message);
+  }
+
+  // ── 1. Check MongoDB Subject cache ─────────────
   try {
     if (board && subject) {
       const doc = await Subject.findOne({
@@ -350,13 +375,13 @@ function _getDefaultChapters(subject, grade, board) {
         "स्वदेश", "दो गौरैया", "मित्रलाभ", "एक आशीर्वाद", "हरिद्वार", "कबीर के दोहे", "कदम मिलाकर चलना होगा", "एक टोकरी भर मिट्टी", "मत बाँधो", "नए मेहमान", "आदमी के अनुपात", "तरुण के स्वप्न", "भारती जब विषय करो"
       ],
       'English': [
-        "The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody’s Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "The Cherry Tree", "Harvest Hymn", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"
+        "The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody’s Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "Spectacular Wonders", "The Cherry Tree", "Harvest Hymn", "Waiting for the Rain", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"
       ]
     };
   } else if (grade === 8 && board === 'SSC') {
     defaults = {
       'Mathematics': [
-        "Rational Numbers", "Linear Equations in One Variable", "Construction of Quadrilaterals", "Exponents and Powers", "Comparing Quantities using Proportion", "Square Roots and Cube Roots", "Frequency Distribution Tables and Graphs", "Exploring Geometrical Figures", "Area of Plane Figures", "Direct and Inverse Proportions", "Algebraic Expressions", "Factorisation", "Visualizing 3-D in 2-D", "Surface Areas and Volumes (Cube-Cuboid)", "Playing with Numbers"
+        "Rational Numbers", "Linear Equations in One Variable", "Construction of Quadrilaterals", "Exponents and Powers", "Comparing Quantities", "Square Roots and Cube Roots", "Frequency Distribution Tables and Graphs", "Exploring Geometrical Figures", "Area of Plane Figures", "Direct and Inverse Proportions", "Algebraic Expressions", "Factorisation", "Visualizing 3-D in 2-D", "Surface Areas and Volumes", "Playing with Numbers"
       ],
       'Physics': [
         "Force", "Friction", "Synthetic Fibres and Plastics", "Metals and Non metals", "Sound", "Reflection of Light at plane surfaces", "Coal and Petroleum", "Combustion, Fuels and flame", "Electrical Conductivity of Liquids", "Some natural phenomena", "Stars and the Solar system", "Graphs of Motion"
