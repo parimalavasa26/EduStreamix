@@ -7,6 +7,7 @@
   const GRADE = window.__GRADE__;
   const BOARD = window.__BOARD__;
   const SUBJECT = window.__SUBJECT__;
+  const DISPLAY_SUBJECT = window.__DISPLAY_SUBJECT__ || SUBJECT;
   let LANGUAGE = window.__LANGUAGE__ || 'English';
   let currentChapterData = null;
   let ytPlayer = null;
@@ -24,122 +25,22 @@
 
   const videoSection = document.getElementById('video-section');
 
-  async function translateChaptersDeep(chapters, lang) {
-    if (lang === 'English' || lang === 'en') return chapters;
-
-    // Collect all unique strings
-    const textsToTranslate = [];
-    
-    if (SUBJECT && !textsToTranslate.includes(SUBJECT)) textsToTranslate.push(SUBJECT);
-
-    chapters.forEach(ch => {
-      if (ch.unitName && !textsToTranslate.includes(ch.unitName)) textsToTranslate.push(ch.unitName);
-      if (ch.chapterName && !textsToTranslate.includes(ch.chapterName)) textsToTranslate.push(ch.chapterName);
-      if (ch.type && !textsToTranslate.includes(ch.type)) textsToTranslate.push(ch.type);
-    });
-
-    if (textsToTranslate.length === 0) return chapters;
-
-    try {
-      const res = await fetch('/translate-batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ texts: textsToTranslate, targetLang: lang })
-      });
-      const translations = await res.json();
-
-      const dict = {};
-      textsToTranslate.forEach((txt) => {
-        // Enforce dict mapping. Never fallback to English if translation exists!
-        if (translations[txt] && translations[txt] !== txt) {
-          dict[txt] = translations[txt];
-        }
-      });
-
-      // Update Subject Name globally via dict mapping strictly
-      if (dict[SUBJECT]) {
-        const subjDisplay = document.getElementById('subject-display');
-        if (subjDisplay) subjDisplay.textContent = dict[SUBJECT];
-      }
-
-      const mappedChapters = chapters.map(ch => ({
-        ...ch,
-        unitName: dict[ch.unitName] || ch.unitName,
-        chapterName: dict[ch.chapterName] || ch.chapterName,
-        type: dict[ch.type] || ch.type,
-        lessonNo: ch.lessonNo || '-'
-      }));
-
-      console.log("Dictionary Mapping:", dict);
-      console.log("Mapped unitNames:", mappedChapters.map(c => c.unitName));
-      console.log("Mapped chapter titles:", mappedChapters.map(c => c.chapterName));
-
-      return mappedChapters;
-    } catch (e) {
-      console.error('Batch translation failed:', e);
-      return chapters;
-    }
-  }
-
   async function getFinalChapters(grade, board, subject, selectedLanguage) {
-    const res = await fetch('/api/chapters?grade=' + grade + '&board=' + board + '&subject=' + encodeURIComponent(subject));
-    const data = await res.json();
-    if (!data.chapters || !data.chapters.length) return [];
+    const cacheKey = `chapters_v4_${selectedLanguage}_${grade}_${board}_${subject}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      try { return JSON.parse(cached); } catch(e) {}
+    }
     
-    if (selectedLanguage === 'English' || selectedLanguage === 'en') {
+    const params = new URLSearchParams({ grade, board, subject, lang: selectedLanguage });
+    const res = await fetch('/api/chapters?' + params.toString());
+    const data = await res.json();
+    
+    if (data.chapters) {
+      sessionStorage.setItem(cacheKey, JSON.stringify(data.chapters));
       return data.chapters;
     }
-    
-    // Use v2 cache key to bust any previously poisoned English caches!
-    const cacheKey = `chapters_v2_${selectedLanguage}_${grade}_${board}_${subject}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        return JSON.parse(cached);
-      } catch(e) {}
-    }
-    
-    let isDone = false;
-    const translationPromise = translateChaptersDeep(data.chapters, selectedLanguage)
-      .then(translated => {
-        isDone = true;
-        // Temporary Debug Safety
-        console.log("Selected Language:", selectedLanguage);
-        console.log("Translated Chapters:", translated);
-        
-        // Only cache if translation was successful
-        if (window.i18nReady) {
-          localStorage.setItem(cacheKey, JSON.stringify(translated));
-        }
-        return translated;
-      })
-      .catch(e => {
-        console.error(e);
-        isDone = true;
-        return data.chapters;
-      });
-
-    // 3 Second Maximum Loading Limit!
-    const timeoutPromise = new Promise((resolve) => {
-      setTimeout(() => {
-        if (!isDone) resolve(data.chapters);
-      }, 3000);
-    });
-
-    const result = await Promise.race([translationPromise, timeoutPromise]);
-
-    // If it timed out, result is English. We setup a listener to update the UI when the slow translation finishes.
-    if (result === data.chapters && !isDone) {
-      console.warn("Translation taking longer than 3s. Falling back to English temporarily.");
-      translationPromise.then(finalTranslated => {
-        if (LANGUAGE === selectedLanguage) {
-          console.log("Background translation finished! Re-rendering UI.");
-          showChapters(); // Safe to recall, as it will instantly hit the cached data now!
-        }
-      });
-    }
-
-    return result;
+    return [];
   }
 
   // ── Load Chapters on Init ─────────────────
@@ -148,7 +49,6 @@
     chaptersSection.style.display = '';
     chaptersList.innerHTML = `
       <div class="loader-spinner" style="margin: 0 auto;"></div>
-      <p style="text-align:center; margin-top:1rem; color:var(--text-secondary);" data-i18n="Translating...">Translating...</p>
       ${Array(3).fill('<div class="skeleton-item" style="margin-top:1rem;"></div>').join('')}
     `;
     try {
@@ -183,14 +83,17 @@
         const chapterTitleLabel = window.t ? window.t('Chapter Title') : 'Chapter Title';
         const typeLabel = window.t ? window.t('Type') : 'Type';
 
+        const hideType = (GRADE == 8 && BOARD === 'SSC');
+        const colspan = hideType ? 2 : 3;
+
         thead.innerHTML = `
           <tr class="unit-title-row">
-            <th colspan="3">${unitNameLabel}</th>
+            <th colspan="${colspan}">${unitNameLabel}</th>
           </tr>
           <tr class="col-headers-row">
             <th>${lessonNoLabel}</th>
             <th>${chapterTitleLabel}</th>
-            <th>${typeLabel}</th>
+            ${hideType ? '' : `<th>${typeLabel}</th>`}
           </tr>
         `;
         table.appendChild(thead);
@@ -207,7 +110,7 @@
           tr.innerHTML = `
             <td class="col-lesson">${ch.lessonNo || '-'}</td>
             <td class="col-title">${ch.chapterName || '-'}</td>
-            <td class="col-type">${ch.type || '-'}</td>
+            ${hideType ? '' : `<td class="col-type">${ch.type || '-'}</td>`}
           `;
           tbody.appendChild(tr);
         });
@@ -253,7 +156,11 @@
 
     try {
       const params = new URLSearchParams({
-        chapter: currentChapterData.chapterName, grade: GRADE, language: selectedLanguage, board: BOARD, subject: SUBJECT
+        chapter: currentChapterData.originalChapterName || currentChapterData.chapterName, 
+        grade: GRADE, 
+        language: selectedLanguage, 
+        board: BOARD, 
+        subject: SUBJECT
       });
       const res = await fetch('/api/video?' + params.toString());
       const data = await res.json();
@@ -303,7 +210,7 @@
       });
       
       loader.style.display = 'none';
-      const defaultTitle = currentChapterData.chapterName + ' — ' + SUBJECT;
+      const defaultTitle = currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT;
       titleEl.textContent = data.video.title || defaultTitle;
       titleEl.removeAttribute('data-i18n'); // Use actual video title or translated string
 
@@ -323,7 +230,7 @@
   }
 
   // ── Quiz ───────────────────────────────────
-  function showQuiz() {
+  async function showQuiz() {
     const section = document.getElementById('quiz-section');
     const body = document.getElementById('quiz-body');
     const actions = document.getElementById('quiz-actions');
@@ -331,25 +238,61 @@
     const retake = document.getElementById('quiz-retake-btn');
     const submit = document.getElementById('quiz-submit-btn');
 
-    const pool = currentChapterData.quizQuestions || [];
-    if (pool.length === 0) return;
+    let pool = currentChapterData.quizQuestions;
+    if (!pool || pool.length === 0) {
+      pool = (window.QUIZ_DATA && window.QUIZ_DATA[SUBJECT]) ? window.QUIZ_DATA[SUBJECT] : (window.QUIZ_DATA ? window.QUIZ_DATA['General'] : []);
+    }
+    if (!pool || pool.length === 0) return;
 
     section.style.display = '';
     result.style.display = 'none';
     retake.style.display = 'none';
-    actions.style.display = '';
+    actions.style.display = 'none';
 
     // Pick random 10 questions (or less if pool is smaller)
-    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    let shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
 
+    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div>';
+
+    // Translate questions if language is not English
+    if (LANGUAGE !== 'English' && LANGUAGE !== 'en') {
+      const textsToTranslate = [];
+      shuffled.forEach(q => {
+        if (!textsToTranslate.includes(q.question)) textsToTranslate.push(q.question);
+        q.options.forEach(opt => {
+          if (!textsToTranslate.includes(opt)) textsToTranslate.push(opt);
+        });
+      });
+
+      if (textsToTranslate.length > 0) {
+        try {
+          const res = await fetch('/translate-batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: textsToTranslate, targetLang: LANGUAGE })
+          });
+          const translations = await res.json();
+          
+          shuffled = shuffled.map(q => ({
+            ...q,
+            question: translations[q.question] || q.question,
+            options: q.options.map(opt => translations[opt] || opt)
+          }));
+        } catch (e) {
+          console.error("Quiz translation failed", e);
+        }
+      }
+    }
+
+    actions.style.display = '';
     body.innerHTML = '';
     shuffled.forEach((q, qi) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.dataset.answer = q.correctAnswer;
-      let html = '<p>' + (qi+1) + '. <span data-i18n="' + q.question + '">' + (window.t ? window.t(q.question) : q.question) + '</span></p>';
+      div.dataset.answer = q.answer !== undefined ? q.answer : q.correctAnswer;
+      let html = '<p>' + (qi+1) + '. <span>' + q.question + '</span></p>';
       q.options.forEach((opt, oi) => {
-        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span data-i18n="' + opt + '">' + (window.t ? window.t(opt) : opt) + '</span></label>';
+        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span>' + opt + '</span></label>';
       });
       div.innerHTML = html;
       body.appendChild(div);
@@ -362,17 +305,17 @@
         const correct = parseInt(qDiv.dataset.answer);
         const selected = qDiv.querySelector('input:checked');
         const opts = qDiv.querySelectorAll('.quiz-option');
-        opts[correct].classList.add('correct');
+        if (opts[correct]) opts[correct].classList.add('correct');
         if (selected) {
           const val = parseInt(selected.value);
           if (val === correct) { score++; }
-          else { opts[val].classList.add('wrong'); }
+          else { if (opts[val]) opts[val].classList.add('wrong'); }
         }
         qDiv.querySelectorAll('input').forEach(inp => inp.disabled = true);
       });
       actions.style.display = 'none';
       result.style.display = '';
-      result.textContent = 'Score: ' + score + ' / ' + questions.length;
+      result.textContent = (window.t ? window.t('Score') : 'Score') + ': ' + score + ' / ' + questions.length;
       result.className = 'quiz-result ' + (score >= (questions.length * 0.8) ? 'good' : score >= (questions.length * 0.4) ? 'ok' : 'bad');
       retake.style.display = '';
     };

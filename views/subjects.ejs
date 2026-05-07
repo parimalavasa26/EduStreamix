@@ -85,24 +85,26 @@
       const grid = document.getElementById('subjects-grid');
 
       async function loadSubjects() {
+        const appLang = localStorage.getItem('appLang') || 'English';
         grid.innerHTML = Array(5).fill('<div class="skeleton-card"></div>').join('');
         try {
-          const res = await fetch('/api/subjects?grade=' + GRADE + '&board=' + BOARD);
+          const res = await fetch('/api/subjects?grade=' + GRADE + '&board=' + BOARD + '&lang=' + appLang);
           const data = await res.json();
           if (!data.subjects || !data.subjects.length) {
             grid.innerHTML = '<p class="no-data-msg">No subjects found for this selection.</p>';
             return;
           }
+          
           grid.innerHTML = '';
-          data.subjects.forEach(subj => {
+          data.subjects.forEach((subjTranslated, i) => {
+            const originalSubj = data.originalSubjects ? data.originalSubjects[i] : subjTranslated;
             const card = document.createElement('a');
-            const appLang = localStorage.getItem('appLang') || 'English';
-            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&language=' + appLang + '&subject=' + encodeURIComponent(subj);
+            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&language=' + appLang + '&subject=' + encodeURIComponent(originalSubj);
             card.className = 'subject-card';
-            card.id = 'subject-' + subj.toLowerCase().replace(/\s+/g, '-');
+            card.id = 'subject-' + originalSubj.toLowerCase().replace(/\s+/g, '-');
             card.innerHTML =
-              '<span class="subject-icon">' + (SUBJECT_ICONS[subj] || '📖') + '</span>' +
-              '<span class="subject-name" data-i18n="' + subj + '">' + (window.t ? window.t(subj) : subj) + '</span>';
+              '<span class="subject-icon">' + (SUBJECT_ICONS[originalSubj] || '📖') + '</span>' +
+              '<span class="subject-name" data-i18n="' + originalSubj + '">' + subjTranslated + '</span>';
             grid.appendChild(card);
           });
         } catch (e) {
@@ -111,6 +113,9 @@
       }
 
       loadSubjects();
+      
+      // Make loadSubjects globally available for the languageChanged event
+      window.loadSubjects = loadSubjects;
     })();
   </script>
   <script src="/js/i18n.js"></script>
@@ -130,11 +135,10 @@
         display.textContent = languageNames[lang] || lang;
       }
     });
-    document.addEventListener('languageChanged', () => {
-      document.querySelectorAll('.subject-name').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (key && window.t) el.innerHTML = window.t(key);
-      });
+    document.addEventListener('languageChanged', async (e) => {
+      if (window.loadSubjects) {
+        window.loadSubjects();
+      }
     });
   </script>
 </body>

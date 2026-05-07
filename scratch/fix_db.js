@@ -5,7 +5,7 @@ require('dotenv').config({ path: '../.env' });
 async function updatePDF() {
   try {
     // Connect to the correct database from .env
-    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/edustreamx';
+    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/edustreamix';
     await mongoose.connect(uri);
     console.log('Connected to MongoDB:', uri);
 

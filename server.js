@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────
-   EduStreamX — Server Entry Point
+   EduStreamix — Server Entry Point
    ────────────────────────────────────────────── */
 
 require('dotenv').config();
