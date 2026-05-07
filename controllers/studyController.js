@@ -3,7 +3,6 @@
    ────────────────────────────────────────────── */
 
 const Subject = require('../models/Subject');
-const TranslationCache = require('../models/TranslationCache');
 const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
@@ -575,106 +574,5 @@ exports.translateBatch = async (req, res) => {
   } catch (error) {
     console.error('Server Error:', error);
     res.status(500).json({ error: 'Translation failed' });
-  }
-};
-
-/**
- * POST /api/link-youtube
- * Manually link a YouTube URL to a chapter
- */
-exports.linkYoutube = async (req, res) => {
-  const { grade, board, subject, chapterName, youtubeUrl, language } = req.body;
-
-  if (!grade || !board || !subject || !chapterName || !youtubeUrl || !language) {
-    return res.status(400).json({ error: 'Missing required fields.' });
-  }
-
-  try {
-    // Extract video ID from URL
-    let videoId = youtubeUrl;
-    if (youtubeUrl.includes('v=')) {
-      videoId = youtubeUrl.split('v=')[1].split('&')[0];
-    } else if (youtubeUrl.includes('youtu.be/')) {
-      videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
-    } else if (youtubeUrl.includes('embed/')) {
-      videoId = youtubeUrl.split('embed/')[1].split('?')[0];
-    }
-
-    const video = {
-      language,
-      youtubeVideoId: videoId,
-      title: `${chapterName} (${language})`,
-      embedUrl: `https://www.youtube.com/embed/${videoId}`
-    };
-
-    const gradeNum = parseInt(grade, 10);
-    const boardUp = board.toUpperCase();
-
-    let doc = await Subject.findOne({ grade: gradeNum, board: boardUp, subject });
-
-    if (!doc) {
-      return res.status(404).json({ error: 'Subject not found. Please seed the subject first.' });
-    }
-
-    let found = false;
-    for (const unit of doc.units) {
-      for (const ch of unit.chapters) {
-        if (ch.chapterName === chapterName) {
-          // Remove existing video for this language if any
-          ch.videos = ch.videos.filter(v => v.language !== language);
-          ch.videos.push(video);
-          found = true;
-          break;
-        }
-      }
-      if (found) break;
-    }
-
-    if (!found) {
-      // Add chapter to first unit if not found
-      doc.units[0].chapters.push({
-        chapterName,
-        videos: [video]
-      });
-    }
-
-    await doc.save();
-    res.json({ success: true, video });
-  } catch (error) {
-    console.error('Error linking YouTube:', error);
-    res.status(500).json({ error: 'Failed to link YouTube URL' });
-  }
-};
-
-/**
- * GET /api/settings
- */
-exports.getSettings = async (req, res) => {
-  try {
-    const configs = await Config.find({});
-    const settings = {};
-    configs.forEach(c => settings[c.key] = c.value);
-    res.json(settings);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch settings' });
-  }
-};
-
-/**
- * POST /api/settings
- */
-exports.setSettings = async (req, res) => {
-  const { key, value } = req.body;
-  if (!key) return res.status(400).json({ error: 'Key is required' });
-
-  try {
-    await Config.findOneAndUpdate(
-      { key },
-      { value },
-      { upsert: true, new: true }
-    );
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to save setting' });
   }
 };

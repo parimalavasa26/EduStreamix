@@ -22,9 +22,6 @@ router.get('/api/video',    ctrl.getVideo);
 // Translation endpoint
 router.post('/translate-batch', ctrl.translateBatch);
 router.post('/api/upload-pdf', ctrl.uploadPdf);
-router.post('/api/link-youtube', ctrl.linkYoutube);
-router.get('/api/settings', ctrl.getSettings);
-router.post('/api/settings', ctrl.setSettings);
 
 
 // ── Admin ───────────────────────────────────
