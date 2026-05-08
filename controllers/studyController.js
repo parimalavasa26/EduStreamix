@@ -3,6 +3,7 @@
    ────────────────────────────────────────────── */
 
 const Subject = require('../models/Subject');
+const Video = require('../models/Video');
 const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
@@ -13,17 +14,17 @@ const mongoose = require('mongoose');
 const CURRICULUM = {
   8: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'Hindi', 'English'],
-    SSC:  ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
-    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
+    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
+    ICSE: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Social Studies']
   },
   9: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC:  ['Mathematics', 'Physical Science', 'Biological Science', 'Social Studies', 'English'],
+    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   },
   10: {
     CBSE: ['Mathematics', 'Science', 'History', 'Geography', 'Political Science', 'Economics'],
-    SSC:  ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Telugu', 'Hindi-1', 'Hindi-2', 'English', 'Telugu-2'],
+    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Telugu', 'Hindi-1', 'Hindi-2', 'English', 'Telugu-2'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   }
 };
@@ -85,11 +86,11 @@ exports.renderSubjects = (req, res) => {
 exports.renderStudy = (req, res) => {
   const { grade, board, subject, language } = req.query;
   res.render('study', {
-    selectedGrade:    grade || null,
-    selectedBoard:    board || null,
-    selectedSubject:  subject || null,
+    selectedGrade: grade || null,
+    selectedBoard: board || null,
+    selectedSubject: subject || null,
     selectedLanguage: language || null,
-    displaySubject:   subject || null
+    displaySubject: subject || null
   });
 };
 
@@ -157,23 +158,24 @@ exports.getChapters = async (req, res) => {
     // 2. Fallback to the original Subject schema
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },
-      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1 }
+      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1, 'units.chapters.videos': 1 }
     ).lean();
 
     if (doc && doc.units && doc.units.length > 0) {
       const chapters = [];
       doc.units.forEach(unit => {
         unit.chapters.forEach(ch => {
-          chapters.push({ 
-            unitName: unit.unitName, 
-            lessonNo: ch.lessonNo, 
-            chapterName: ch.chapterName, 
+          chapters.push({
+            unitName: unit.unitName,
+            lessonNo: ch.lessonNo,
+            chapterName: ch.chapterName,
             type: ch.type,
             pdfUrl: ch.pdfUrl,
             pdfTitle: ch.pdfTitle,
             keyMoments: ch.keyMoments,
             quizQuestions: ch.quizQuestions,
-            summary: ch.summary
+            summary: ch.summary,
+            originalChapterName: ch.chapterName // Keep original for video fetching
           });
         });
       });
@@ -207,7 +209,36 @@ exports.getVideo = async (req, res) => {
 
   const gradeNum = parseInt(grade, 10);
 
-  // ── Check MongoDB cache first ─────────────
+  // ── 0. Check the new Video model first (Highest Priority) ──
+  try {
+    const directVideo = await Video.findOne({ 
+      grade: String(gradeNum), 
+      board: board ? board.toUpperCase() : 'SSC', 
+      subject: subject,
+      chapter: chapter 
+    });
+    if (directVideo) {
+      // Extract video ID from URL if possible
+      let vidId = directVideo.url.split('embed/')[1] || directVideo.url.split('v=')[1] || directVideo.url;
+      if (vidId.includes('&')) vidId = vidId.split('&')[0];
+      if (vidId.includes('?')) vidId = vidId.split('?')[0];
+
+      return res.json({
+        cached: true,
+        video: {
+          youtubeVideoId: vidId,
+          title: `${chapter} (${directVideo.language})`,
+          embedUrl: directVideo.url,
+          viewCount: 0,
+          likeCount: 0
+        }
+      });
+    }
+  } catch (err) {
+    console.warn('Video model lookup failed:', err.message);
+  }
+
+  // ── 1. Check MongoDB Subject cache ─────────────
   try {
     if (board && subject) {
       const doc = await Subject.findOne({
@@ -226,10 +257,10 @@ exports.getVideo = async (req, res) => {
                   cached: true,
                   video: {
                     youtubeVideoId: cached.youtubeVideoId,
-                    title:          cached.title,
-                    viewCount:      cached.viewCount,
-                    likeCount:      cached.likeCount,
-                    embedUrl:       cached.embedUrl || `https://www.youtube.com/embed/${cached.youtubeVideoId}`
+                    title: cached.title,
+                    viewCount: cached.viewCount,
+                    likeCount: cached.likeCount,
+                    embedUrl: cached.embedUrl || `https://www.youtube.com/embed/${cached.youtubeVideoId}`
                   }
                 });
               }
@@ -286,10 +317,10 @@ async function _cacheVideo(grade, board, subject, chapterName, language, video) 
             videos: [{
               language,
               youtubeVideoId: video.youtubeVideoId,
-              title:          video.title,
-              viewCount:      video.viewCount,
-              likeCount:      video.likeCount,
-              embedUrl:       video.embedUrl
+              title: video.title,
+              viewCount: video.viewCount,
+              likeCount: video.likeCount,
+              embedUrl: video.embedUrl
             }]
           }]
         }]
@@ -308,10 +339,10 @@ async function _cacheVideo(grade, board, subject, chapterName, language, video) 
           ch.videos.push({
             language,
             youtubeVideoId: video.youtubeVideoId,
-            title:          video.title,
-            viewCount:      video.viewCount,
-            likeCount:      video.likeCount,
-            embedUrl:       video.embedUrl
+            title: video.title,
+            viewCount: video.viewCount,
+            likeCount: video.likeCount,
+            embedUrl: video.embedUrl
           });
           found = true;
           break;
@@ -327,10 +358,10 @@ async function _cacheVideo(grade, board, subject, chapterName, language, video) 
         videos: [{
           language,
           youtubeVideoId: video.youtubeVideoId,
-          title:          video.title,
-          viewCount:      video.viewCount,
-          likeCount:      video.likeCount,
-          embedUrl:       video.embedUrl
+          title: video.title,
+          viewCount: video.viewCount,
+          likeCount: video.likeCount,
+          embedUrl: video.embedUrl
         }]
       });
     }
@@ -346,17 +377,17 @@ async function _cacheVideo(grade, board, subject, chapterName, language, video) 
  */
 function _getDefaultChapters(subject, grade, board) {
   let defaults = {
-    'Mathematics':      ['Number Systems', 'Algebra', 'Geometry', 'Mensuration', 'Statistics'],
-    'Science':          ['Force and Motion', 'Light', 'Chemical Reactions', 'Cell Biology', 'Ecosystem'],
-    'Social Science':   ['Indian History', 'Geography', 'Civics', 'Economics'],
-    'English':          ['Grammar', 'Comprehension', 'Writing Skills', 'Literature'],
-    'Hindi':            ['व्याकरण', 'गद्य', 'पद्य', 'लेखन'],
-    'Physics':          ['Kinematics', 'Laws of Motion', 'Work and Energy', 'Waves', 'Optics'],
-    'Chemistry':        ['Atoms and Molecules', 'Chemical Bonding', 'Acids and Bases', 'Metals and Non-Metals'],
-    'Biology':          ['Cell Structure', 'Human Body Systems', 'Plant Physiology', 'Genetics', 'Ecology'],
-    'General Science':  ['Force and Motion', 'Light and Sound', 'Chemical Changes', 'Living World'],
-    'Social Studies':   ['History of India', 'World Geography', 'Indian Polity', 'Economics'],
-    'Telugu':           ['వ్యాకరణం', 'గద్యం', 'పద్యం', 'రచన'],
+    'Mathematics': ['Number Systems', 'Algebra', 'Geometry', 'Mensuration', 'Statistics'],
+    'Science': ['Force and Motion', 'Light', 'Chemical Reactions', 'Cell Biology', 'Ecosystem'],
+    'Social Science': ['Indian History', 'Geography', 'Civics', 'Economics'],
+    'English': ['Grammar', 'Comprehension', 'Writing Skills', 'Literature'],
+    'Hindi': ['व्याकरण', 'गद्य', 'पद्य', 'लेखन'],
+    'Physics': ['Kinematics', 'Laws of Motion', 'Work and Energy', 'Waves', 'Optics'],
+    'Chemistry': ['Atoms and Molecules', 'Chemical Bonding', 'Acids and Bases', 'Metals and Non-Metals'],
+    'Biology': ['Cell Structure', 'Human Body Systems', 'Plant Physiology', 'Genetics', 'Ecology'],
+    'General Science': ['Force and Motion', 'Light and Sound', 'Chemical Changes', 'Living World'],
+    'Social Studies': ['History of India', 'World Geography', 'Indian Polity', 'Economics'],
+    'Telugu': ['వ్యాకరణం', 'గద్యం', 'పద్యం', 'రచన'],
     'Physical Science': ['Kinematics', 'Heat', 'Electricity', 'Chemical Reactions', 'Acids and Bases'],
     'Biological Science': ['Cell Biology', 'Plant Kingdom', 'Animal Kingdom', 'Human Physiology', 'Ecology']
   };
@@ -376,13 +407,13 @@ function _getDefaultChapters(subject, grade, board) {
         "स्वदेश", "दो गौरैया", "मित्रलाभ", "एक आशीर्वाद", "हरिद्वार", "कबीर के दोहे", "कदम मिलाकर चलना होगा", "एक टोकरी भर मिट्टी", "मत बाँधो", "नए मेहमान", "आदमी के अनुपात", "तरुण के स्वप्न", "भारती जब विषय करो"
       ],
       'English': [
-        "The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody’s Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "The Cherry Tree", "Harvest Hymn", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"
+        "The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody’s Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "Spectacular Wonders", "The Cherry Tree", "Harvest Hymn", "Waiting for the Rain", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"
       ]
     };
   } else if (grade === 8 && board === 'SSC') {
     defaults = {
       'Mathematics': [
-        "Rational Numbers", "Linear Equations in One Variable", "Construction of Quadrilaterals", "Exponents and Powers", "Comparing Quantities using Proportion", "Square Roots and Cube Roots", "Frequency Distribution Tables and Graphs", "Exploring Geometrical Figures", "Area of Plane Figures", "Direct and Inverse Proportions", "Algebraic Expressions", "Factorisation", "Visualizing 3-D in 2-D", "Surface Areas and Volumes (Cube-Cuboid)", "Playing with Numbers"
+        "Rational Numbers", "Linear Equations in One Variable", "Construction of Quadrilaterals", "Exponents and Powers", "Comparing Quantities", "Square Roots and Cube Roots", "Frequency Distribution Tables and Graphs", "Exploring Geometrical Figures", "Area of Plane Figures", "Direct and Inverse Proportions", "Algebraic Expressions", "Factorisation", "Visualizing 3-D in 2-D", "Surface Areas and Volumes", "Playing with Numbers"
       ],
       'Physics': [
         "Force", "Friction", "Synthetic Fibres and Plastics", "Metals and Non metals", "Sound", "Reflection of Light at plane surfaces", "Coal and Petroleum", "Combustion, Fuels and flame", "Electrical Conductivity of Liquids", "Some natural phenomena", "Stars and the Solar system", "Graphs of Motion"
@@ -401,6 +432,48 @@ function _getDefaultChapters(subject, grade, board) {
       ],
       'English': [
         "The Tattered Blanket", "My Mother (Poem)", "Letter to a Friend", "Oliver Asks for More", "The Cry of Children (Poem)", "Reaching the Unreached", "The Selfish Giant (Part I)", "The Selfish Giant (Part II)", "The Garden Within (Poem)", "The Fun They Had", "Preteen Pretext (Poem)", "The Computer Game", "The Treasure Within – Part I", "The Treasure Within – Part II", "They Literally Build the Nation", "The Story of Ikat", "The Earthen Goblet (Poem)", "Maestro with a Mission", "Bonsai Life – Part I", "Bonsai Life – Part II", "I Can Take Care of Myself", "Dr. Dwarakanath Kotnis", "Be Thankful (Poem)", "The Dead Rat"
+      ]
+    };
+  } else if (grade === 9 && board === 'CBSE') {
+    defaults = {
+      'Mathematics': [
+        "Number Systems", "Polynomials", "Coordinate Geometry", "Linear Equations in Two Variables", "Introduction to Euclid’s Geometry", "Lines and Angles", "Triangles", "Quadrilaterals", "Areas of Parallelograms and Triangles", "Circles", "Constructions", "Heron’s Formula", "Surface Areas and Volumes", "Statistics", "Probability"
+      ],
+      'Science': [
+        "Matter in Our Surroundings", "Is Matter Around Us Pure?", "Atoms and Molecules", "Structure of the Atom", "The Fundamental Unit of Life", "Tissues", "Motion", "Force and Laws of Motion", "Gravitation", "Work and Energy", "Sound", "Improvement in Food Resources"
+      ],
+      'Social Science': [
+        "The French Revolution", "Socialism in Europe and the Russian Revolution", "Nazism and the Rise of Hitler", "Forest Society and Colonialism", "Pastoralists in the Modern World", "India – Size and Location", "Physical Features of India", "Drainage", "Climate", "Natural Vegetation and Wildlife", "Population", "What is Democracy? Why Democracy?", "Constitutional Design", "Electoral Politics", "Working of Institutions", "Democratic Rights", "The Story of Village Palampur", "People as Resource", "Poverty as a Challenge", "Food Security in India"
+      ],
+      'English': [
+        "The Lost Child", "The Adventures of Toto", "Iswaran the Storyteller", "In the Kingdom of Fools", "The Happy Prince", "Weathering the Storm in Ersama", "The Last Leaf", "A House Is Not a Home", "The Accidental Tourist", "The Beggar"
+      ],
+      'Hindi': [
+        "सूरदास: पद", "तुलसीदास: राम लक्ष्मण परशुराम संवाद", "जयशंकर प्रसाद: आत्मकथ्य", "सूर्यकांत त्रिपाठी ‘निराला’: उत्साह एवं अट नहीं रही है", "नागार्जुन: यह दंतुरित मुस्कान एवं फसल", "मंगलेश डबराल: संगतकार", "स्वयं प्रकाश: नेताजी का चश्मा", "रामवृక్ష बेनीपुरी: बालगोबिन भगत", "यशपाल: लखनवी अंदाज़", "मनु भंडारी: एक कहानी यह भी", "रवींद्र मिश्र: नौबतखाने में इबादत", "भदंत आनंद कौसल्यायन: संस्कृति", "शिवपूजन सहाय: माता का अंचल", "मधु कांकरिया: साना-साना हाथ जोड़ि", "अज्ञेय: ‘मैं क्यों लिखता हूँ’"
+      ]
+    };
+  } else if (grade === 9 && board === 'SSC') {
+    defaults = {
+      'Mathematics': [
+        "Real Numbers", "Polynomials and Factorisation", "The Elements of Geometry", "Lines and Angles", "Co-Ordinate Geometry", "Linear Equations in Two Variables", "Triangles", "Quadrilaterals", "Statistics", "Surface Areas and Volumes", "Areas", "Circles", "Geometrical Constructions", "Probability", "Proofs in Mathematics"
+      ],
+      'Physics': [
+        "Matter Around Us", "Motion", "Laws of Motion", "Refraction of Light at Plane Surfaces", "Gravitation", "Is Matter Pure", "Atoms and Molecules and Chemical Reactions", "What is Inside Atom", "Work and Energy", "Heat", "Sound", "Revision"
+      ],
+      'Biology': [
+        "Cell – Structure and Functions", "Plant Tissues", "Animal Tissues", "Transportation through Plasma Membrane", "Diversity in Living Organisms", "Sense Organs", "Animal Behaviour", "Challenges in Improving Agricultural Production", "Adaptations in Different Ecosystems", "Soil Pollution", "Biogeochemical Cycles", "Revision"
+      ],
+      'Social Studies': [
+        "Our Earth", "The Natural Realms of the Earth", "Major Domains of the Earth", "Climate", "Natural Vegetation and Wildlife", "Population", "Settlements", "Resources", "Agriculture", "Industries", "Transport and Communication", "Democracy in the Contemporary World", "Electoral Politics", "Working of Institutions", "Democratic Rights", "Revision"
+      ],
+      'English': [
+        "The Snake and the Mirror", "The Duck and the Kangaroo (Poem)", "Little Bobby", "True Height", "What Is a Player? (Poem)", "V.V.S. Laxman, Very Very Special", "Swami Is Expelled from School", "Not Just a Teacher, but a Friend (Poem)", "Homework", "What Is Man Without the Beasts?", "The River (Poem)", "Can’t Climb Trees Any More", "A Havoc of Flood", "Grabbing Everything on the Land (Poem)", "The Ham Radio", "A Long Walk to Freedom", "Where the Mind Is Without Fear (Poem)", "An Icon of Civil Rights", "The Trial", "Antony’s Speech (Poem)", "Mahatma Gandhi, Pushed out of Train", "The Accidental Tourist", "Father Returning Home (Poem)", "Kathmandu"
+      ],
+      'Telugu': [
+        "ధర్మార్జునులు", "నేనెరిగిన బాటలు", "వలస కూలి", "రంగాచార్యతో ముఖాముఖి", "శతక మధురిమ", "దీక్షకు సిద్ధంకండి", "చెలిమి", "ఉద్యమ స్ఫూర్తి", "కోర్స్", "వాగ్భూషణం", "వాయుసం", "తీయని పలకరింపు"
+      ],
+      'Hindi': [
+        "कबीर", "वह आवाज़", "बूँद", "तुम कब जाओगे, अतिथि!", "(उपवाचन: इस जल प्रलय में)", "ललद्यद", "दो बैलों की कथा", "कैदी और कोकिला", "नाना साहब की पुत्री", "(उपवाचन: रीढ़ की हड्डी)", "ग्रामश्री", "साँवले सपनों की याद", "एक कुत्ता और एक महिना", "उपभोक्तावाद की संस्कृति", "(उपवाचन: माटीवाली)", "खुशबू रचते हैं हाथ", "ल्हासा की ओर", "बच्चे काम पर जा रहे हैं", "मेरे बचपन के दिन", "(उपवाचन: अनोखा उपाय)"
       ]
     };
   } else if (grade === 10 && board === 'CBSE') {
@@ -457,7 +530,7 @@ function _getDefaultChapters(subject, grade, board) {
   }
 
   return (defaults[subject] || ['Chapter 1', 'Chapter 2', 'Chapter 3'])
-    .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name, type: 'General Topic' }));
+    .map((name, i) => ({ unitName: 'General', lessonNo: String(i + 1), chapterName: name }));
 }
 
 /**
@@ -505,7 +578,7 @@ exports.uploadPdf = async (req, res) => {
     const boardUp = board.toUpperCase();
 
     let doc = await Subject.findOne({ grade: gradeNum, board: boardUp, subject });
-    
+
     if (!doc) {
       // Create a default if doesn't exist
       doc = new Subject({
@@ -572,10 +645,10 @@ exports.translateBatch = async (req, res) => {
       texts.forEach(t => fallback[t] = t);
       return res.json(fallback);
     }
-    
-    const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
+
+    const langCodes = { 'English': 'en', 'Hindi': 'hi', 'Telugu': 'te', 'Tamil': 'ta', 'Kannada': 'kn', 'Malayalam': 'ml' };
     const target = langCodes[reqLang] || reqLang;
-    
+
     // Robust parallel translation block
     const promises = texts.map(async (text) => {
       if (!text || text === '-') {

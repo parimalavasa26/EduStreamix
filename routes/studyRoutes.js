@@ -23,6 +23,7 @@ router.get('/api/video',    ctrl.getVideo);
 router.post('/translate-batch', ctrl.translateBatch);
 router.post('/api/upload-pdf', ctrl.uploadPdf);
 
+
 // ── Admin ───────────────────────────────────
 router.get('/admin', ctrl.renderAdmin);
 
