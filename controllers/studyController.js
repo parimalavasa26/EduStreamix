@@ -18,7 +18,7 @@ const CURRICULUM = {
   },
   9: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC: ['Mathematics', 'Physical Science', 'Biological Science', 'Social Studies', 'English'],
+    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
     ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   },
   10: {
@@ -405,6 +405,48 @@ function _getDefaultChapters(subject, grade, board) {
       ],
       'English': [
         "The Tattered Blanket", "My Mother (Poem)", "Letter to a Friend", "Oliver Asks for More", "The Cry of Children (Poem)", "Reaching the Unreached", "The Selfish Giant (Part I)", "The Selfish Giant (Part II)", "The Garden Within (Poem)", "The Fun They Had", "Preteen Pretext (Poem)", "The Computer Game", "The Treasure Within – Part I", "The Treasure Within – Part II", "They Literally Build the Nation", "The Story of Ikat", "The Earthen Goblet (Poem)", "Maestro with a Mission", "Bonsai Life – Part I", "Bonsai Life – Part II", "I Can Take Care of Myself", "Dr. Dwarakanath Kotnis", "Be Thankful (Poem)", "The Dead Rat"
+      ]
+    };
+  } else if (grade === 9 && board === 'CBSE') {
+    defaults = {
+      'Mathematics': [
+        "Number Systems", "Polynomials", "Coordinate Geometry", "Linear Equations in Two Variables", "Introduction to Euclid’s Geometry", "Lines and Angles", "Triangles", "Quadrilaterals", "Areas of Parallelograms and Triangles", "Circles", "Constructions", "Heron’s Formula", "Surface Areas and Volumes", "Statistics", "Probability"
+      ],
+      'Science': [
+        "Matter in Our Surroundings", "Is Matter Around Us Pure?", "Atoms and Molecules", "Structure of the Atom", "The Fundamental Unit of Life", "Tissues", "Motion", "Force and Laws of Motion", "Gravitation", "Work and Energy", "Sound", "Improvement in Food Resources"
+      ],
+      'Social Science': [
+        "The French Revolution", "Socialism in Europe and the Russian Revolution", "Nazism and the Rise of Hitler", "Forest Society and Colonialism", "Pastoralists in the Modern World", "India – Size and Location", "Physical Features of India", "Drainage", "Climate", "Natural Vegetation and Wildlife", "Population", "What is Democracy? Why Democracy?", "Constitutional Design", "Electoral Politics", "Working of Institutions", "Democratic Rights", "The Story of Village Palampur", "People as Resource", "Poverty as a Challenge", "Food Security in India"
+      ],
+      'English': [
+        "The Lost Child", "The Adventures of Toto", "Iswaran the Storyteller", "In the Kingdom of Fools", "The Happy Prince", "Weathering the Storm in Ersama", "The Last Leaf", "A House Is Not a Home", "The Accidental Tourist", "The Beggar"
+      ],
+      'Hindi': [
+        "सूरदास: पद", "तुलसीदास: राम लक्ष्मण परशुराम संवाद", "जयशंकर प्रसाद: आत्मकथ्य", "सूर्यकांत त्रिपाठी ‘निराला’: उत्साह एवं अट नहीं रही है", "नागार्जुन: यह दंतुरित मुस्कान एवं फसल", "मंगलेश डबराल: संगतकार", "स्वयं प्रकाश: नेताजी का चश्मा", "रामवृక్ష बेनीपुरी: बालगोबिन भगत", "यशपाल: लखनवी अंदाज़", "मनु भंडारी: एक कहानी यह भी", "रवींद्र मिश्र: नौबतखाने में इबादत", "भदंत आनंद कौसल्यायन: संस्कृति", "शिवपूजन सहाय: माता का अंचल", "मधु कांकरिया: साना-साना हाथ जोड़ि", "अज्ञेय: ‘मैं क्यों लिखता हूँ’"
+      ]
+    };
+  } else if (grade === 9 && board === 'SSC') {
+    defaults = {
+      'Mathematics': [
+        "Real Numbers", "Polynomials and Factorisation", "The Elements of Geometry", "Lines and Angles", "Co-Ordinate Geometry", "Linear Equations in Two Variables", "Triangles", "Quadrilaterals", "Statistics", "Surface Areas and Volumes", "Areas", "Circles", "Geometrical Constructions", "Probability", "Proofs in Mathematics"
+      ],
+      'Physics': [
+        "Matter Around Us", "Motion", "Laws of Motion", "Refraction of Light at Plane Surfaces", "Gravitation", "Is Matter Pure", "Atoms and Molecules and Chemical Reactions", "What is Inside Atom", "Work and Energy", "Heat", "Sound", "Revision"
+      ],
+      'Biology': [
+        "Cell – Structure and Functions", "Plant Tissues", "Animal Tissues", "Transportation through Plasma Membrane", "Diversity in Living Organisms", "Sense Organs", "Animal Behaviour", "Challenges in Improving Agricultural Production", "Adaptations in Different Ecosystems", "Soil Pollution", "Biogeochemical Cycles", "Revision"
+      ],
+      'Social Studies': [
+        "Our Earth", "The Natural Realms of the Earth", "Major Domains of the Earth", "Climate", "Natural Vegetation and Wildlife", "Population", "Settlements", "Resources", "Agriculture", "Industries", "Transport and Communication", "Democracy in the Contemporary World", "Electoral Politics", "Working of Institutions", "Democratic Rights", "Revision"
+      ],
+      'English': [
+        "The Snake and the Mirror", "The Duck and the Kangaroo (Poem)", "Little Bobby", "True Height", "What Is a Player? (Poem)", "V.V.S. Laxman, Very Very Special", "Swami Is Expelled from School", "Not Just a Teacher, but a Friend (Poem)", "Homework", "What Is Man Without the Beasts?", "The River (Poem)", "Can’t Climb Trees Any More", "A Havoc of Flood", "Grabbing Everything on the Land (Poem)", "The Ham Radio", "A Long Walk to Freedom", "Where the Mind Is Without Fear (Poem)", "An Icon of Civil Rights", "The Trial", "Antony’s Speech (Poem)", "Mahatma Gandhi, Pushed out of Train", "The Accidental Tourist", "Father Returning Home (Poem)", "Kathmandu"
+      ],
+      'Telugu': [
+        "ధర్మార్జునులు", "నేనెరిగిన బాటలు", "వలస కూలి", "రంగాచార్యతో ముఖాముఖి", "శతక మధురిమ", "దీక్షకు సిద్ధంకండి", "చెలిమి", "ఉద్యమ స్ఫూర్తి", "కోర్స్", "వాగ్భూషణం", "వాయుసం", "తీయని పలకరింపు"
+      ],
+      'Hindi': [
+        "कबीर", "वह आवाज़", "बूँद", "तुम कब जाओगे, अतिथि!", "(उपवाचन: इस जल प्रलय में)", "ललद्यद", "दो बैलों की कथा", "कैदी और कोकिला", "नाना साहब की पुत्री", "(उपवाचन: रीढ़ की हड्डी)", "ग्रामश्री", "साँवले सपनों की याद", "एक कुत्ता और एक महिना", "उपभोक्तावाद की संस्कृति", "(उपवाचन: माटीवाली)", "खुशबू रचते हैं हाथ", "ल्हासा की ओर", "बच्चे काम पर जा रहे हैं", "मेरे बचपन के दिन", "(उपवाचन: अनोखा उपाय)"
       ]
     };
   } else if (grade === 10 && board === 'CBSE') {
