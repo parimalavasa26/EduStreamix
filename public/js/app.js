@@ -150,19 +150,35 @@
     }
 
     try {
-      let data = null;
+      let videoData = null;
+      let cachedFlag = false;
 
-      // 1. Check if video is already in currentChapterData (returned by getChapters)
-      if (currentChapterData && currentChapterData.videos) {
-        const cached = currentChapterData.videos.find(v => v.language === selectedLanguage);
-        if (cached && cached.youtubeVideoId) {
-          console.log('Using pre-connected video from chapter data:', cached.youtubeVideoId);
-          data = { cached: true, video: cached };
+      // Use the direct link from the database if available
+      if (currentChapterData.link) {
+        let videoId = '';
+        if (currentChapterData.link.includes('embed/')) {
+          videoId = currentChapterData.link.split('embed/')[1].split('?')[0];
+        } else if (currentChapterData.link.includes('v=')) {
+          videoId = currentChapterData.link.split('v=')[1].split('&')[0];
+        }
+        
+        if (videoId) {
+          videoData = {
+            youtubeVideoId: videoId,
+            title: currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT
+          };
+          cachedFlag = true;
+        } else {
+          // If it's not a YouTube video, just open it in a new tab and return
+          window.open(currentChapterData.link, '_blank');
+          hideAllSections();
+          chaptersSection.style.display = '';
+          return;
         }
       }
 
-      // 2. Fallback to API if not found in pre-connected data
-      if (!data) {
+      // Fallback to /api/video if no direct link
+      if (!videoData) {
         const params = new URLSearchParams({
           chapter: currentChapterData.originalChapterName || currentChapterData.chapterName, 
           grade: GRADE, 
@@ -171,13 +187,15 @@
           subject: SUBJECT
         });
         const res = await fetch('/api/video?' + params.toString());
-        data = await res.json();
-      }
+        const data = await res.json();
 
-      if (!data.video) {
-        titleEl.textContent = 'No video found';
-        loader.innerHTML = '<p class="no-data-msg error-msg">No video found for this topic.</p>';
-        return;
+        if (!data.video) {
+          titleEl.textContent = 'No video found';
+          loader.innerHTML = '<p class="no-data-msg error-msg">No video found for this topic.</p>';
+          return;
+        }
+        videoData = data.video;
+        cachedFlag = data.cached;
       }
       
       const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
@@ -199,7 +217,7 @@
       }
 
       ytPlayer = new YT.Player('video-iframe-container', {
-        videoId: data.video.youtubeVideoId,
+        videoId: videoData.youtubeVideoId,
         playerVars: {
           autoplay: 1,
           rel: 0,
@@ -220,13 +238,13 @@
       
       loader.style.display = 'none';
       const defaultTitle = currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT;
-      titleEl.textContent = data.video.title || defaultTitle;
+      titleEl.textContent = videoData.title || defaultTitle;
       titleEl.removeAttribute('data-i18n'); // Use actual video title or translated string
 
       let meta = '';
-      if (data.video.viewCount) meta += '<span>👁️ ' + Number(data.video.viewCount).toLocaleString() + ' views</span>';
-      if (data.video.likeCount) meta += '<span>👍 ' + Number(data.video.likeCount).toLocaleString() + ' likes</span>';
-      if (data.cached) meta += '<span>⚡ Cached</span>';
+      if (videoData.viewCount) meta += '<span>👁️ ' + Number(videoData.viewCount).toLocaleString() + ' views</span>';
+      if (videoData.likeCount) meta += '<span>👍 ' + Number(videoData.likeCount).toLocaleString() + ' likes</span>';
+      if (cachedFlag) meta += '<span>⚡ Cached</span>';
       metaEl.innerHTML = meta;
 
       if (!instantSwitch) {
