@@ -7,6 +7,7 @@ const { fetchBestVideo } = require('../services/youtubeService');
 const fs = require('fs');
 const path = require('path');
 const translate = require('google-translate-api-x');
+const mongoose = require('mongoose');
 
 // ── Curriculum mapping (example subjects per class + board) ──
 const CURRICULUM = {
@@ -128,6 +129,32 @@ exports.getChapters = async (req, res) => {
   const boardUp = board.toUpperCase();
 
   try {
+    // 1. Try to fetch from the new CBSE_Syllabi or SSC_Syllabi collections first
+    const collectionName = boardUp + '_Syllabi';
+    if (mongoose.connection && mongoose.connection.db) {
+      const collection = mongoose.connection.db.collection(collectionName);
+      const doc = await collection.findOne({ grade: gradeNum, subject: subject });
+      
+      if (doc && doc.units && doc.units.length > 0) {
+        const chapters = [];
+        doc.units.forEach((unit, i) => {
+          let link = null;
+          if (unit.resources && unit.resources.length > 0) {
+            link = unit.resources[0].link; // Pick the first resource link
+          }
+          chapters.push({
+            unitName: 'General',
+            lessonNo: String(i + 1),
+            chapterName: unit.name,
+            type: link ? 'Video' : 'Topic',
+            link: link // Custom property for the frontend
+          });
+        });
+        return res.json({ grade: gradeNum, board: boardUp, subject, chapters });
+      }
+    }
+
+    // 2. Fallback to the original Subject schema
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },
       { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1 }
@@ -156,7 +183,7 @@ exports.getChapters = async (req, res) => {
     console.warn('getChapters DB lookup failed (MongoDB may be offline):', err.message);
   }
 
-  // Fallback: return default chapters when DB is unavailable or not seeded
+  // 3. Fallback: return default chapters when DB is unavailable or not seeded
   res.json({
     grade: gradeNum,
     board: boardUp,
