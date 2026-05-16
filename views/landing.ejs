@@ -7,13 +7,13 @@
   <title>EduStreamix — Distraction-Free Learning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="landing-body">
 
   <nav class="navbar" id="navbar">
-    <div class="nav-brand">
+    <a href="/" class="nav-brand">
       <span class="brand-icon">🎓</span>
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
@@ -22,30 +22,37 @@
     </div>
   </nav>
 
+  <!-- LOGO HEADER BANNER -->
+  <section class="logo-banner" id="logo-banner">
+    <div class="logo-banner-inner">
+      <div class="logo-banner-left">
+        <img src="/uploads/logos/Osmania_logo.jpg" alt="Osmania University" class="partner-logo partner-logo-left" />
+      </div>
+      <div class="logo-banner-center">
+        <h1 class="brand-title-marker">
+          <span class="marker-edu">EDU</span><span class="marker-stream">STREAMI</span><span class="marker-x">X</span>
+        </h1>
+        <div class="grade-badge">For Grade 8</div>
+      </div>
+      <div class="logo-banner-right">
+        <img src="/uploads/logos/otbi_logo.jpg" alt="Osmania Technology Business Incubator" class="partner-logo partner-logo-right" />
+      </div>
+    </div>
+  </section>
+
   <!-- HERO -->
   <section class="hero" id="hero">
 
     <div class="hero-content">
       <p class="hero-tagline">The distraction-free platform</p>
-      <h1 class="hero-title">EduStreami<span class="hero-highlight">x</span></h1>
-      <h2 style="font-family: var(--font-classy); font-size: 2.5rem; margin-top: -1rem; margin-bottom: 2rem; color: var(--text-primary); letter-spacing: 4px;">CLASS 8</h2>
       <p class="hero-subtitle">
-        EduStreamix is your focused learning space—where Class 8 content is organized,
+        EduStreamix is your focused learning space—where content is organized,
         distractions are minimized, and learning becomes effective.
       </p>
-      <a href="/languages" class="hero-btn" id="dive-into-learning-btn">
+      <a href="/boards?grade=8" class="hero-btn" id="dive-into-learning-btn">
         <span>Dive into Learning</span>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
-    </div>
-    <div class="hero-float-elements">
-      <div class="float-card float-card-1"><span class="float-emoji">🎯</span><span>Focused Learning</span></div>
-      <div class="float-card float-card-2"><span class="float-emoji">🛡️</span><span>Zero Distractions</span></div>
-      <div class="float-card float-card-3"><span class="float-emoji">📂</span><span>Smart Organization</span></div>
-      <div class="float-card float-card-4"><span class="float-emoji">🧠</span><span>Enhanced Focus</span></div>
-      <div class="float-card float-card-5"><span class="float-emoji">🎓</span><span>Student Friendly</span></div>
-      <div class="float-card float-card-6"><span class="float-emoji">⏱️</span><span>Time Saving</span></div>
-      <div class="float-card float-card-7"><span class="float-emoji">📈</span><span>Improved Productivity</span></div>
     </div>
   </section>
 

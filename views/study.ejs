@@ -24,8 +24,11 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <span class="nav-lang-display" id="nav-lang-display">English</span>
-      <a href="/">Home</a>
+      <select class="nav-lang-switcher" id="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">हिंदी</option>
+        <option value="Telugu">తెలుగు</option>
+      </select>
     </div>
   </nav>
 
@@ -106,18 +109,16 @@
   <script src="/js/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const display = document.getElementById('nav-lang-display');
-      if (display) {
-        const lang = localStorage.getItem('appLang') || 'English';
-        const languageNames = {
-          'English': 'English',
-          'Hindi': 'हिंदी',
-          'Telugu': 'తెలుగు',
-          'Tamil': 'தமிழ்',
-          'Kannada': 'ಕನ್ನಡ',
-          'Malayalam': 'മലയാളം'
-        };
-        display.textContent = languageNames[lang] || lang;
+      const switcher = document.getElementById('nav-lang-switcher');
+      if (switcher) {
+        switcher.value = localStorage.getItem('appLang') || 'English';
+        switcher.addEventListener('change', (e) => {
+          const selectedLang = e.target.value;
+          localStorage.setItem('appLang', selectedLang);
+          if (window.applyLanguage) {
+            window.applyLanguage(selectedLang);
+          }
+        });
       }
     });
   </script>

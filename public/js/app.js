@@ -260,11 +260,13 @@
     const actions = document.getElementById('quiz-actions');
     const result = document.getElementById('quiz-result');
     const retakeBtn = document.getElementById('quiz-retake-btn');
+    const submitBtn = document.getElementById('quiz-submit-btn');
 
     section.style.display = '';
     actions.style.display = 'none';
     result.style.display = 'none';
     retakeBtn.style.display = 'none';
+    submitBtn.style.display = 'inline-block';
     
     body.innerHTML = `
       <div class="loader-spinner"></div>

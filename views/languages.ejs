@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +8,12 @@
   <title>Select Language — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
+
 <body class="step-body">
 
   <nav class="navbar scrolled" id="navbar">
@@ -58,15 +62,17 @@
       </div>
 
       <div class="board-grid" id="language-grid">
-        <% const langs = ['English', 'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Malayalam']; %>
-        <% langs.forEach(lang => { %>
-          <a href="#" class="board-card language-selector" data-lang="<%= lang %>">
-            <div class="board-card-glow"></div>
-            <span class="board-icon">🌐</span>
-            <h3 class="board-card-title"><%= lang %></h3>
-            <span class="board-card-arrow">→</span>
-          </a>
-        <% }) %>
+        <% const langs=['English', 'Hindi' , 'Telugu' , 'Tamil' , 'Kannada' , 'Malayalam' ]; %>
+          <% langs.forEach(lang=> { %>
+            <a href="#" class="board-card language-selector" data-lang="<%= lang %>">
+              <div class="board-card-glow"></div>
+              <span class="board-icon">🌐</span>
+              <h3 class="board-card-title">
+                <%= lang %>
+              </h3>
+              <span class="board-card-arrow">→</span>
+            </a>
+            <% }) %>
       </div>
 
     </div>
@@ -92,10 +98,10 @@
     };
 
     document.querySelectorAll('.language-selector').forEach(el => {
-      el.addEventListener('click', function(e) {
+      el.addEventListener('click', function (e) {
         e.preventDefault();
         const selectedLang = this.getAttribute('data-lang');
-        
+
         // Use our new instant system instead of Google Translate cookies
         if (window.applyLanguage) applyLanguage(selectedLang);
         else localStorage.setItem('appLang', selectedLang);
@@ -116,4 +122,5 @@
     });
   </script>
 </body>
+
 </html>
