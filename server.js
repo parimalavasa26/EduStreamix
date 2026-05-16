@@ -1,14 +1,26 @@
-/* ──────────────────────────────────────────────
-   EduStreamix — Server Entry Point
-   ────────────────────────────────────────────── */
-
 require('dotenv').config();
+
+// ── Environment Validation ──────────────────
+if (!process.env.GEMINI_API_KEY) {
+  console.error('\n❌ CRITICAL ERROR: Missing GEMINI_API_KEY in .env');
+  console.error('Please add your Gemini API Key to the .env file and restart the server.\n');
+  process.exit(1);
+}
+
+console.log("✅ GEMINI_API_KEY validated successfully.");
+
+/* ──────────────────────────────────────────────
+    EduStreamix — Server Entry Point
+    ────────────────────────────────────────────── */
+
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const studyRoutes = require('./routes/studyRoutes');
 const videoRoutes = require('./routes/videoRoutes');
+const quizRoutes = require('./routes/quizRoutes');
+
 
 // ── Global Error Protection ─────────────────
 process.on("uncaughtException", (err) => {
@@ -36,6 +48,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ── Routes ──────────────────────────────────
 app.use('/', studyRoutes);
 app.use('/', videoRoutes);
+app.use('/api/quiz', quizRoutes);
+
 
 // ── 404 Handler ─────────────────────────────
 app.use((req, res) => {

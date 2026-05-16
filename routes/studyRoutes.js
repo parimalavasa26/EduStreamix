@@ -8,7 +8,6 @@ const ctrl = require('../controllers/studyController');
 
 // ── Pages ───────────────────────────────────
 router.get('/',         ctrl.renderLanding);
-router.get('/classes',  ctrl.renderClasses);
 router.get('/boards',   ctrl.renderBoards);
 router.get('/languages', ctrl.renderLanguages);
 router.get('/subjects', ctrl.renderSubjects);
@@ -23,6 +22,9 @@ router.get('/api/video',    ctrl.getVideo);
 router.post('/translate-batch', ctrl.translateBatch);
 router.post('/api/upload-pdf', ctrl.uploadPdf);
 
+
+// ── Progress Dashboard ──────────────────────
+router.get('/progress', (req, res) => res.render('progress'));
 
 // ── Admin ───────────────────────────────────
 router.get('/admin', ctrl.renderAdmin);

@@ -2455,57 +2455,6 @@ const SEED_DATA = [
     ]
   },
 
-  // ── Class 9 CBSE ──────────────────────────
-  {
-    grade: 9, board: 'CBSE', subject: 'Mathematics',
-    units: [
-      {
-        unitName: 'Number Systems',
-        chapters: [
-          { chapterName: 'Number Systems', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Number Systems - Class 9', viewCount: 220000, likeCount: 6100, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] },
-          { chapterName: 'Polynomials', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Polynomials - Class 9', viewCount: 190000, likeCount: 5300, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] }
-        ]
-      }
-    ]
-  },
-  {
-    grade: 9, board: 'CBSE', subject: 'Science',
-    units: [
-      {
-        unitName: 'Physics',
-        chapters: [
-          { chapterName: 'Motion', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Motion - Class 9', viewCount: 300000, likeCount: 8500, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] },
-          { chapterName: 'Force and Laws of Motion', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Force and Laws - Class 9', viewCount: 280000, likeCount: 7800, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] }
-        ]
-      }
-    ]
-  },
-
-  // ── Class 10 CBSE ─────────────────────────
-  {
-    grade: 10, board: 'CBSE', subject: 'Mathematics',
-    units: [
-      {
-        unitName: 'Algebra',
-        chapters: [
-          { chapterName: 'Real Numbers', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Real Numbers - Class 10', viewCount: 350000, likeCount: 9800, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] },
-          { chapterName: 'Pair of Linear Equations', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Linear Equations - Class 10', viewCount: 310000, likeCount: 8700, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] }
-        ]
-      }
-    ]
-  },
-  {
-    grade: 10, board: 'CBSE', subject: 'Science',
-    units: [
-      {
-        unitName: 'Chemistry',
-        chapters: [
-          { chapterName: 'Chemical Reactions and Equations', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Chemical Reactions - Class 10', viewCount: 400000, likeCount: 11200, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] },
-          { chapterName: 'Acids, Bases and Salts', videos: [{ language: 'English', youtubeVideoId: 'dQw4w9WgXcQ', title: 'Acids Bases Salts - Class 10', viewCount: 370000, likeCount: 10500, embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }] }
-        ]
-      }
-    ]
-  }
 ];
 
 async function seed() {

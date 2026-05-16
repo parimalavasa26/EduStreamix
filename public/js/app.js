@@ -1,6 +1,4 @@
-/* ════════════════════════════════════════════════
-   EduStreamix — Client-Side Study Page Logic
-   ════════════════════════════════════════════════ */
+/* EduStreamix — Client-Side Study Page Logic */
 (function () {
   'use strict';
 
@@ -145,8 +143,8 @@
       titleEl.setAttribute('data-i18n', 'Loading video...');
       metaEl.innerHTML = '';
 
-      // Reset components
-      document.getElementById('quiz-section').style.display = 'none';
+      // Start Quiz Generation immediately for every chapter
+      showQuiz();
     }
 
     try {
@@ -247,9 +245,6 @@
       if (cachedFlag) meta += '<span>⚡ Cached</span>';
       metaEl.innerHTML = meta;
 
-      if (!instantSwitch) {
-        showQuiz();
-      }
     } catch (e) {
       titleEl.textContent = 'Error loading video';
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
@@ -257,98 +252,126 @@
   }
 
   // ── Quiz ───────────────────────────────────
+  let currentQuizData = null;
+
   async function showQuiz() {
     const section = document.getElementById('quiz-section');
     const body = document.getElementById('quiz-body');
     const actions = document.getElementById('quiz-actions');
     const result = document.getElementById('quiz-result');
-    const retake = document.getElementById('quiz-retake-btn');
-    const submit = document.getElementById('quiz-submit-btn');
-
-    let pool = currentChapterData.quizQuestions;
-    if (!pool || pool.length === 0) {
-      pool = (window.QUIZ_DATA && window.QUIZ_DATA[SUBJECT]) ? window.QUIZ_DATA[SUBJECT] : (window.QUIZ_DATA ? window.QUIZ_DATA['General'] : []);
-    }
-    if (!pool || pool.length === 0) return;
+    const retakeBtn = document.getElementById('quiz-retake-btn');
 
     section.style.display = '';
-    result.style.display = 'none';
-    retake.style.display = 'none';
     actions.style.display = 'none';
+    result.style.display = 'none';
+    retakeBtn.style.display = 'none';
+    
+    body.innerHTML = `
+      <div class="loader-spinner"></div>
+      <p id="quiz-status">Generating AI Quiz... This may take up to a minute.</p>
+    `;
 
-    // Pick random 10 questions (or less if pool is smaller)
-    let shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+    try {
+      const response = await fetch('/api/quiz/generate-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          board: BOARD,
+          grade: GRADE,
+          subject: SUBJECT,
+          focusTopic: currentChapterData.chapterName,
+          difficulty: 'medium',
+          numQuestions: 5 // Reduced for faster feedback
+        })
+      });
 
-    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div>';
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Quiz generation failed.');
 
-    // Translate questions if language is not English
-    if (LANGUAGE !== 'English' && LANGUAGE !== 'en') {
-      const textsToTranslate = [];
-      shuffled.forEach(q => {
-        if (!textsToTranslate.includes(q.question)) textsToTranslate.push(q.question);
-        q.options.forEach(opt => {
-          if (!textsToTranslate.includes(opt)) textsToTranslate.push(opt);
+      currentQuizData = data.questions;
+      body.innerHTML = '';
+      
+      currentQuizData.forEach((q, qi) => {
+        let html = `
+          <div class="quiz-question" id="q-container-${qi}">
+            <p>${qi + 1}. ${q.question}</p>
+            <div class="quiz-options">
+        `;
+        q.options.forEach((opt, oi) => {
+          html += `
+            <label class="quiz-option" id="label-${qi}-${oi}">
+              <input type="radio" name="q${qi}" value="${oi}">
+              ${opt}
+            </label>
+          `;
         });
+        html += `
+            </div>
+            <div class="quiz-explanation" id="explanation-${qi}" style="display:none; margin-top:10px; padding:10px; background:#f0f7ff; border-radius:8px; font-size:0.9rem; color:#444; border-left:4px solid var(--accent-1);">
+              <strong>Explanation:</strong> ${q.explanation}
+            </div>
+          </div>
+        `;
+        body.innerHTML += html;
       });
 
-      if (textsToTranslate.length > 0) {
-        try {
-          const res = await fetch('/translate-batch', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ texts: textsToTranslate, targetLang: LANGUAGE })
-          });
-          const translations = await res.json();
-          
-          shuffled = shuffled.map(q => ({
-            ...q,
-            question: translations[q.question] || q.question,
-            options: q.options.map(opt => translations[opt] || opt)
-          }));
-        } catch (e) {
-          console.error("Quiz translation failed", e);
-        }
-      }
+      actions.style.display = 'block';
+      const submitBtn = document.getElementById('quiz-submit-btn');
+      submitBtn.onclick = handleQuizSubmit;
+
+    } catch (err) {
+      body.innerHTML = `<p class="error-msg">Error: ${err.message}</p> <button class="hero-btn" onclick="showQuiz()">Retry</button>`;
     }
+  }
 
-    actions.style.display = '';
-    body.innerHTML = '';
-    shuffled.forEach((q, qi) => {
-      const div = document.createElement('div');
-      div.className = 'quiz-question';
-      div.dataset.answer = q.answer !== undefined ? q.answer : q.correctAnswer;
-      let html = '<p>' + (qi+1) + '. <span>' + q.question + '</span></p>';
-      q.options.forEach((opt, oi) => {
-        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span>' + opt + '</span></label>';
-      });
-      div.innerHTML = html;
-      body.appendChild(div);
+  function handleQuizSubmit() {
+    let score = 0;
+    const body = document.getElementById('quiz-body');
+    const submitBtn = document.getElementById('quiz-submit-btn');
+    const retakeBtn = document.getElementById('quiz-retake-btn');
+    const resultEl = document.getElementById('quiz-result');
+
+    currentQuizData.forEach((q, qi) => {
+      const selected = document.querySelector(`input[name="q${qi}"]:checked`);
+      const correctIdx = q.correctAnswerIndex;
+      const explanationEl = document.getElementById(`explanation-${qi}`);
+      
+      // Highlight correct answer in all cases
+      const correctLabel = document.getElementById(`label-${qi}-${correctIdx}`);
+      if (correctLabel) correctLabel.classList.add('correct');
+
+      if (selected) {
+        const userIdx = parseInt(selected.value);
+        const userLabel = document.getElementById(`label-${qi}-${userIdx}`);
+        
+        if (userIdx === correctIdx) {
+          score++;
+        } else {
+          // If wrong, highlight user choice in red and show explanation
+          if (userLabel) userLabel.classList.add('wrong');
+          if (explanationEl) explanationEl.style.display = 'block';
+        }
+      } else {
+        // If nothing selected, it counts as wrong, show correct one
+        if (explanationEl) explanationEl.style.display = 'block';
+      }
+
+      // Disable all inputs after submit
+      const inputs = document.querySelectorAll(`input[name="q${qi}"]`);
+      inputs.forEach(i => i.disabled = true);
     });
 
-    submit.onclick = () => {
-      let score = 0;
-      const questions = body.querySelectorAll('.quiz-question');
-      questions.forEach((qDiv) => {
-        const correct = parseInt(qDiv.dataset.answer);
-        const selected = qDiv.querySelector('input:checked');
-        const opts = qDiv.querySelectorAll('.quiz-option');
-        if (opts[correct]) opts[correct].classList.add('correct');
-        if (selected) {
-          const val = parseInt(selected.value);
-          if (val === correct) { score++; }
-          else { if (opts[val]) opts[val].classList.add('wrong'); }
-        }
-        qDiv.querySelectorAll('input').forEach(inp => inp.disabled = true);
-      });
-      actions.style.display = 'none';
-      result.style.display = '';
-      result.textContent = (window.t ? window.t('Score') : 'Score') + ': ' + score + ' / ' + questions.length;
-      result.className = 'quiz-result ' + (score >= (questions.length * 0.8) ? 'good' : score >= (questions.length * 0.4) ? 'ok' : 'bad');
-      retake.style.display = '';
-    };
+    // Show result
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `You scored ${score} out of ${currentQuizData.length}!`;
+    resultEl.className = 'quiz-result ' + (score === currentQuizData.length ? 'good' : (score > currentQuizData.length / 2 ? 'ok' : 'bad'));
 
-    retake.onclick = showQuiz;
+    submitBtn.style.display = 'none';
+    retakeBtn.style.display = 'block';
+    retakeBtn.onclick = showQuiz;
   }
+
+
 
 
   // ── Helpers ───────────────────────────────

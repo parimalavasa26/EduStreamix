@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduStreamix — Project Progress Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/progress.css"/>
+</head>
+<body>
+
+<!-- ── TOP HEADER ── -->
+<header class="pd-header">
+  <div class="pd-header-inner">
+    <div class="pd-brand">
+      <span class="pd-brand-icon">🎓</span>
+      <span class="pd-brand-name">EduStreamix</span>
+      <span class="pd-badge live">● LIVE</span>
+    </div>
+    <div class="pd-header-right">
+      <span class="pd-updated">Last updated: <strong id="lastUpdated"></strong></span>
+      <button class="pd-btn-pdf" onclick="window.print()" id="export-pdf-btn">⬇ Export PDF</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="pd-main">
+
+  <!-- HERO BAND -->
+  <section class="pd-hero">
+    <div class="pd-hero-inner">
+      <div class="pd-hero-text">
+        <h1 class="pd-hero-title">Project Progress Dashboard</h1>
+        <p class="pd-hero-sub">EduStreamix · Class 8 Smart Learning Platform</p>
+        <div class="pd-hero-chips">
+          <span class="chip chip-green">🟢 Server Running</span>
+          <span class="chip chip-blue">🔵 MongoDB Connected</span>
+          <span class="chip chip-purple">🟣 Gemini AI Active</span>
+          <span class="chip chip-orange">🟠 v1.0.0</span>
+        </div>
+      </div>
+      <div class="pd-hero-ring">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#1e293b" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="url(#ringGrad)" stroke-width="10"
+              stroke-dasharray="314" stroke-dashoffset="47" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ring-label"><span class="ring-pct">85%</span><span class="ring-sub">Complete</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAT CARDS -->
+  <section class="pd-section">
+    <div class="pd-stats-grid">
+      <div class="stat-card stat-green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-val">12</div>
+        <div class="stat-lbl">Modules Complete</div>
+      </div>
+      <div class="stat-card stat-blue">
+        <div class="stat-icon">🔧</div>
+        <div class="stat-val">3</div>
+        <div class="stat-lbl">In Development</div>
+      </div>
+      <div class="stat-card stat-yellow">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-val">5</div>
+        <div class="stat-lbl">Pending Tasks</div>
+      </div>
+      <div class="stat-card stat-purple">
+        <div class="stat-icon">📝</div>
+        <div class="stat-val">15</div>
+        <div class="stat-lbl">Git Commits</div>
+      </div>
+      <div class="stat-card stat-cyan">
+        <div class="stat-icon">🎓</div>
+        <div class="stat-val">3</div>
+        <div class="stat-lbl">Boards Covered</div>
+      </div>
+      <div class="stat-card stat-rose">
+        <div class="stat-icon">🤖</div>
+        <div class="stat-val">10</div>
+        <div class="stat-lbl">AI MCQs/Quiz</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECT OVERVIEW -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">📋 Project Overview</h2>
+    <div class="pd-overview-grid">
+      <div class="overview-item"><span class="ov-label">Project Title</span><span class="ov-val">EduStreamix</span></div>
+      <div class="overview-item"><span class="ov-label">Objective</span><span class="ov-val">Distraction-free, AI-powered smart learning platform for Class 8 students across CBSE, SSC &amp; ICSE boards</span></div>
+      <div class="overview-item"><span class="ov-label">Stage</span><span class="ov-val"><span class="badge-stage">Beta / v1.0 Pre-Release</span></span></div>
+      <div class="overview-item"><span class="ov-label">Tech Stack</span><span class="ov-val tech-chips">
+        <span class="tech">Node.js</span><span class="tech">Express</span><span class="tech">MongoDB</span><span class="tech">EJS</span><span class="tech">Gemini AI</span><span class="tech">YouTube API</span><span class="tech">Google Translate</span><span class="tech">Vanilla CSS</span>
+      </span></div>
+      <div class="overview-item"><span class="ov-label">Deployment</span><span class="ov-val">Local (localhost:3000) · Nodemon Dev Server · MongoDB Atlas</span></div>
+      <div class="overview-item"><span class="ov-label">Repository</span><span class="ov-val"><a href="https://github.com/parimalavasa26/EduStreamix" target="_blank" class="pd-link">github.com/parimalavasa26/EduStreamix</a></span></div>
+    </div>
+  </section>
+
+  <!-- MODULES STATUS -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">🗂️ Module Status</h2>
+    <div class="modules-list">
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Landing Page</span>
+          <span class="mod-desc">Hero section, features grid, navbar, footer — responsive dark-mode UI</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Board Selection</span>
+          <span class="mod-desc">CBSE, SSC, ICSE board routing — Class 8 focus</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Language Selection</span>
+          <span class="mod-desc">Multi-language support: English, Hindi, Telugu, Tamil, Kannada, Malayalam</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Subject Navigator</span>
+          <span class="mod-desc">Dynamic subject lists per board — CBSE/SSC/ICSE Chapter 8 syllabi</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Video Streaming Engine</span>
+          <span class="mod-desc">YouTube embed player with MongoDB caching, language-aware lookup, fallback</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">MongoDB Integration</span>
+          <span class="mod-desc">Subject, Chapter, Video, TranslationCache models; Atlas cloud connected</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Seed Data — CBSE Class 8</span>
+          <span class="mod-desc">Full syllabus: Math, Science, Social Science, Hindi, English with YouTube links</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Seed Data — SSC Class 8 &amp; 9</span>
+          <span class="mod-desc">All subjects seeded including Telugu, Biology, Physics, Social Studies</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Seed Data — ICSE Class 8</span>
+          <span class="mod-desc">English, Math, Biology, Chemistry, Physics seeded with video resources</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">AI Quiz Engine (Gemini)</span>
+          <span class="mod-desc">10-MCQ generation via Gemini 2.0-flash + 2.5-flash fallback; strict JSON parsing</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Translation Engine</span>
+          <span class="mod-desc">Google Translate batch API; real-time UI content translation per language</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row done">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Admin Panel</span>
+          <span class="mod-desc">PDF upload, chapter management, DB admin tools at /admin</span>
+        </div>
+        <span class="mod-badge done-badge">✅ Complete</span>
+      </div>
+
+      <div class="module-row active">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">PDF Viewer Integration</span>
+          <span class="mod-desc">Chapter-wise PDF upload, Base64 storage, public URL delivery</span>
+        </div>
+        <span class="mod-badge active-badge">🔧 In Progress</span>
+      </div>
+
+      <div class="module-row active">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Key Moments / Timestamps</span>
+          <span class="mod-desc">Video chapter-marker system with timestamp navigation</span>
+        </div>
+        <span class="mod-badge active-badge">🔧 In Progress</span>
+      </div>
+
+      <div class="module-row active">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Class 9 Expansion</span>
+          <span class="mod-desc">CBSE Class 9 seed data integration underway</span>
+        </div>
+        <span class="mod-badge active-badge">🔧 In Progress</span>
+      </div>
+
+      <div class="module-row pending">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">User Authentication</span>
+          <span class="mod-desc">Login, signup, student progress tracking</span>
+        </div>
+        <span class="mod-badge pending-badge">⏳ Pending</span>
+      </div>
+
+      <div class="module-row pending">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Progress Analytics Dashboard</span>
+          <span class="mod-desc">Student quiz score trends, chapter completion tracking</span>
+        </div>
+        <span class="mod-badge pending-badge">⏳ Pending</span>
+      </div>
+
+      <div class="module-row pending">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Mobile Responsive Polish</span>
+          <span class="mod-desc">Full responsive breakpoints for phone/tablet</span>
+        </div>
+        <span class="mod-badge pending-badge">⏳ Pending</span>
+      </div>
+
+      <div class="module-row pending">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Cloud Deployment</span>
+          <span class="mod-desc">Deploy to Railway / Render / Vercel for public access</span>
+        </div>
+        <span class="mod-badge pending-badge">⏳ Pending</span>
+      </div>
+
+      <div class="module-row pending">
+        <div class="mod-status-dot"></div>
+        <div class="mod-info">
+          <span class="mod-name">Offline Mode / PWA</span>
+          <span class="mod-desc">Service workers, installable app, offline chapter access</span>
+        </div>
+        <span class="mod-badge pending-badge">⏳ Pending</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BUILD INFO -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">🚀 Build &amp; Deployment Info</h2>
+    <div class="build-grid">
+      <div class="build-card">
+        <div class="build-icon">🖥️</div>
+        <div class="build-label">Runtime</div>
+        <div class="build-val">Node.js + Express</div>
+        <div class="build-status ok">Running</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🗄️</div>
+        <div class="build-label">Database</div>
+        <div class="build-val">MongoDB Atlas</div>
+        <div class="build-status ok">Connected</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🤖</div>
+        <div class="build-label">AI Service</div>
+        <div class="build-val">Gemini 2.0 Flash</div>
+        <div class="build-status ok">Active</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🌐</div>
+        <div class="build-label">Local URL</div>
+        <div class="build-val">localhost:3000</div>
+        <div class="build-status ok">Live</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">☁️</div>
+        <div class="build-label">Cloud Deploy</div>
+        <div class="build-val">Not yet deployed</div>
+        <div class="build-status pending-s">Pending</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">📦</div>
+        <div class="build-label">Version</div>
+        <div class="build-val">v1.0.0</div>
+        <div class="build-status ok">Stable</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT COMMITS -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">📜 Recent Git Commits</h2>
+    <div class="commits-list">
+      <div class="commit-row">
+        <span class="commit-hash">549b5f3</span>
+        <span class="commit-msg">Merge branch 'main' — integrate DB links</span>
+        <span class="commit-date">May 16, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">181a082</span>
+        <span class="commit-msg">Updated seed &amp; syllabus links</span>
+        <span class="commit-date">May 15, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">a45eea0</span>
+        <span class="commit-msg">Resolve merge conflicts and integrate DB links</span>
+        <span class="commit-date">May 15, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">736e77b</span>
+        <span class="commit-msg">Added YouTube video links for chapters</span>
+        <span class="commit-date">May 14, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">b39a226</span>
+        <span class="commit-msg">Class 9 seed data integration</span>
+        <span class="commit-date">May 14, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">67b7387</span>
+        <span class="commit-msg">Updated video resource links for SSC/ICSE</span>
+        <span class="commit-date">May 13, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">1349f76</span>
+        <span class="commit-msg">Updated syllabus seed data</span>
+        <span class="commit-date">May 13, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">03d0284</span>
+        <span class="commit-msg">Updated studyController with board-aware chapter logic</span>
+        <span class="commit-date">May 13, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">f13bd4e</span>
+        <span class="commit-msg">Fix displaySubject undefined error on study page</span>
+        <span class="commit-date">May 12, 2026</span>
+      </div>
+      <div class="commit-row">
+        <span class="commit-hash">2b0c3f7</span>
+        <span class="commit-msg">Add Class 8 subjects to studyController + CURRICULUM map</span>
+        <span class="commit-date">May 12, 2026</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTIVITY TIMELINE -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">🕐 Activity Timeline</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot tl-green"></div>
+        <div class="tl-content">
+          <div class="tl-title">AI Quiz Engine — Gemini Integration Complete</div>
+          <div class="tl-desc">Strict syllabus MCQ generation with gemini-2.0-flash primary + 2.5-flash fallback. Robust JSON parsing with auto-retry.</div>
+          <div class="tl-time">May 16, 2026 · 13:00 IST</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-blue"></div>
+        <div class="tl-content">
+          <div class="tl-title">ICSE Class 8 Full Curriculum Seeded</div>
+          <div class="tl-desc">English, Math, Biology, Chemistry, Physics chapters with YouTube video links added to MongoDB.</div>
+          <div class="tl-time">May 15, 2026 · 09:00 IST</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-purple"></div>
+        <div class="tl-content">
+          <div class="tl-title">Quiz Navigation Bug Fixed</div>
+          <div class="tl-desc">Resolved UI disappearing issue when selecting a second chapter. Quiz generation now persistent across all subjects.</div>
+          <div class="tl-time">May 15, 2026 · 08:30 IST</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-blue"></div>
+        <div class="tl-content">
+          <div class="tl-title">Landing Page Modernized</div>
+          <div class="tl-desc">Removed Smart Ranking feature, fixed floating card overlap with hero subtitle. Clean distraction-free aesthetic.</div>
+          <div class="tl-time">May 14, 2026 · 06:30 IST</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-green"></div>
+        <div class="tl-content">
+          <div class="tl-title">SSC Class 8 &amp; 9 Seed Data Complete</div>
+          <div class="tl-desc">All SSC subjects seeded with chapter-level YouTube links including Telugu, Biology, Physics, Social Studies.</div>
+          <div class="tl-time">May 13, 2026 · 14:00 IST</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-orange"></div>
+        <div class="tl-content">
+          <div class="tl-title">MongoDB Atlas Connection Established</div>
+          <div class="tl-desc">Cloud database configured and connected. All seed scripts updated to use Atlas URI.</div>
+          <div class="tl-time">May 13, 2026 · 08:00 IST</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PENDING TASKS -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">📌 Pending Tasks</h2>
+    <div class="tasks-list">
+      <div class="task-item">
+        <input type="checkbox" id="t1" class="task-check"/> <label for="t1">Deploy to cloud platform (Railway / Render)</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t2" class="task-check"/> <label for="t2">Implement student authentication (login/signup)</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t3" class="task-check"/> <label for="t3">Build student progress &amp; analytics dashboard</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t4" class="task-check"/> <label for="t4">Full mobile responsive CSS polish</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t5" class="task-check"/> <label for="t5">PWA / offline mode with service workers</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t6" class="task-check"/> <label for="t6">Complete Class 9 CBSE seed data</label>
+      </div>
+      <div class="task-item">
+        <input type="checkbox" id="t7" class="task-check"/> <label for="t7">Key-moments timestamp navigation for videos</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHARE LINKS -->
+  <section class="pd-section">
+    <h2 class="pd-section-title">🔗 Share This Dashboard</h2>
+    <div class="share-grid">
+      <div class="share-card">
+        <div class="share-icon">🌐</div>
+        <div class="share-label">Local Progress URL</div>
+        <code class="share-url" id="localUrl">http://localhost:3000/progress</code>
+        <button class="share-copy-btn" onclick="copyUrl('localUrl')">Copy</button>
+      </div>
+      <div class="share-card">
+        <div class="share-icon">💻</div>
+        <div class="share-label">GitHub Repository</div>
+        <code class="share-url">github.com/parimalavasa26/EduStreamix</code>
+        <a class="share-copy-btn" href="https://github.com/parimalavasa26/EduStreamix" target="_blank">Open</a>
+      </div>
+    </div>
+    <div class="share-note">
+      ℹ️ To share publicly with faculty/guides: deploy to <strong>Railway</strong> or <strong>Render</strong> (free tier) — then share the live URL. See pending tasks above.
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="pd-footer">
+  <div class="pd-footer-inner">
+    <span>🎓 EduStreamix Project Dashboard</span>
+    <span>Generated: <span id="footerTime"></span></span>
+    <span>Made with ❤️ for learning</span>
+  </div>
+</footer>
+
+<script>
+  // Set timestamps
+  const now = new Date();
+  const fmt = d => d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  document.getElementById('lastUpdated').textContent = fmt(now);
+  document.getElementById('footerTime').textContent = fmt(now);
+
+  // Copy URL helper
+  function copyUrl(id) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('URL copied to clipboard!');
+    });
+  }
+
+  // Animate stat cards on load
+  document.querySelectorAll('.stat-card').forEach((el, i) => {
+    el.style.animationDelay = (i * 0.08) + 's';
+    el.classList.add('stat-anim');
+  });
+</script>
+
+</body>
+</html>

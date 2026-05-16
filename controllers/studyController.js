@@ -16,16 +16,6 @@ const CURRICULUM = {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'Hindi', 'English'],
     SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
     ICSE: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Social Studies']
-  },
-  9: {
-    CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
-    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
-    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
-  },
-  10: {
-    CBSE: ['Mathematics', 'Science', 'History', 'Geography', 'Political Science', 'Economics'],
-    SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Telugu', 'Hindi-1', 'Hindi-2', 'English', 'Telugu-2'],
-    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
   }
 };
 
@@ -36,21 +26,14 @@ exports.renderLanding = (req, res) => {
   res.render('landing');
 };
 
-/**
- * GET /classes  — Render class selection page (Step 1)
- */
-exports.renderClasses = (req, res) => {
-  res.render('classes');
-};
 
 /**
  * GET /boards  — Render board selection page (Step 2)
  * Query params: grade
  */
 exports.renderBoards = (req, res) => {
-  const { grade } = req.query;
   res.render('boards', {
-    selectedGrade: grade || '8'
+    selectedGrade: '8'
   });
 };
 
@@ -59,9 +42,9 @@ exports.renderBoards = (req, res) => {
  * Query params: grade, board
  */
 exports.renderLanguages = (req, res) => {
-  const { grade, board } = req.query;
+  const { board } = req.query;
   res.render('languages', {
-    selectedGrade: grade || '8',
+    selectedGrade: '8',
     selectedBoard: board || 'CBSE'
   });
 };
@@ -71,9 +54,9 @@ exports.renderLanguages = (req, res) => {
  * Query params: grade, board
  */
 exports.renderSubjects = (req, res) => {
-  const { grade, board, language } = req.query;
+  const { board, language } = req.query;
   res.render('subjects', {
-    selectedGrade: grade || '8',
+    selectedGrade: '8',
     selectedBoard: board || 'CBSE',
     selectedLanguage: language || 'English'
   });
@@ -86,7 +69,7 @@ exports.renderSubjects = (req, res) => {
 exports.renderStudy = (req, res) => {
   const { grade, board, subject, language } = req.query;
   res.render('study', {
-    selectedGrade: grade || null,
+    selectedGrade: '8',
     selectedBoard: board || null,
     selectedSubject: subject || null,
     selectedLanguage: language || null,
@@ -105,7 +88,7 @@ exports.getSubjects = (req, res) => {
     return res.status(400).json({ error: 'grade and board are required' });
   }
 
-  const gradeNum = parseInt(grade, 10);
+  const gradeNum = 8;
   const subjects = CURRICULUM[gradeNum]?.[board.toUpperCase()];
 
   if (!subjects) {
@@ -126,7 +109,7 @@ exports.getChapters = async (req, res) => {
     return res.status(400).json({ error: 'grade, board, and subject are required' });
   }
 
-  const gradeNum = parseInt(grade, 10);
+  const gradeNum = 8;
   const boardUp = board.toUpperCase();
 
   try {
@@ -207,7 +190,7 @@ exports.getVideo = async (req, res) => {
     return res.status(400).json({ error: 'chapter, grade, and language are required' });
   }
 
-  const gradeNum = parseInt(grade, 10);
+  const gradeNum = 8;
 
   // ── 0. Check the new Video model first (Highest Priority) ──
   try {
@@ -434,99 +417,6 @@ function _getDefaultChapters(subject, grade, board) {
         "The Tattered Blanket", "My Mother (Poem)", "Letter to a Friend", "Oliver Asks for More", "The Cry of Children (Poem)", "Reaching the Unreached", "The Selfish Giant (Part I)", "The Selfish Giant (Part II)", "The Garden Within (Poem)", "The Fun They Had", "Preteen Pretext (Poem)", "The Computer Game", "The Treasure Within – Part I", "The Treasure Within – Part II", "They Literally Build the Nation", "The Story of Ikat", "The Earthen Goblet (Poem)", "Maestro with a Mission", "Bonsai Life – Part I", "Bonsai Life – Part II", "I Can Take Care of Myself", "Dr. Dwarakanath Kotnis", "Be Thankful (Poem)", "The Dead Rat"
       ]
     };
-  } else if (grade === 9 && board === 'CBSE') {
-    defaults = {
-      'Mathematics': [
-        "Number Systems", "Polynomials", "Coordinate Geometry", "Linear Equations in Two Variables", "Introduction to Euclid’s Geometry", "Lines and Angles", "Triangles", "Quadrilaterals", "Areas of Parallelograms and Triangles", "Circles", "Constructions", "Heron’s Formula", "Surface Areas and Volumes", "Statistics", "Probability"
-      ],
-      'Science': [
-        "Matter in Our Surroundings", "Is Matter Around Us Pure?", "Atoms and Molecules", "Structure of the Atom", "The Fundamental Unit of Life", "Tissues", "Motion", "Force and Laws of Motion", "Gravitation", "Work and Energy", "Sound", "Improvement in Food Resources"
-      ],
-      'Social Science': [
-        "The French Revolution", "Socialism in Europe and the Russian Revolution", "Nazism and the Rise of Hitler", "Forest Society and Colonialism", "Pastoralists in the Modern World", "India – Size and Location", "Physical Features of India", "Drainage", "Climate", "Natural Vegetation and Wildlife", "Population", "What is Democracy? Why Democracy?", "Constitutional Design", "Electoral Politics", "Working of Institutions", "Democratic Rights", "The Story of Village Palampur", "People as Resource", "Poverty as a Challenge", "Food Security in India"
-      ],
-      'English': [
-        "The Lost Child", "The Adventures of Toto", "Iswaran the Storyteller", "In the Kingdom of Fools", "The Happy Prince", "Weathering the Storm in Ersama", "The Last Leaf", "A House Is Not a Home", "The Accidental Tourist", "The Beggar"
-      ],
-      'Hindi': [
-        "सूरदास: पद", "तुलसीदास: राम लक्ष्मण परशुराम संवाद", "जयशंकर प्रसाद: आत्मकथ्य", "सूर्यकांत त्रिपाठी ‘निराला’: उत्साह एवं अट नहीं रही है", "नागार्जुन: यह दंतुरित मुस्कान एवं फसल", "मंगलेश डबराल: संगतकार", "स्वयं प्रकाश: नेताजी का चश्मा", "रामवृక్ష बेनीपुरी: बालगोबिन भगत", "यशपाल: लखनवी अंदाज़", "मनु भंडारी: एक कहानी यह भी", "रवींद्र मिश्र: नौबतखाने में इबादत", "भदंत आनंद कौसल्यायन: संस्कृति", "शिवपूजन सहाय: माता का अंचल", "मधु कांकरिया: साना-साना हाथ जोड़ि", "अज्ञेय: ‘मैं क्यों लिखता हूँ’"
-      ]
-    };
-  } else if (grade === 9 && board === 'SSC') {
-    defaults = {
-      'Mathematics': [
-        "Real Numbers", "Polynomials and Factorisation", "The Elements of Geometry", "Lines and Angles", "Co-Ordinate Geometry", "Linear Equations in Two Variables", "Triangles", "Quadrilaterals", "Statistics", "Surface Areas and Volumes", "Areas", "Circles", "Geometrical Constructions", "Probability", "Proofs in Mathematics"
-      ],
-      'Physics': [
-        "Matter Around Us", "Motion", "Laws of Motion", "Refraction of Light at Plane Surfaces", "Gravitation", "Is Matter Pure", "Atoms and Molecules and Chemical Reactions", "What is Inside Atom", "Work and Energy", "Heat", "Sound", "Revision"
-      ],
-      'Biology': [
-        "Cell – Structure and Functions", "Plant Tissues", "Animal Tissues", "Transportation through Plasma Membrane", "Diversity in Living Organisms", "Sense Organs", "Animal Behaviour", "Challenges in Improving Agricultural Production", "Adaptations in Different Ecosystems", "Soil Pollution", "Biogeochemical Cycles", "Revision"
-      ],
-      'Social Studies': [
-        "Our Earth", "The Natural Realms of the Earth", "Major Domains of the Earth", "Climate", "Natural Vegetation and Wildlife", "Population", "Settlements", "Resources", "Agriculture", "Industries", "Transport and Communication", "Democracy in the Contemporary World", "Electoral Politics", "Working of Institutions", "Democratic Rights", "Revision"
-      ],
-      'English': [
-        "The Snake and the Mirror", "The Duck and the Kangaroo (Poem)", "Little Bobby", "True Height", "What Is a Player? (Poem)", "V.V.S. Laxman, Very Very Special", "Swami Is Expelled from School", "Not Just a Teacher, but a Friend (Poem)", "Homework", "What Is Man Without the Beasts?", "The River (Poem)", "Can’t Climb Trees Any More", "A Havoc of Flood", "Grabbing Everything on the Land (Poem)", "The Ham Radio", "A Long Walk to Freedom", "Where the Mind Is Without Fear (Poem)", "An Icon of Civil Rights", "The Trial", "Antony’s Speech (Poem)", "Mahatma Gandhi, Pushed out of Train", "The Accidental Tourist", "Father Returning Home (Poem)", "Kathmandu"
-      ],
-      'Telugu': [
-        "ధర్మార్జునులు", "నేనెరిగిన బాటలు", "వలస కూలి", "రంగాచార్యతో ముఖాముఖి", "శతక మధురిమ", "దీక్షకు సిద్ధంకండి", "చెలిమి", "ఉద్యమ స్ఫూర్తి", "కోర్స్", "వాగ్భూషణం", "వాయుసం", "తీయని పలకరింపు"
-      ],
-      'Hindi': [
-        "कबीर", "वह आवाज़", "बूँद", "तुम कब जाओगे, अतिथि!", "(उपवाचन: इस जल प्रलय में)", "ललद्यद", "दो बैलों की कथा", "कैदी और कोकिला", "नाना साहब की पुत्री", "(उपवाचन: रीढ़ की हड्डी)", "ग्रामश्री", "साँवले सपनों की याद", "एक कुत्ता और एक महिना", "उपभोक्तावाद की संस्कृति", "(उपवाचन: माटीवाली)", "खुशबू रचते हैं हाथ", "ल्हासा की ओर", "बच्चे काम पर जा रहे हैं", "मेरे बचपन के दिन", "(उपवाचन: अनोखा उपाय)"
-      ]
-    };
-  } else if (grade === 10 && board === 'CBSE') {
-    defaults = {
-      'Mathematics': [
-        "Number Systems", "Algebra", "Coordinate Geometry", "Geometry", "Trigonometry", "Mensuration", "Statistics and Probability"
-      ],
-      'Science': [
-        "Chemical Substances - Nature and Behaviour", "World of Living", "Natural Phenomena", "Effects of Current", "Natural Resources"
-      ],
-      'History': [
-        "The Rise of Nationalism in Europe", "Nationalism in India", "The Making of a Global World", "The Age of Industrialisation", "Print Culture and the Modern World"
-      ],
-      'Geography': [
-        "Resources and Development", "Forest and Wildlife Resources", "Water Resources", "Agriculture", "Minerals and Energy Resources", "Manufacturing Industries", "Lifelines of National Economy"
-      ],
-      'Political Science': [
-        "Power Sharing", "Federalism", "Gender, Religion and Caste", "Political Parties", "Outcomes of Democracy"
-      ],
-      'Economics': [
-        "Development", "Sectors of the Indian Economy", "Money and Credit", "Globalisation and the Indian Economy", "Consumer Rights"
-      ]
-    };
-  } else if (grade === 10 && board === 'SSC') {
-    defaults = {
-      'Mathematics': [
-        "Real Numbers", "Sets", "Polynomials", "Linear Equations in Two Variables", "Quadratic Equations", "Progressions", "Coordinate Geometry", "Similar Triangles", "Tangents and Secants to Circles", "Mensuration", "Trigonometry", "Applications of Trigonometry", "Probability", "Statistics"
-      ],
-      'Physics': [
-        "Reflection of Light at Curved Surfaces", "Refraction of Light at Curved Surfaces", "Human Eye and Colourful World", "Electric Current", "Electromagnetism", "Chemical Equations", "Acids, Bases and Salts", "Structure of Atom", "Classification of Elements–the Periodic Table", "Chemical Bonding", "Principles of Metallurgy", "Carbon and Its Compounds"
-      ],
-      'Biology': [
-        "Nutrition", "Respiration", "Transportation", "Excretion", "Coordination", "Reproduction", "Heredity and Evolution", "Our Environment", "Natural Resources"
-      ],
-      'Social Studies': [
-        "India: Relief Features", "Ideas of Development", "Production and Employment", "Climate of India", "Indian Rivers and Water Resources", "The Population", "Settlements and Migration", "Rampur: A Village Economy", "Globalisation", "Food Security", "Sustainable Development with Equity", "World Between the World Wars", "National Liberation Movements in the Colonies", "National Movement in India – Partition & Independence (1939–1947)", "The Making of Independent India’s Constitution", "Election Process in India", "Independent India (1947–77)", "Emerging Political Trends (1977–2000)", "Post-War World and India", "Social Movements in Our Times", "The Movement for the Formation of Telangana State"
-      ],
-      'Telugu': [
-        "దానశీలము", "ఎవరికి బాధ మించదు", "వీర తెలంగాణ", "కృష్ణదేవరాయలు", "నగరగీతం", "భాగ్యోదయం", "శతక మాధుర్యం", "లక్ష్మీదేవి", "టీవీభాష్యం", "గోలకొండ పట్టణం", "భిక్ష", "భూమిక", "రామాయణం"
-      ],
-      'Hindi-2': [
-        "बरसते बादल", "ईदगाह", "माँ मुझे आने दे", "कण-कण का अधिकारी", "लोकगीत", "अंतर्राष्ट्रीय स्तर पर हिंदी", "भक्ति पद", "स्वराज्य की नींव", "दक्षिणी गंगा गोदावरी", "नीति दोहे", "जल ही जीवन है", "धरती के सवाल, अंतरिक्ष के जवाब"
-      ],
-      'English': [
-        "Attitude is Altitude", "Every Success Story is also a Story of Great Failures", "I Will Do It", "The Dear Departed – I", "The Dear Departed – II", "The Brave Potter", "The Journey", "Another Woman", "The Never Never Nest", "Rendezvous with Ray", "Maya Bazaar", "A Tribute", "The Storeyed House – I", "The Storeyed House – II", "Abandoned", "Environment", "Or Will the Dreamer Wake", "My Childhood", "A Plea for India", "Unity in Diversity", "Jamaican Fragment", "Once Upon a Time", "What is My Name?"
-      ],
-      'Hindi-1': [
-        "सुंदर भारत", "नेताजी का चश्मा", "एक कहानी यह भी", "मंगल, मानव और मशीन", "कविता", "गोपी का फूल", "राम-लक्ष्मण-परशुराम संवाद", "बड़े भाई साहब", "अभिव्यक्ति"
-      ],
-      'Telugu-2': [
-        "భారతదేశ రత్నాలు", "పర్యావరణం", "ధర్మాలు", "బాలసురక్షిత పథకం", "సత్కర్మలు", "మహిళా సాధికారత", "పరోపకారం", "వ్యవసాయ పథకాలు"
-      ]
-    };
   }
 
   return (defaults[subject] || ['Chapter 1', 'Chapter 2', 'Chapter 3'])
@@ -574,7 +464,7 @@ exports.uploadPdf = async (req, res) => {
     const pdfUrl = `/uploads/pdfs/${fileName}`;
 
     // 3. Update MongoDB Subject Chapter
-    const gradeNum = parseInt(grade, 10);
+    const gradeNum = 8;
     const boardUp = board.toUpperCase();
 
     let doc = await Subject.findOne({ grade: gradeNum, board: boardUp, subject });

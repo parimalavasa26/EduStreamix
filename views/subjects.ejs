@@ -7,7 +7,7 @@
   <title>Subjects — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="step-body">
@@ -34,24 +34,19 @@
         <div class="step-line filled"></div>
         <div class="step-dot completed" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Class</span>
-        </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot completed" data-step="3">
-          <span class="step-dot-inner">3</span>
           <span class="step-dot-label">Board</span>
         </div>
         <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="4">
-          <span class="step-dot-inner">4</span>
+        <div class="step-dot active" data-step="3">
+          <span class="step-dot-inner">3</span>
           <span class="step-dot-label">Subjects</span>
         </div>
       </div>
 
       <div class="step-header">
-        <a href="/boards?grade=<%= selectedGrade %>" class="back-step-link" id="back-to-boards" data-i18n="Back to Boards">← Back to Boards</a>
+        <a href="/boards" class="back-step-link" id="back-to-boards" data-i18n="Back to Boards">← Back to Boards</a>
         <h1 class="step-title"><span class="hero-highlight" data-i18n="Subjects">Subjects</span></h1>
-        <p class="step-subtitle" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
+        <p class="step-subtitle font-lucida" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
       </div>
 
       <div class="subjects-grid" id="subjects-grid">
