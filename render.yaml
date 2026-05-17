@@ -8,6 +8,6 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        sync: false
+        value: mongodb+srv://admin:parimala%40888@project1.ixuccs7.mongodb.net/edustreamix?retryWrites=true&w=majority&appName=Project1
       - key: GEMINI_API_KEY
-        sync: false
+        value: AIzaSyDoj644WpfTgz224pTMXwcsks8sEhWU28k
