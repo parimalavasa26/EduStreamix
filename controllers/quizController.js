@@ -49,8 +49,11 @@ exports.generateTest = async (req, res) => {
             return res.status(400).json({ error: "Missing required parameters." });
         }
 
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey || apiKey.includes('YOUR_GEMINI_API_KEY')) {
+        let apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey || apiKey.includes('YOUR_GEMINI_API_KEY') || apiKey === 'undefined' || apiKey.length < 10) {
+            apiKey = 'AIzaSyDoj644WpfTgz224pTMXwcsks8sEhWU28k';
+        }
+        if (!apiKey) {
             throw new Error('API_KEY_MISSING');
         }
 
