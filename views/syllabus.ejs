@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EduStreamix — Browse Class 9 SSC & CBSE Syllabus" />
+  <title>EduStreamix — Syllabus Browser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/syllabus.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="sy-nav" id="sy-nav">
+    <a href="/" class="sy-nav-brand">🎓 EduStreami<span class="accent">x</span></a>
+    <div class="sy-nav-search">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="globalSearch" placeholder="Search chapters, subjects..." autocomplete="off" />
+    </div>
+  </nav>
+
+  <!-- CLASS 9 ENTRY CARD -->
+  <header class="sy-hero" id="heroSection">
+    <h1 class="sy-hero-title">Syllabus Browser</h1>
+    <p class="sy-hero-sub">Select your class to explore organized subjects and chapters.</p>
+    <div class="class-entry-grid">
+      <div class="class-entry-card" id="class9Btn">
+        <div class="ce-glow"></div>
+        <span class="ce-icon">🎓</span>
+        <h2>Class 9</h2>
+        <p>CBSE & SSC Curriculum</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- LOADING -->
+  <div class="sy-loader" id="loader" style="display:none;">
+    <div class="spinner"></div>
+    <p>Loading syllabus...</p>
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  <section class="sy-search-results" id="searchResults" style="display:none;">
+    <h2 class="sr-title">Search Results</h2>
+    <div id="searchList" class="sr-list"></div>
+    <button class="sr-back" id="clearSearch">✕ Clear Search</button>
+  </section>
+
+  <!-- UNIFIED DASHBOARD -->
+  <section class="sy-dashboard" id="dashboardSection" style="display:none;">
+    <button class="sy-back-btn" id="dashBackBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Classes
+    </button>
+    <div class="dash-layout">
+      <!-- SIDEBAR -->
+      <aside class="dash-sidebar" id="dashSidebar">
+        <!-- JS will populate Boards and Subjects here -->
+      </aside>
+      <!-- MAIN CONTENT -->
+      <div class="dash-content">
+        <h2 class="dash-subject-title" id="dashSubjectTitle">Select a Subject</h2>
+        <div class="units-list" id="unitsList">
+          <p class="sy-empty">Choose a subject from the sidebar to view chapters and videos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO MODAL -->
+  <div class="sy-modal-overlay" id="videoModal">
+    <div class="sy-modal">
+      <button class="sy-modal-close" id="modalClose">✕</button>
+      <h3 class="sy-modal-title" id="modalTitle"></h3>
+      <div class="sy-modal-player" id="modalPlayer"></div>
+      <a href="#" class="sy-modal-extlink" id="modalExtLink" target="_blank" rel="noopener">Open in YouTube ↗</a>
+    </div>
+  </div>
+
+  <footer class="sy-footer">
+    <span>🎓 EduStreami<span class="accent">x</span></span>
+    <span>&copy; 2026 EduStreamix. Built for learners.</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/js/syllabus.js"></script>
+</body>
+</html>

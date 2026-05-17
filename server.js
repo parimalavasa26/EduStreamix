@@ -7,8 +7,10 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const studyRoutes = require('./routes/studyRoutes');
-const videoRoutes = require('./routes/videoRoutes');
+const studyRoutes    = require('./routes/studyRoutes');
+const videoRoutes    = require('./routes/videoRoutes');
+const syllabusRoutes = require('./routes/syllabusRoutes');
+const progressRoutes = require('./routes/progressRoutes');
 
 // ── Global Error Protection ─────────────────
 process.on("uncaughtException", (err) => {
@@ -20,7 +22,7 @@ process.on("unhandledRejection", (err) => {
 });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT, 10) || 3000;
 
 // ── Connect to MongoDB ──────────────────────
 connectDB();
@@ -36,6 +38,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ── Routes ──────────────────────────────────
 app.use('/', studyRoutes);
 app.use('/', videoRoutes);
+app.use('/', syllabusRoutes);
+app.use('/', progressRoutes);
 
 // ── 404 Handler ─────────────────────────────
 app.use((req, res) => {
@@ -49,17 +53,23 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start Server ────────────────────────────
-const server = app.listen(PORT, () => {
-  console.log(`\n🚀 EduStreamix is running at http://localhost:${PORT}\n`);
-});
+const startServer = (port) => {
+  const server = app.listen(port, () => {
+    console.log(`\n🚀 EduStreamix is running at http://localhost:${port}\n`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`⚠️  Port ${port} is in use.`);
+      if (port < PORT + 5) { // Try up to 5 ports
+        console.log(`   Trying next port: ${port + 1}...`);
+        startServer(port + 1);
+      } else {
+        console.error('❌ Could not find an open port. Please close other applications.');
+        process.exit(1);
+      }
+    } else {
+      console.error("❌ Server Error:", err);
+    }
+  });
+};
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is in use. Trying port ${PORT + 1}...`);
-    app.listen(PORT + 1, () => {
-      console.log(`\n🚀 EduStreamix is running at http://localhost:${PORT + 1}\n`);
-    });
-  } else {
-    console.error("Server Error:", err);
-  }
-});
+startServer(PORT);

@@ -1,0 +1,24 @@
+{
+  "title": "EduStreamix",
+  "objective": "A distraction-free, smart educational platform focusing on high-quality video content and structured curriculum navigation.",
+  "technologies": "Node.js, Express, MongoDB, EJS, HTML5, CSS3, Google Generative AI",
+  "stage": "Development Phase",
+  "completedModules": [
+    "User authentication framework",
+    "MongoDB database schema & connection",
+    "Syllabus & curriculum browsing UI",
+    "Distraction-free video player integration",
+    "AI-powered dynamic quiz generation"
+  ],
+  "underDevelopment": [
+    "Student progress tracking",
+    "Performance analytics dashboard",
+    "Multi-language transliteration & localization"
+  ],
+  "pendingTasks": [
+    "Production deployment to cloud provider",
+    "Integration of additional board curriculums (ICSE, State)",
+    "Admin panel for uploading new videos",
+    "Mobile app wrapper (React Native / Flutter)"
+  ]
+}

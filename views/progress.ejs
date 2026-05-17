@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - Project Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="progress-body">
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">📈</span>
+      <span class="brand-text">Progress<span class="brand-x">Dashboard</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/admin/progress" class="nav-link">Admin Edit</a>
+      <button onclick="exportPDF()" class="hero-btn primary-btn" style="padding: 0.5rem 1.5rem; font-size: 0.9rem;">
+        Export PDF
+      </button>
+    </div>
+  </nav>
+
+  <div id="progress-report-content" class="progress-container">
+    <header class="progress-header">
+      <div class="header-badges">
+        <span class="status-badge pulse-active">Live Status: <%= stage %></span>
+      </div>
+      <h1 class="progress-title"><%= title %> Project Report</h1>
+      <p class="progress-objective"><%= objective %></p>
+      
+      <div class="tech-stack-container">
+        <strong>Technologies Used:</strong> 
+        <div class="tech-tags">
+          <% technologies.split(',').forEach(tech => { %>
+            <span class="tech-tag"><%= tech.trim() %></span>
+          <% }) %>
+        </div>
+      </div>
+    </header>
+
+    <div class="progress-grid">
+      <!-- Completed Modules -->
+      <div class="progress-card completed-card">
+        <div class="card-icon">✅</div>
+        <h2>Completed Modules</h2>
+        <ul class="task-list">
+          <% completedModules.forEach(module => { %>
+            <li class="task-item completed"><span class="check">✓</span> <%= module %></li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Under Development -->
+      <div class="progress-card development-card">
+        <div class="card-icon">⚙️</div>
+        <h2>Under Development</h2>
+        <ul class="task-list">
+          <% underDevelopment.forEach(feature => { %>
+            <li class="task-item development"><span class="spinner">↻</span> <%= feature %></li>
+          <% }) %>
+        </ul>
+      </div>
+
+      <!-- Pending Tasks -->
+      <div class="progress-card pending-card">
+        <div class="card-icon">📋</div>
+        <h2>Pending Tasks</h2>
+        <ul class="task-list">
+          <% pendingTasks.forEach(task => { %>
+            <li class="task-item pending"><span class="dot">○</span> <%= task %></li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Recent Git Activity -->
+    <section class="activity-section">
+      <h2 class="section-title" style="margin-top: 3rem; margin-bottom: 1.5rem;">Recent Activity Log</h2>
+      <div class="timeline">
+        <% if (recentActivity && recentActivity.length > 0) { %>
+          <% recentActivity.forEach((commit, index) => { %>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="commit-meta">
+                  <span class="commit-date"><%= commit.date %></span>
+                  <span class="commit-hash"><%= commit.hash %></span>
+                </div>
+                <div class="commit-message"><%= commit.message %></div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p class="no-activity">No recent git activity found or git not initialized.</p>
+        <% } %>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="footer" style="margin-top: 4rem;">
+    <div class="footer-inner">
+      <span class="footer-brand">📈 Progress<span class="brand-x">Dashboard</span></span>
+      <span class="footer-copy">Automatically generated at <%= new Date().toLocaleString() %></span>
+    </div>
+  </footer>
+
+  <script>
+    function exportPDF() {
+      const element = document.getElementById('progress-report-content');
+      const opt = {
+        margin:       0.5,
+        filename:     '<%= title.replace(/\s+/g, "_") %>_Progress_Report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      
+      // Add a brief generating class for UI feedback
+      element.classList.add('generating-pdf');
+      
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('generating-pdf');
+      });
+    }
+  </script>
+</body>
+</html>

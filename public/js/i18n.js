@@ -6,7 +6,8 @@ const langCodes = {
   'Telugu': 'te',
   'Tamil': 'ta',
   'Kannada': 'kn',
-  'Malayalam': 'ml'
+  'Malayalam': 'ml',
+  'Odia': 'or'
 };
 
 let currentLangCode = 'en';
@@ -79,3 +80,27 @@ function t(key) {
 
 // Call on startup
 document.addEventListener('DOMContentLoaded', initI18n);
+
+// Global function for the UI picker
+window.changeAppLang = async function(langName) {
+  await applyLanguage(langName);
+  // Update UI text if picker exists
+  const display = document.getElementById('current-lang-name');
+  if (display) display.textContent = langName;
+  
+  // Update active state in dropdown
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.classList.toggle('active', opt.textContent.includes(langName));
+  });
+};
+
+// Update picker on load
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('appLang') || 'English';
+  const display = document.getElementById('current-lang-name');
+  if (display) display.textContent = savedLang;
+  
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.classList.toggle('active', opt.textContent.includes(savedLang));
+  });
+});

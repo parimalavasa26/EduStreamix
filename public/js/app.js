@@ -256,99 +256,211 @@
     }
   }
 
-  // ── Quiz ───────────────────────────────────
-  async function showQuiz() {
+  // ── AI Quiz ───────────────────────────────
+  let aiQuizQuestions = [];
+  let quizElapsedTimer = null;
+  let quizElapsedSec = 0;
+
+  function showQuiz() {
     const section = document.getElementById('quiz-section');
-    const body = document.getElementById('quiz-body');
+    if (section) section.style.display = '';
+    // Reset state
+    resetQuizUI();
+  }
+
+  function resetQuizUI() {
+    const body    = document.getElementById('quiz-body');
     const actions = document.getElementById('quiz-actions');
-    const result = document.getElementById('quiz-result');
-    const retake = document.getElementById('quiz-retake-btn');
-    const submit = document.getElementById('quiz-submit-btn');
+    const result  = document.getElementById('quiz-result');
+    const retake  = document.getElementById('quiz-retake-btn');
+    const timerBar = document.getElementById('quiz-timer-bar');
+    const genBar  = document.getElementById('quiz-gen-bar');
+    if (body)    body.innerHTML = '<p style="padding:1.5rem;color:var(--text-muted);font-size:.9rem;">Pick a question count and click <strong>Generate Quiz</strong> to get AI-made questions for this chapter.</p>';
+    if (actions) actions.style.display = 'none';
+    if (result)  { result.style.display = 'none'; result.textContent = ''; }
+    if (retake)  retake.style.display = 'none';
+    if (timerBar) timerBar.style.display = 'none';
+    if (genBar)  genBar.style.display = '';
+    aiQuizQuestions = [];
+    stopElapsedTimer();
+  }
 
-    let pool = currentChapterData.quizQuestions;
-    if (!pool || pool.length === 0) {
-      pool = (window.QUIZ_DATA && window.QUIZ_DATA[SUBJECT]) ? window.QUIZ_DATA[SUBJECT] : (window.QUIZ_DATA ? window.QUIZ_DATA['General'] : []);
-    }
-    if (!pool || pool.length === 0) return;
+  function stopElapsedTimer() {
+    if (quizElapsedTimer) { clearInterval(quizElapsedTimer); quizElapsedTimer = null; }
+    quizElapsedSec = 0;
+  }
 
-    section.style.display = '';
-    result.style.display = 'none';
-    retake.style.display = 'none';
-    actions.style.display = 'none';
+  function startElapsedTimer() {
+    stopElapsedTimer();
+    quizElapsedSec = 0;
+    const el = document.getElementById('quiz-elapsed-val');
+    quizElapsedTimer = setInterval(() => {
+      quizElapsedSec++;
+      const m = Math.floor(quizElapsedSec / 60);
+      const s = quizElapsedSec % 60;
+      if (el) el.textContent = m + ':' + String(s).padStart(2, '0');
+    }, 1000);
+  }
 
-    // Pick random 10 questions (or less if pool is smaller)
-    let shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 10);
+  function fmtSec(s) {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return m > 0 ? `${m}m ${sec}s` : `${sec}s`;
+  }
 
-    body.innerHTML = '<div class="loader-spinner" style="margin: 0 auto;"></div>';
+  async function generateAIQuiz() {
+    if (!currentChapterData) return;
+    const btn    = document.getElementById('quiz-generate-btn');
+    const body   = document.getElementById('quiz-body');
+    const genBar = document.getElementById('quiz-gen-bar');
+    const numQ   = parseInt(document.getElementById('quiz-count-sel').value) || 10;
+    const actions = document.getElementById('quiz-actions');
+    const result  = document.getElementById('quiz-result');
+    const retake  = document.getElementById('quiz-retake-btn');
+    const timerBar = document.getElementById('quiz-timer-bar');
+    const timerVal = document.getElementById('quiz-timer-val');
 
-    // Translate questions if language is not English
-    if (LANGUAGE !== 'English' && LANGUAGE !== 'en') {
-      const textsToTranslate = [];
-      shuffled.forEach(q => {
-        if (!textsToTranslate.includes(q.question)) textsToTranslate.push(q.question);
-        q.options.forEach(opt => {
-          if (!textsToTranslate.includes(opt)) textsToTranslate.push(opt);
-        });
+    // Reset
+    if (actions) actions.style.display = 'none';
+    if (result)  { result.style.display = 'none'; result.textContent = ''; }
+    if (retake)  retake.style.display = 'none';
+    if (timerBar) timerBar.style.display = 'none';
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating...';
+
+    body.innerHTML = `
+      <div class="quiz-loading">
+        <div class="quiz-loading-spinner"></div>
+        <p>Generating ${numQ} AI questions for <strong>${currentChapterData.chapterName}</strong>...</p>
+        <p style="font-size:.8rem;color:var(--text-muted);">Powered by Gemini AI ✨</p>
+      </div>`;
+
+    try {
+      const res = await fetch('/api/generate-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          board:        BOARD,
+          grade:        GRADE,
+          subject:      SUBJECT,
+          focusTopic:   currentChapterData.chapterName,
+          difficulty:   'medium',
+          numQuestions: numQ
+        })
       });
 
-      if (textsToTranslate.length > 0) {
-        try {
-          const res = await fetch('/translate-batch', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ texts: textsToTranslate, targetLang: LANGUAGE })
-          });
-          const translations = await res.json();
-          
-          shuffled = shuffled.map(q => ({
-            ...q,
-            question: translations[q.question] || q.question,
-            options: q.options.map(opt => translations[opt] || opt)
-          }));
-        } catch (e) {
-          console.error("Quiz translation failed", e);
-        }
+      const data = await res.json();
+      if (!res.ok || !data.questions || !data.questions.length) {
+        body.innerHTML = `<p style="padding:1.5rem;color:#e53e3e;">⚠️ ${data.error || 'Could not generate quiz. Please try again.'}</p>`;
+        btn.disabled = false;
+        btn.textContent = '🤖 Generate Quiz';
+        return;
       }
-    }
 
-    actions.style.display = '';
+      aiQuizQuestions = data.questions;
+
+      // Handle Fallback/Demo message
+      if (data.isFallback) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'background:rgba(245,158,11,0.1); border:1px solid #f59e0b; border-radius:10px; padding:.8rem; margin:1rem; font-size:.85rem; color:#b45309; text-align:center;';
+        msg.innerHTML = `✨ <strong>Demo Mode:</strong> Using sample questions because the AI service is ${data.errorInfo || 'offline'}.`;
+        body.parentElement.insertBefore(msg, body);
+        setTimeout(() => msg.remove(), 8000); // Auto-remove after 8s
+      }
+
+      // Show timer
+      if (timerBar && timerVal) {
+        timerBar.style.display = '';
+        timerVal.textContent = fmtSec(data.avgTimeSeconds || numQ * 60);
+      }
+
+      // Render questions
+      renderAIQuiz(aiQuizQuestions);
+
+      startElapsedTimer();
+
+      btn.textContent = '🔄 Regenerate';
+      btn.disabled = false;
+
+    } catch (err) {
+      body.innerHTML = `<p style="padding:1.5rem;color:#e53e3e;">❌ Network error. Check your connection.</p>`;
+      btn.disabled = false;
+      btn.textContent = '🤖 Generate Quiz';
+    }
+  }
+
+  function renderAIQuiz(questions) {
+    const body    = document.getElementById('quiz-body');
+    const actions = document.getElementById('quiz-actions');
+    const submit  = document.getElementById('quiz-submit-btn');
+    const result  = document.getElementById('quiz-result');
+    const retake  = document.getElementById('quiz-retake-btn');
+    const genBar  = document.getElementById('quiz-gen-bar');
+
+    if (genBar) genBar.style.display = 'none';
+
     body.innerHTML = '';
-    shuffled.forEach((q, qi) => {
+    questions.forEach((q, qi) => {
       const div = document.createElement('div');
       div.className = 'quiz-question';
-      div.dataset.answer = q.answer !== undefined ? q.answer : q.correctAnswer;
-      let html = '<p>' + (qi+1) + '. <span>' + q.question + '</span></p>';
+      div.dataset.correct = q.correctAnswerIndex;
+      div.dataset.explanation = q.explanation || '';
+
+      let html = `<p>${qi + 1}. <span>${q.question}</span></p>`;
       q.options.forEach((opt, oi) => {
-        html += '<label class="quiz-option"><input type="radio" name="q' + qi + '" value="' + oi + '"> <span>' + opt + '</span></label>';
+        const letter = ['A','B','C','D'][oi];
+        html += `<label class="quiz-option"><input type="radio" name="q${qi}" value="${oi}"> <span>${letter}. ${opt}</span></label>`;
       });
+      html += `<div class="quiz-explanation" id="explanation-${qi}">💡 ${q.explanation || ''}</div>`;
       div.innerHTML = html;
       body.appendChild(div);
     });
 
+    if (actions) actions.style.display = '';
+
     submit.onclick = () => {
+      stopElapsedTimer();
       let score = 0;
-      const questions = body.querySelectorAll('.quiz-question');
-      questions.forEach((qDiv) => {
-        const correct = parseInt(qDiv.dataset.answer);
+      const qDivs = body.querySelectorAll('.quiz-question');
+      qDivs.forEach((qDiv) => {
+        const correct = parseInt(qDiv.dataset.correct);
         const selected = qDiv.querySelector('input:checked');
         const opts = qDiv.querySelectorAll('.quiz-option');
         if (opts[correct]) opts[correct].classList.add('correct');
         if (selected) {
           const val = parseInt(selected.value);
-          if (val === correct) { score++; }
-          else { if (opts[val]) opts[val].classList.add('wrong'); }
+          if (val === correct) score++;
+          else if (opts[val]) opts[val].classList.add('wrong');
         }
         qDiv.querySelectorAll('input').forEach(inp => inp.disabled = true);
+        // Show explanation
+        const expEl = qDiv.querySelector('.quiz-explanation');
+        if (expEl) expEl.classList.add('show');
       });
-      actions.style.display = 'none';
-      result.style.display = '';
-      result.textContent = (window.t ? window.t('Score') : 'Score') + ': ' + score + ' / ' + questions.length;
-      result.className = 'quiz-result ' + (score >= (questions.length * 0.8) ? 'good' : score >= (questions.length * 0.4) ? 'ok' : 'bad');
-      retake.style.display = '';
+      if (actions) actions.style.display = 'none';
+      if (result) {
+        const pct = score / qDivs.length;
+        const emoji = pct >= 0.8 ? '🎉' : pct >= 0.5 ? '👍' : '📖';
+        result.style.display = '';
+        result.textContent = `${emoji} Score: ${score} / ${qDivs.length}`;
+        result.className = 'quiz-result ' + (pct >= 0.8 ? 'good' : pct >= 0.5 ? 'ok' : 'bad');
+      }
+      if (retake) retake.style.display = '';
     };
 
-    retake.onclick = showQuiz;
+    retake.onclick = () => {
+      const genBar = document.getElementById('quiz-gen-bar');
+      if (genBar) genBar.style.display = '';
+      resetQuizUI();
+    };
   }
+
+  // Wire up generate button after DOM ready
+  document.addEventListener('DOMContentLoaded', () => {
+    const genBtn = document.getElementById('quiz-generate-btn');
+    if (genBtn) genBtn.addEventListener('click', generateAIQuiz);
+  });
 
 
   // ── Helpers ───────────────────────────────
@@ -364,7 +476,6 @@
     const newLang = e.detail;
     LANGUAGE = newLang;
 
-    // Update YT Captions seamlessly without reload
     if (ytPlayer && typeof ytPlayer.setOption === 'function') {
       const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
       const code = langCodes[newLang] || 'en';
@@ -375,7 +486,6 @@
       }
     }
 
-    // Always re-render dynamically generated elements like chapters and quiz
     if (chaptersSection.style.display !== 'none' || !window.chaptersInitiallyLoaded) {
       window.chaptersInitiallyLoaded = true;
       showChapters();
@@ -387,5 +497,5 @@
 
   // ── Init ───────────────────────────────────
   // showChapters() is intentionally not called here anymore.
-  // It waits for 'languageChanged' event from i18n.js to ensure window.t is fully ready before caching translations!
+  // It waits for 'languageChanged' event from i18n.js to ensure window.t is fully ready!
 })();

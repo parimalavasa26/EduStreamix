@@ -7,66 +7,112 @@
   <title>EduStreamix — Distraction-Free Learning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="landing-body">
+
+  <div class="hero-bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+
+  <div class="watermark-icons">
+    <div class="watermark icon-1">📖</div>
+    <div class="watermark icon-2">🎓</div>
+    <div class="watermark icon-3">⚛️</div>
+    <div class="watermark icon-4">📐</div>
+  </div>
 
   <nav class="navbar" id="navbar">
     <div class="nav-brand">
       <span class="brand-icon">🎓</span>
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
-    </a>
+    </div>
     <div class="nav-links">
-      <a href="#features">Why EduStreamix</a>
+      <a href="#features">Features</a>
+      <div class="nav-lang-picker">
+        <button class="lang-picker-btn">
+          <span id="current-lang-name">English</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="lang-dropdown">
+          <a href="#" class="lang-option" onclick="changeAppLang('English')"><span>English</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Hindi')"><span>Hindi</span> <span>हिंदी</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Telugu')"><span>Telugu</span> <span>తెలుగు</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Kannada')"><span>Kannada</span> <span>ಕನ್ನಡ</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Tamil')"><span>Tamil</span> <span>தமிழ்</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Malayalam')"><span>Malayalam</span> <span>മലയാളം</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Odia')"><span>Odia</span> <span>ଓଡ଼ିଆ</span></a>
+        </div>
+      </div>
     </div>
   </nav>
 
+  <script src="/js/i18n.js"></script>
+
   <!-- HERO -->
   <section class="hero" id="hero">
+    <div class="side-logos-container">
+      <div class="side-logo-box side-logo-left">
+        <img src="/images/logo_right.jpeg" alt="Edu Logo Right" class="side-logo">
+      </div>
+      <div class="side-logo-box side-logo-right">
+        <img src="/images/logo_left.jpeg" alt="Edu Logo Left" class="side-logo">
+      </div>
+    </div>
 
     <div class="hero-content">
-      <p class="hero-tagline">The distraction-free platform</p>
-      <h1 class="hero-title">EduStreami<span class="hero-highlight">x</span></h1>
+      <div class="title-wrap">
+        <h1 class="hero-title"><span class="hero-edu">EDU</span>STREAMI<span class="hero-highlight">X</span></h1>
+      </div>
+      <div class="hero-class-badge">FOR GRADE 9</div>
+      <p class="hero-tagline">THE DISTRACTION-FREE PLATFORM</p>
       <p class="hero-subtitle">
         EduStreamix is your focused learning space—where content is organized,
         distractions are minimized, and learning becomes effective.
       </p>
-      <a href="/languages" class="hero-btn" id="dive-into-learning-btn">
-        <span>Dive into Learning</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
+      
+      <div class="hero-actions">
+        <a href="/boards?grade=9" class="hero-btn primary-btn">
+          <span>Dive into Learning</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
     </div>
+
     <div class="hero-float-elements">
       <div class="float-card float-card-1"><span class="float-emoji">🎯</span><span>Focused Learning</span></div>
-      <div class="float-card float-card-2"><span class="float-emoji">🛡️</span><span>Zero Distractions</span></div>
-      <div class="float-card float-card-3"><span class="float-emoji">📂</span><span>Smart Organization</span></div>
+      <div class="float-card float-card-2"><span class="float-emoji">🎓</span><span>Student Friendly</span></div>
+      <div class="float-card float-card-3"><span class="float-emoji">📈</span><span>Improved Productivity</span></div>
       <div class="float-card float-card-4"><span class="float-emoji">🧠</span><span>Enhanced Focus</span></div>
-      <div class="float-card float-card-5"><span class="float-emoji">🎓</span><span>Student Friendly</span></div>
+      <div class="float-card float-card-5"><span class="float-emoji">🛡️</span><span>Zero Distractions</span></div>
       <div class="float-card float-card-6"><span class="float-emoji">⏱️</span><span>Time Saving</span></div>
-      <div class="float-card float-card-7"><span class="float-emoji">📈</span><span>Improved Productivity</span></div>
+      <div class="float-card float-card-7"><span class="float-emoji">📂</span><span>Smart Organization</span></div>
     </div>
   </section>
 
-  <!-- FEATURES / WHY EDUSTREAMIX -->
+  <!-- FEATURES -->
   <section class="features" id="features">
     <h2 class="section-title">Why EduStreamix?</h2>
     <p class="section-subtitle">Everything you need, nothing you don't.</p>
     <div class="features-grid">
-      <div class="feature-card" id="feature-1">
+      <div class="feature-card">
         <div class="feature-icon-wrap"><div class="feature-icon">🛡️</div></div>
         <h3>Distraction-Free</h3>
-        <p>No ads, no recommendations, no rabbit holes. Videos play right here — clean, focused, and controlled.</p>
+        <p>No ads, no recommendations, no rabbit holes. Videos play right here — clean and controlled.</p>
       </div>
-      <div class="feature-card" id="feature-2">
+      <div class="feature-card">
         <div class="feature-icon-wrap"><div class="feature-icon">⚡</div></div>
-        <h3>Smart Ranking</h3>
-        <p>Our algorithm picks the best video for each topic using view counts, likes, and embeddability.</p>
+        <h3>Curated Content</h3>
+        <p>Hand-picked educational resources from verified boards (SSC & CBSE & ICSE).</p>
       </div>
-      <div class="feature-card" id="feature-3">
+      <div class="feature-card">
         <div class="feature-icon-wrap"><div class="feature-icon">📚</div></div>
-        <h3>Organized Content</h3>
-        <p>Subjects, chapters, and topics — all structured so you never lose your way.</p>
+        <h3>Structured Learning</h3>
+        <p>Navigate through grades, subjects, and units with a single tap. Organized just for you.</p>
       </div>
     </div>
   </section>
@@ -74,13 +120,19 @@
   <footer class="footer">
     <div class="footer-inner">
       <span class="footer-brand">🎓 EduStreami<span class="brand-x">x</span></span>
-      <span class="footer-copy">&copy; 2026 EduStreamix. Built for learners.</span>
+      <span class="footer-copy">&copy; 2026 EduStreamix. Built for modern learners.</span>
     </div>
   </footer>
 
   <script>
+    // Ensure English is default language if not set
+    if (!localStorage.getItem('appLang')) {
+      localStorage.setItem('appLang', 'English');
+    }
+
     window.addEventListener('scroll', () => {
-      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+      const nav = document.getElementById('navbar');
+      if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
     });
   </script>
 </body>

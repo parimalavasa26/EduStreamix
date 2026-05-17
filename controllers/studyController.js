@@ -15,12 +15,12 @@ const CURRICULUM = {
   8: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'Hindi', 'English'],
     SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
-    ICSE: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Social Studies']
+    ICSE: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'History and Civics', 'Geography']
   },
   9: {
     CBSE: ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi'],
     SSC: ['Mathematics', 'Physics', 'Biology', 'Social Studies', 'Hindi', 'Telugu', 'English'],
-    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English']
+    ICSE: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History and Civics', 'Geography', 'English']
   },
   10: {
     CBSE: ['Mathematics', 'Science', 'History', 'Geography', 'Political Science', 'Economics'],
@@ -131,30 +131,34 @@ exports.getChapters = async (req, res) => {
 
   try {
     // 1. Try to fetch from the new CBSE_Syllabi or SSC_Syllabi collections first
-    const collectionName = boardUp + '_Syllabi';
-    if (mongoose.connection && mongoose.connection.db) {
-      const collection = mongoose.connection.db.collection(collectionName);
-      const doc = await collection.findOne({ grade: gradeNum, subject: subject });
+    const Ssc9  = require('../models/Ssc9');
+    const Cbse9 = require('../models/Cbse9');
+    const Icse9 = require('../models/Icse9');
+    const Model = boardUp === 'SSC' ? Ssc9 : (boardUp === 'CBSE' ? Cbse9 : (boardUp === 'ICSE' ? Icse9 : null));
+
+    if (Model) {
+      const doc = await Model.findOne({ grade: gradeNum, subject: subject }).lean();
       
       if (doc && doc.units && doc.units.length > 0) {
         const chapters = [];
-        doc.units.forEach((unit, i) => {
-          let link = null;
-          if (unit.resources && unit.resources.length > 0) {
-            link = unit.resources[0].link; // Pick the first resource link
-          }
-          chapters.push({
-            unitName: 'General',
-            lessonNo: String(i + 1),
-            chapterName: unit.name,
-            type: link ? 'Video' : 'Topic',
-            link: link // Custom property for the frontend
+        // Normalize units — handle both flat and nested formats
+        const units = (doc.units[0] && doc.units[0].chapters) ? doc.units : [{ unit: 'All Chapters', chapters: doc.units }];
+        
+        units.forEach(unit => {
+          (unit.chapters || []).forEach((ch, i) => {
+            let link = ch.url || null;
+            chapters.push({
+              unitName: unit.unit || 'General',
+              lessonNo: String(i + 1),
+              chapterName: ch.name || ch.chapterName || 'Untitled',
+              type: link ? 'Video' : 'Topic',
+              link: link 
+            });
           });
         });
         return res.json({ grade: gradeNum, board: boardUp, subject, chapters });
       }
     }
-
     // 2. Fallback to the original Subject schema
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },

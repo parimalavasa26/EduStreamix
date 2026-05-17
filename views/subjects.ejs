@@ -18,8 +18,22 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <span class="nav-lang-display" id="nav-lang-display">English</span>
       <a href="/">Home</a>
+      <div class="nav-lang-picker">
+        <button class="lang-picker-btn">
+          <span id="current-lang-name">English</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="lang-dropdown">
+          <a href="#" class="lang-option" onclick="changeAppLang('English')"><span>English</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Hindi')"><span>Hindi</span> <span>हिंदी</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Telugu')"><span>Telugu</span> <span>తెలుగు</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Kannada')"><span>Kannada</span> <span>ಕನ್ನಡ</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Tamil')"><span>Tamil</span> <span>தமிழ்</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Malayalam')"><span>Malayalam</span> <span>മലയാളం</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Odia')"><span>Odia</span> <span>ଓଡ଼ିଆ</span></a>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -29,21 +43,11 @@
       <div class="step-progress" id="step-progress">
         <div class="step-dot completed" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label">Language</span>
-        </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot completed" data-step="2">
-          <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Class</span>
-        </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot completed" data-step="3">
-          <span class="step-dot-inner">3</span>
           <span class="step-dot-label">Board</span>
         </div>
         <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="4">
-          <span class="step-dot-inner">4</span>
+        <div class="step-dot active" data-step="2">
+          <span class="step-dot-inner">2</span>
           <span class="step-dot-label">Subjects</span>
         </div>
       </div>

@@ -24,8 +24,22 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <span class="nav-lang-display" id="nav-lang-display">English</span>
       <a href="/">Home</a>
+      <div class="nav-lang-picker">
+        <button class="lang-picker-btn">
+          <span id="current-lang-name">English</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="lang-dropdown">
+          <a href="#" class="lang-option" onclick="changeAppLang('English')"><span>English</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Hindi')"><span>Hindi</span> <span>हिंदी</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Telugu')"><span>Telugu</span> <span>తెలుగు</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Kannada')"><span>Kannada</span> <span>ಕನ್ನಡ</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Tamil')"><span>Tamil</span> <span>தமிழ்</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Malayalam')"><span>Malayalam</span> <span>മലയാളం</span></a>
+          <a href="#" class="lang-option" onclick="changeAppLang('Odia')"><span>Odia</span> <span>ଓଡ଼ିଆ</span></a>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -68,18 +82,40 @@
 
 
 
-        <!-- Quiz -->
+        <!-- AI Quiz -->
         <div class="quiz-section" id="quiz-section" style="display:none;">
           <div class="quiz-header">
-            <span data-i18n="Quick Quiz">📝 Quick Quiz</span>
+            <span>📝 Chapter Quiz</span>
+            <span class="quiz-ai-badge">✨ AI Generated</span>
           </div>
+
+          <!-- Generate bar -->
+          <div class="quiz-gen-bar" id="quiz-gen-bar">
+            <label for="quiz-count-sel" style="font-size:.88rem;font-weight:600;color:var(--text-secondary);">Questions:</label>
+            <select class="quiz-count-select" id="quiz-count-sel">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+            <button class="quiz-generate-btn" id="quiz-generate-btn">
+              🤖 Generate Quiz
+            </button>
+          </div>
+
+          <!-- Timer bar (hidden until quiz active) -->
+          <div class="quiz-timer-bar" id="quiz-timer-bar" style="display:none;">
+            ⏱ Estimated time: <span class="quiz-timer-val" id="quiz-timer-val">—</span>
+            &nbsp;|&nbsp; ✅ Your time: <span class="quiz-timer-val" id="quiz-elapsed-val">0:00</span>
+          </div>
+
           <div class="quiz-body" id="quiz-body"></div>
+
           <div class="quiz-actions" id="quiz-actions" style="display:none;">
-            <button class="quiz-submit-btn" id="quiz-submit-btn" data-i18n="Submit Answers">Submit Answers</button>
+            <button class="quiz-submit-btn" id="quiz-submit-btn">Submit Answers</button>
           </div>
           <div class="quiz-result" id="quiz-result" style="display:none;"></div>
-          <button class="quiz-retake-btn" id="quiz-retake-btn" style="display:none;" data-i18n="Retake Quiz">🔄 Retake
-            Quiz</button>
+          <button class="quiz-retake-btn" id="quiz-retake-btn" style="display:none;">🔄 Regenerate Quiz</button>
         </div>
 
 

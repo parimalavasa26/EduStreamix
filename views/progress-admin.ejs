@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Update Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">⚙️</span>
+      <span class="brand-text">Admin<span class="brand-x">Progress</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="/progress" class="nav-link">View Public Dashboard</a>
+      <a href="/" class="nav-link">Home</a>
+    </div>
+  </nav>
+
+  <main class="admin-main" style="padding-top: 100px;">
+    <div class="admin-container" style="max-width: 800px; margin: 0 auto; background: #fff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);">
+      <h1 class="admin-title" style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 2rem; color: #1e293b;">Update Project Progress</h1>
+      
+      <form action="/admin/progress" method="POST" class="admin-form">
+        
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Project Title</label>
+          <input type="text" name="title" value="<%= title %>" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Objective</label>
+          <textarea name="objective" rows="3" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;" required><%= objective %></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Technologies Used (comma separated)</label>
+          <input type="text" name="technologies" value="<%= technologies %>" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Current Development Stage</label>
+          <input type="text" name="stage" value="<%= stage %>" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Completed Modules (One per line)</label>
+          <textarea name="completedModules" rows="5" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;"><%= completedModules.join('\n') %></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Features Under Development (One per line)</label>
+          <textarea name="underDevelopment" rows="5" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;"><%= underDevelopment.join('\n') %></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+          <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Pending Tasks (One per line)</label>
+          <textarea name="pendingTasks" rows="5" style="width: 100%; padding: 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px;"><%= pendingTasks.join('\n') %></textarea>
+        </div>
+
+        <button type="submit" class="hero-btn primary-btn" style="width: 100%; justify-content: center;">
+          <span>Save Changes</span>
+        </button>
+      </form>
+    </div>
+  </main>
+
+</body>
+</html>
