@@ -7,7 +7,7 @@
   <title>Select Board — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="step-body">
@@ -22,7 +22,11 @@
         <option value="English">English</option>
         <option value="Hindi">हिंदी</option>
         <option value="Telugu">తెలుగు</option>
+        <option value="Tamil">தமிழ்</option>
+        <option value="Kannada">ಕನ್ನಡ</option>
+        <option value="Malayalam">മലയാളം</option>
       </select>
+      <a href="/" data-i18n="Home">Home</a>
     </div>
   </nav>
 
@@ -32,12 +36,12 @@
       <div class="step-progress" id="step-progress">
         <div class="step-dot active" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label">Board</span>
+          <span class="step-dot-label" data-i18n="Board">Board</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Subjects</span>
+          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
         </div>
       </div>
 
@@ -90,9 +94,7 @@
         switcher.addEventListener('change', (e) => {
           const selectedLang = e.target.value;
           localStorage.setItem('appLang', selectedLang);
-          if (window.applyLanguage) {
-            window.applyLanguage(selectedLang);
-          }
+          if (window.applyLanguage) window.applyLanguage(selectedLang);
         });
       }
     });

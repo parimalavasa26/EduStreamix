@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
@@ -24,13 +24,13 @@
     <div class="nav-links">
       <select id="nav-lang-switcher" class="nav-lang-switcher">
         <option value="English">English</option>
-        <option value="Hindi">Hindi</option>
-        <option value="Telugu">Telugu</option>
-        <option value="Tamil">Tamil</option>
-        <option value="Kannada">Kannada</option>
-        <option value="Malayalam">Malayalam</option>
+        <option value="Hindi">हिंदी</option>
+        <option value="Telugu">తెలుగు</option>
+        <option value="Tamil">தமிழ்</option>
+        <option value="Kannada">ಕನ್ನಡ</option>
+        <option value="Malayalam">മലയാളം</option>
       </select>
-      <a href="/">Home</a>
+      <a href="/" data-i18n="Home">Home</a>
     </div>
   </nav>
 
@@ -41,38 +41,46 @@
       <div class="step-progress" id="step-progress">
         <div class="step-dot active" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label">Language</span>
+          <span class="step-dot-label" data-i18n="Language">Language</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Board</span>
+          <span class="step-dot-label" data-i18n="Board">Board</span>
         </div>
         <div class="step-line"></div>
         <div class="step-dot" data-step="3">
           <span class="step-dot-inner">3</span>
-          <span class="step-dot-label">Subjects</span>
+          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
         </div>
       </div>
 
       <div class="step-header">
-        <a href="/" class="back-step-link" id="back-to-boards">← Back to Home</a>
-        <h1 class="step-title"><span>Select Language</span></h1>
-        <p class="step-subtitle">Choose your preferred language for your lessons</p>
+        <a href="/" class="back-step-link" id="back-to-home" data-i18n="Back to Home">← Back to Home</a>
+        <h1 class="step-title"><span data-i18n="Select Language">Select Language</span></h1>
+        <p class="step-subtitle" data-i18n="Choose your preferred language for your lessons">Choose your preferred language for your lessons</p>
       </div>
 
       <div class="board-grid" id="language-grid">
-        <% const langs=['English', 'Hindi' , 'Telugu' , 'Tamil' , 'Kannada' , 'Malayalam' ]; %>
-          <% langs.forEach(lang=> { %>
-            <a href="#" class="board-card language-selector" data-lang="<%= lang %>">
-              <div class="board-card-glow"></div>
-              <span class="board-icon">🌐</span>
-              <h3 class="board-card-title">
-                <%= lang %>
-              </h3>
-              <span class="board-card-arrow">→</span>
-            </a>
-            <% }) %>
+        <%
+          const langs = [
+            { key: 'English',   native: 'English',   flag: '🇬🇧' },
+            { key: 'Hindi',     native: 'हिंदी',     flag: '🇮🇳' },
+            { key: 'Telugu',    native: 'తెలుగు',    flag: '🇮🇳' },
+            { key: 'Tamil',     native: 'தமிழ்',     flag: '🇮🇳' },
+            { key: 'Kannada',   native: 'ಕನ್ನಡ',    flag: '🇮🇳' },
+            { key: 'Malayalam', native: 'മലയാളം',  flag: '🇮🇳' }
+          ];
+        %>
+        <% langs.forEach(lang => { %>
+          <a href="#" class="board-card language-selector" id="lang-<%= lang.key.toLowerCase() %>" data-lang="<%= lang.key %>">
+            <div class="board-card-glow"></div>
+            <span class="board-icon"><%= lang.flag %></span>
+            <h3 class="board-card-title"><%= lang.native %></h3>
+            <p class="board-card-label"><%= lang.key %></p>
+            <span class="board-card-arrow">→</span>
+          </a>
+        <% }) %>
       </div>
 
     </div>
@@ -87,26 +95,12 @@
 
   <script src="/js/i18n.js"></script>
   <script>
-    // Language code map for Google Translate (deprecated but kept for structure)
-    const langCodesLoc = {
-      'English': 'en',
-      'Hindi': 'hi',
-      'Telugu': 'te',
-      'Tamil': 'ta',
-      'Kannada': 'kn',
-      'Malayalam': 'ml'
-    };
-
     document.querySelectorAll('.language-selector').forEach(el => {
       el.addEventListener('click', function (e) {
         e.preventDefault();
         const selectedLang = this.getAttribute('data-lang');
-
-        // Use our new instant system instead of Google Translate cookies
         if (window.applyLanguage) applyLanguage(selectedLang);
         else localStorage.setItem('appLang', selectedLang);
-
-        // Redirect to boards step
         window.location.href = '/boards';
       });
     });

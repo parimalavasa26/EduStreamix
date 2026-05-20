@@ -7,7 +7,7 @@
   <title>EduStreamix — Distraction-Free Learning</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Permanent+Marker&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="landing-body">
@@ -18,7 +18,15 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <a href="#features">Why EduStreamix</a>
+      <a href="#features" data-i18n="Why EduStreamix">Why EduStreamix</a>
+      <select class="nav-lang-switcher" id="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">हिंदी</option>
+        <option value="Telugu">తెలుగు</option>
+        <option value="Tamil">தமிழ்</option>
+        <option value="Kannada">ಕನ್ನಡ</option>
+        <option value="Malayalam">മലയാളം</option>
+      </select>
     </div>
   </nav>
 
@@ -32,7 +40,7 @@
         <h1 class="brand-title-marker">
           <span class="marker-edu">EDU</span><span class="marker-stream">STREAMI</span><span class="marker-x">X</span>
         </h1>
-        <div class="grade-badge">For Grade 8</div>
+        <div class="grade-badge" data-i18n="Class 8">For Grade 8</div>
       </div>
       <div class="logo-banner-right">
         <img src="/uploads/logos/otbi_logo.jpg" alt="Osmania Technology Business Incubator" class="partner-logo partner-logo-right" />
@@ -42,15 +50,14 @@
 
   <!-- HERO -->
   <section class="hero" id="hero">
-
     <div class="hero-content">
-      <p class="hero-tagline">The distraction-free platform</p>
-      <p class="hero-subtitle">
+      <p class="hero-tagline" data-i18n="The distraction-free platform">The distraction-free platform</p>
+      <p class="hero-subtitle" data-i18n="EduStreamix is your focused learning space">
         EduStreamix is your focused learning space—where content is organized,
         distractions are minimized, and learning becomes effective.
       </p>
       <a href="/boards?grade=8" class="hero-btn" id="dive-into-learning-btn">
-        <span>Dive into Learning</span>
+        <span data-i18n="Dive into Learning">Dive into Learning</span>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
     </div>
@@ -58,18 +65,18 @@
 
   <!-- FEATURES / WHY EDUSTREAMIX -->
   <section class="features" id="features">
-    <h2 class="section-title">Why EduStreamix?</h2>
-    <p class="section-subtitle">Everything you need, nothing you don't.</p>
+    <h2 class="section-title" data-i18n="Why EduStreamix">Why EduStreamix?</h2>
+    <p class="section-subtitle" data-i18n="Zero Distractions">Everything you need, nothing you don't.</p>
     <div class="features-grid">
       <div class="feature-card" id="feature-1">
         <div class="feature-icon-wrap"><div class="feature-icon">🛡️</div></div>
-        <h3>Distraction-Free</h3>
-        <p>No ads, no recommendations, no rabbit holes. Videos play right here — clean, focused, and controlled.</p>
+        <h3 data-i18n="Distraction-Free">Distraction-Free</h3>
+        <p data-i18n="No ads, no recommendations">No ads, no recommendations, no rabbit holes. Videos play right here — clean, focused, and controlled.</p>
       </div>
       <div class="feature-card" id="feature-3">
         <div class="feature-icon-wrap"><div class="feature-icon">📚</div></div>
-        <h3>Organized Content</h3>
-        <p>Subjects, chapters, and topics — all structured so you never lose your way.</p>
+        <h3 data-i18n="Organized Content">Organized Content</h3>
+        <p data-i18n="Subjects, chapters, and topics">Subjects, chapters, and topics — all structured so you never lose your way.</p>
       </div>
     </div>
   </section>
@@ -81,9 +88,24 @@
     </div>
   </footer>
 
+  <script src="/js/i18n.js"></script>
   <script>
+    // Navbar scroll effect
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Language switcher
+    document.addEventListener('DOMContentLoaded', () => {
+      const switcher = document.getElementById('nav-lang-switcher');
+      if (switcher) {
+        switcher.value = localStorage.getItem('appLang') || 'English';
+        switcher.addEventListener('change', (e) => {
+          const selectedLang = e.target.value;
+          localStorage.setItem('appLang', selectedLang);
+          if (window.applyLanguage) window.applyLanguage(selectedLang);
+        });
+      }
     });
   </script>
 </body>

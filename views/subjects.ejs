@@ -7,7 +7,7 @@
   <title>Subjects — EduStreamix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Cinzel:wght@400;700&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body class="step-body">
@@ -18,8 +18,15 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <span class="nav-lang-display" id="nav-lang-display">English</span>
-      <a href="/">Home</a>
+      <select class="nav-lang-switcher" id="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">हिंदी</option>
+        <option value="Telugu">తెలుగు</option>
+        <option value="Tamil">தமிழ்</option>
+        <option value="Kannada">ಕನ್ನಡ</option>
+        <option value="Malayalam">മലയാളം</option>
+      </select>
+      <a href="/" data-i18n="Home">Home</a>
     </div>
   </nav>
 
@@ -29,17 +36,12 @@
       <div class="step-progress" id="step-progress">
         <div class="step-dot completed" data-step="1">
           <span class="step-dot-inner">1</span>
-          <span class="step-dot-label">Language</span>
+          <span class="step-dot-label" data-i18n="Board">Board</span>
         </div>
         <div class="step-line filled"></div>
-        <div class="step-dot completed" data-step="2">
+        <div class="step-dot active" data-step="2">
           <span class="step-dot-inner">2</span>
-          <span class="step-dot-label">Board</span>
-        </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="3">
-          <span class="step-dot-inner">3</span>
-          <span class="step-dot-label">Subjects</span>
+          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
         </div>
       </div>
 
@@ -85,11 +87,13 @@
         try {
           const res = await fetch('/api/subjects?grade=' + GRADE + '&board=' + BOARD + '&lang=' + appLang);
           const data = await res.json();
+
           if (!data.subjects || !data.subjects.length) {
-            grid.innerHTML = '<p class="no-data-msg">No subjects found for this selection.</p>';
+            const msg = window.t ? window.t('No subjects found.') : 'No subjects found.';
+            grid.innerHTML = '<p class="no-data-msg">' + msg + '</p>';
             return;
           }
-          
+
           grid.innerHTML = '';
           data.subjects.forEach((subjTranslated, i) => {
             const originalSubj = data.originalSubjects ? data.originalSubjects[i] : subjTranslated;
@@ -99,40 +103,39 @@
             card.id = 'subject-' + originalSubj.toLowerCase().replace(/\s+/g, '-');
             card.innerHTML =
               '<span class="subject-icon">' + (SUBJECT_ICONS[originalSubj] || '📖') + '</span>' +
-              '<span class="subject-name" data-i18n="' + originalSubj + '">' + subjTranslated + '</span>';
+              '<span class="subject-name">' + subjTranslated + '</span>';
             grid.appendChild(card);
           });
         } catch (e) {
-          grid.innerHTML = '<p class="no-data-msg error-msg">Error loading subjects. Please try again.</p>';
+          const msg = window.t ? window.t('Error loading subjects.') : 'Error loading subjects.';
+          grid.innerHTML = '<p class="no-data-msg error-msg">' + msg + '</p>';
         }
       }
 
-      loadSubjects();
-      
-      // Make loadSubjects globally available for the languageChanged event
+      // Make globally available so languageChanged can trigger reload
       window.loadSubjects = loadSubjects;
+
+      // Initial load — wait for i18n to be ready so t() works
+      document.addEventListener('languageChanged', () => {
+        loadSubjects();
+      });
+      // Also load immediately in case i18nReady fires before DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.i18nReady) loadSubjects();
+      });
     })();
   </script>
   <script src="/js/i18n.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const display = document.getElementById('nav-lang-display');
-      if (display) {
-        const lang = localStorage.getItem('appLang') || 'English';
-        const languageNames = {
-          'English': 'English',
-          'Hindi': 'हिंदी',
-          'Telugu': 'తెలుగు',
-          'Tamil': 'தமிழ்',
-          'Kannada': 'ಕನ್ನಡ',
-          'Malayalam': 'മലയാളം'
-        };
-        display.textContent = languageNames[lang] || lang;
-      }
-    });
-    document.addEventListener('languageChanged', async (e) => {
-      if (window.loadSubjects) {
-        window.loadSubjects();
+      const switcher = document.getElementById('nav-lang-switcher');
+      if (switcher) {
+        switcher.value = localStorage.getItem('appLang') || 'English';
+        switcher.addEventListener('change', (e) => {
+          const selectedLang = e.target.value;
+          localStorage.setItem('appLang', selectedLang);
+          if (window.applyLanguage) window.applyLanguage(selectedLang);
+        });
       }
     });
   </script>

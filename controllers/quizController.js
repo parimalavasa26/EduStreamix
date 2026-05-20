@@ -1,13 +1,22 @@
 const axios = require('axios');
+const translate = require('google-translate-api-x');
 
 // ─────────────────────────────
 // CONFIG
 // ─────────────────────────────
 
-// Based on diagnostic check, these are the models available for your API key:
-const PRIMARY_MODEL = 'gemini-2.0-flash'; 
+const PRIMARY_MODEL  = 'gemini-2.0-flash';
 const FALLBACK_MODEL = 'gemini-2.5-flash';
-const API_VERSION = 'v1';
+const API_VERSION    = 'v1';
+
+const LANG_CODES = {
+  'English':   'en',
+  'Hindi':     'hi',
+  'Telugu':    'te',
+  'Tamil':     'ta',
+  'Kannada':   'kn',
+  'Malayalam': 'ml'
+};
 
 /**
  * Robust JSON extraction to handle AI noise and markdown fences.
@@ -20,7 +29,7 @@ function extractJSON(text) {
       return JSON.parse(cleaned);
     } catch (e) {
       const start = cleaned.indexOf('{');
-      const end = cleaned.lastIndexOf('}');
+      const end   = cleaned.lastIndexOf('}');
       if (start !== -1 && end !== -1) {
         return JSON.parse(cleaned.substring(start, end + 1));
       }
@@ -65,7 +74,7 @@ Return ONLY the JSON object. No markdown code blocks. No backticks. No intro/out
  */
 async function callGemini(model, prompt) {
   const url = `https://generativelanguage.googleapis.com/${API_VERSION}/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
-  
+
   const payload = {
     contents: [{
       parts: [{ text: prompt }]
@@ -83,20 +92,53 @@ async function callGemini(model, prompt) {
 }
 
 /**
+ * Translate all text fields of a quiz question array to the target language.
+ * Uses google-translate-api-x with parallel requests for speed.
+ */
+async function translateQuiz(questions, targetCode) {
+  if (targetCode === 'en') return questions;
+
+  return Promise.all(questions.map(async (q) => {
+    try {
+      // Translate all strings in parallel: question + 4 options + explanation
+      const texts = [q.question, ...q.options, q.explanation];
+      const translated = await Promise.all(
+        texts.map(async (text) => {
+          try {
+            const result = await translate(text, { to: targetCode });
+            return result.text;
+          } catch (e) {
+            return text; // fallback to original
+          }
+        })
+      );
+      return {
+        question:           translated[0],
+        options:            translated.slice(1, 5),
+        correctAnswerIndex: q.correctAnswerIndex,
+        explanation:        translated[5]
+      };
+    } catch (err) {
+      return q; // on error return original question
+    }
+  }));
+}
+
+/**
  * Main Controller: Fresh Generation via Gemini (No Caching)
  */
 exports.generateTest = async (req, res) => {
-  const { focusTopic } = req.body;
-  
+  const { focusTopic, lang } = req.body;
+
   if (!process.env.GEMINI_API_KEY) {
     return res.status(500).json({ error: "Configuration Error", message: "API Key is missing." });
   }
 
-  console.log(`\n=== AI QUIZ REQUEST: ${focusTopic} (Gemini 2.x Mode) ===`);
+  console.log(`\n=== AI QUIZ REQUEST: ${focusTopic} | lang=${lang || 'English'} ===`);
 
   try {
     const prompt = buildPrompt(req.body);
-    let quizData = null;
+    let quizData  = null;
     let lastError = null;
 
     // 1. Primary Attempt (gemini-2.0-flash)
@@ -126,6 +168,19 @@ exports.generateTest = async (req, res) => {
     }
 
     console.log(`>> Successfully generated ${quizData.questions.length} MCQs.`);
+
+    // 3. Translate if a non-English language is requested
+    const targetCode = LANG_CODES[lang] || 'en';
+    if (targetCode !== 'en' && quizData.questions && quizData.questions.length > 0) {
+      console.log(`>> Translating quiz to ${lang} (${targetCode})...`);
+      try {
+        quizData.questions = await translateQuiz(quizData.questions, targetCode);
+        console.log(`>> Translation complete.`);
+      } catch (translateErr) {
+        console.warn(`>> Translation failed, returning English quiz: ${translateErr.message}`);
+      }
+    }
+
     return res.json(quizData);
 
   } catch (err) {

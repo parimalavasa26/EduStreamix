@@ -10,13 +10,14 @@
       max-width: 600px;
       margin: 50px auto;
       padding: 30px;
-      background: var(--card-bg);
+      background: var(--bg-card);
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(245,158,11,0.1);
+      border: 1px solid var(--border-glass);
     }
     .admin-container h1 {
       margin-bottom: 20px;
-      color: var(--text-color);
+      color: var(--text-primary);
     }
     .form-group {
       margin-bottom: 15px;
@@ -24,20 +25,26 @@
     .form-group label {
       display: block;
       margin-bottom: 5px;
-      color: var(--text-color);
+      color: var(--text-secondary);
       font-weight: 500;
     }
     .form-group input, .form-group select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
-      border: 1px solid rgba(0,0,0,0.1);
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text-primary);
       font-size: 1rem;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--accent-1);
     }
     .btn-upload {
       width: 100%;
       padding: 12px;
-      background: var(--primary-color);
+      background: var(--accent-1);
       color: white;
       border: none;
       border-radius: 8px;
@@ -45,23 +52,25 @@
       font-weight: 600;
       cursor: pointer;
       margin-top: 10px;
+      transition: background 0.2s;
     }
     .btn-upload:hover {
-      background: var(--primary-hover);
+      background: var(--accent-2);
     }
     .status-msg {
       margin-top: 15px;
       padding: 10px;
       border-radius: 8px;
       display: none;
+      font-weight: 500;
     }
     .status-success {
-      background: rgba(46, 213, 115, 0.1);
-      color: #2ed573;
+      background: rgba(132, 204, 22, 0.15);
+      color: #3f6212;
     }
     .status-error {
-      background: rgba(255, 71, 87, 0.1);
-      color: #ff4757;
+      background: rgba(239, 68, 68, 0.12);
+      color: #991b1b;
     }
   </style>
 </head>

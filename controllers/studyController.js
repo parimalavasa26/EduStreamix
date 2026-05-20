@@ -81,8 +81,8 @@ exports.renderStudy = (req, res) => {
  * GET /api/subjects?grade=8&board=CBSE
  * Returns list of subjects for a given class and board
  */
-exports.getSubjects = (req, res) => {
-  const { grade, board } = req.query;
+exports.getSubjects = async (req, res) => {
+  const { grade, board, lang } = req.query;
 
   if (!grade || !board) {
     return res.status(400).json({ error: 'grade and board are required' });
@@ -95,8 +95,38 @@ exports.getSubjects = (req, res) => {
     return res.status(404).json({ error: 'No subjects found for this class and board' });
   }
 
-  res.json({ grade: gradeNum, board: board.toUpperCase(), subjects });
+  // If English or no lang requested, return as-is
+  const langCodes = { 'English': 'en', 'Hindi': 'hi', 'Telugu': 'te', 'Tamil': 'ta', 'Kannada': 'kn', 'Malayalam': 'ml' };
+  const targetCode = langCodes[lang] || 'en';
+
+  if (targetCode === 'en' || !lang || lang === 'English') {
+    return res.json({ grade: gradeNum, board: board.toUpperCase(), subjects, originalSubjects: subjects });
+  }
+
+  // Translate subject names in parallel
+  try {
+    const translated = await Promise.all(
+      subjects.map(async (name) => {
+        try {
+          const result = await translate(name, { to: targetCode });
+          return result.text;
+        } catch (e) {
+          return name; // fallback to English
+        }
+      })
+    );
+    return res.json({
+      grade: gradeNum,
+      board: board.toUpperCase(),
+      subjects: translated,
+      originalSubjects: subjects
+    });
+  } catch (err) {
+    // On any error return English
+    return res.json({ grade: gradeNum, board: board.toUpperCase(), subjects, originalSubjects: subjects });
+  }
 };
+
 
 /**
  * GET /api/chapters?grade=8&board=CBSE&subject=Mathematics
