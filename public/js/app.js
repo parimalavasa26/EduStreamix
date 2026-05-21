@@ -244,40 +244,6 @@
       if (videoData.likeCount) meta += '<span>👍 ' + Number(videoData.likeCount).toLocaleString() + ' likes</span>';
       metaEl.innerHTML = meta;
 
-      // Configure Mark as Watched button state and click listener
-      const markBtn = document.getElementById('mark-watched-btn');
-      if (markBtn) {
-        const watchedKey = `watched_${GRADE}_${BOARD}_${SUBJECT}`;
-        
-        function updateBtnUI() {
-          const currentList = JSON.parse(localStorage.getItem(watchedKey) || '[]');
-          const isCompleted = currentList.includes(currentChapterData.chapterName);
-          if (isCompleted) {
-            markBtn.classList.add('completed');
-            markBtn.querySelector('.btn-text').textContent = window.t ? window.t('Watched') : 'Watched';
-            markBtn.querySelector('.btn-text').setAttribute('data-i18n', 'Watched');
-          } else {
-            markBtn.classList.remove('completed');
-            markBtn.querySelector('.btn-text').textContent = window.t ? window.t('Mark as Watched') : 'Mark as Watched';
-            markBtn.querySelector('.btn-text').setAttribute('data-i18n', 'Mark as Watched');
-          }
-        }
-        
-        updateBtnUI();
-        
-        markBtn.onclick = () => {
-          let currentList = JSON.parse(localStorage.getItem(watchedKey) || '[]');
-          const chapName = currentChapterData.chapterName;
-          if (currentList.includes(chapName)) {
-            currentList = currentList.filter(name => name !== chapName);
-          } else {
-            currentList.push(chapName);
-          }
-          localStorage.setItem(watchedKey, JSON.stringify(currentList));
-          updateBtnUI();
-        };
-      }
-
     } catch (e) {
       titleEl.textContent = 'Error loading video';
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';

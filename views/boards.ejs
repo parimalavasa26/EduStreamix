@@ -25,11 +25,11 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      height: 56px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 clamp(0.85rem, 3vw, 2rem);
+      padding: 0 clamp(0.65rem, 2.4vw, 1.5rem);
       background: rgba(255,251,235,0.88);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(245,158,11,0.12);
@@ -105,18 +105,18 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 68px clamp(0.75rem, 3vw, 1.25rem) 76px;
+      padding: 62px clamp(0.65rem, 2.5vw, 1rem) 68px;
       min-height: 0;
     }
 
     /* Header */
     .bp-header {
       text-align: center;
-      margin-bottom: clamp(0.8rem, 2.5vh, 1.25rem);
+      margin-bottom: clamp(0.65rem, 2vh, 1rem);
     }
     .bp-title {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.55rem, 4.5vw, 2.35rem);
+      font-size: clamp(1.35rem, 3.8vw, 2.1rem);
       font-weight: 900;
       color: #451a03;
       letter-spacing: -0.5px;
@@ -138,7 +138,7 @@
       justify-content: center;
       gap: clamp(0.7rem, 2vw, 1rem);
       width: 100%;
-      max-width: 660px;
+      max-width: 600px;
     }
 
     /* Individual board card */
@@ -150,12 +150,12 @@
       justify-content: center;
       gap: 0.45rem;
       width: 100%;
-      min-height: 152px;
+      min-height: 132px;
       aspect-ratio: 1 / 0.82;
       padding: clamp(0.8rem, 2vw, 1.05rem);
       background: rgba(255,255,255,0.84);
       border: 1.5px solid rgba(245,158,11,0.24);
-      border-radius: 18px;
+      border-radius: 16px;
       cursor: pointer;
       transition: all 0.25s ease;
       box-shadow: 0 8px 24px rgba(120,53,15,0.07);
@@ -186,15 +186,15 @@
     .bp-card-emoji {
       display: grid;
       place-items: center;
-      width: 46px;
-      height: 46px;
-      font-size: 2rem;
+      width: 40px;
+      height: 40px;
+      font-size: 1.75rem;
       line-height: 1;
       filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
     }
     .bp-card-name {
       font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.2rem, 2.8vw, 1.45rem);
+      font-size: clamp(1.05rem, 2.5vw, 1.32rem);
       font-weight: 900;
       color: #451a03;
       background: linear-gradient(135deg, #d97706, #f97316);
@@ -205,7 +205,7 @@
     }
     .bp-card-desc {
       font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #92400e;
       margin: 0;
@@ -228,7 +228,7 @@
       background: rgba(255,251,235,0.92);
       backdrop-filter: blur(10px);
       border-top: 1px solid rgba(245,158,11,0.12);
-      padding: 0.55rem clamp(0.85rem,4vw,2rem);
+      padding: 0.5rem clamp(0.7rem,3vw,1.5rem);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -279,14 +279,14 @@
       .bp-home-btn { padding: 0.32rem 0.55rem; font-size: 0.78rem; }
       .bp-lang-label { display: none; }
       .bp-lang-select { max-width: 92px; padding: 0.28rem 0.42rem; font-size: 0.76rem; }
-      .bp-main { padding: 60px 0.7rem 68px; justify-content: center; }
+      .bp-main { padding: 56px 0.6rem 62px; justify-content: center; }
       .bp-header { margin-bottom: 0.7rem; }
       .bp-subtitle { font-size: 0.78rem; line-height: 1.25; }
       .bp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.48rem; max-width: 100%; }
-      .bp-card { min-height: 118px; aspect-ratio: auto; padding: 0.55rem 0.35rem; border-radius: 14px; gap: 0.26rem; }
-      .bp-card-emoji { width: 34px; height: 34px; font-size: 1.55rem; }
+      .bp-card { min-height: 104px; aspect-ratio: auto; padding: 0.48rem 0.3rem; border-radius: 13px; gap: 0.22rem; }
+      .bp-card-emoji { width: 30px; height: 30px; font-size: 1.35rem; }
       .bp-card-name { font-size: 1rem; }
-      .bp-card-desc { font-size: 0.64rem; line-height: 1.15; }
+      .bp-card-desc { font-size: 0.6rem; line-height: 1.12; }
       .bp-radio { width: 14px; height: 14px; }
       .bp-nav-btn { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
     }
