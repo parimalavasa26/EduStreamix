@@ -19,14 +19,17 @@
     </a>
     <div class="nav-links">
       <a href="#features" data-i18n="Why EduStreamix">Why EduStreamix</a>
-      <select class="nav-lang-switcher" id="nav-lang-switcher">
-        <option value="English">English</option>
-        <option value="Hindi">हिंदी</option>
-        <option value="Telugu">తెలుగు</option>
-        <option value="Tamil">தமிழ்</option>
-        <option value="Kannada">ಕನ್ನಡ</option>
-        <option value="Malayalam">മലയാളം</option>
-      </select>
+      <div class="nav-lang-group">
+        <span class="nav-lang-label" data-i18n="Select your language">Language:</span>
+        <select class="nav-lang-switcher" id="nav-lang-switcher">
+          <option value="English">English</option>
+          <option value="Hindi">हिंदी</option>
+          <option value="Telugu">తెలుగు</option>
+          <option value="Tamil">தமிழ்</option>
+          <option value="Kannada">ಕನ್ನಡ</option>
+          <option value="Malayalam">മലയാളം</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -89,14 +92,15 @@
   </footer>
 
   <script src="/js/i18n.js"></script>
+  <script src="/js/global-nav.js"></script>
   <script>
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
     });
 
-    // Language switcher
     document.addEventListener('DOMContentLoaded', () => {
+      // Language switcher
       const switcher = document.getElementById('nav-lang-switcher');
       if (switcher) {
         switcher.value = localStorage.getItem('appLang') || 'English';
@@ -105,6 +109,21 @@
           localStorage.setItem('appLang', selectedLang);
           if (window.applyLanguage) window.applyLanguage(selectedLang);
         });
+      }
+
+      // ── 3-second auto-transition to boards ──────────────────
+      let autoNavTimer = setTimeout(() => {
+        const lang = localStorage.getItem('appLang') || 'English';
+        document.body.classList.add('page-fade-out');
+        setTimeout(() => {
+          window.location.href = '/boards?grade=8&language=' + encodeURIComponent(lang);
+        }, 500);
+      }, 3000);
+
+      // Cancel auto-nav if user clicks the CTA themselves
+      const cta = document.getElementById('dive-into-learning-btn');
+      if (cta) {
+        cta.addEventListener('click', () => clearTimeout(autoNavTimer));
       }
     });
   </script>

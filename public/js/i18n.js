@@ -23,7 +23,7 @@
   };
 
   // ── Cache busting: clear old locale cache on version mismatch ──
-  const LOCALE_VERSION = 'v3';
+  const LOCALE_VERSION = 'v4';
   if (localStorage.getItem('localeVersion') !== LOCALE_VERSION) {
     Object.keys(LANG_CODES).forEach(langName => {
       localStorage.removeItem('locale_' + LANG_CODES[langName]);
@@ -49,7 +49,7 @@
     }
 
     try {
-      const res  = await fetch('/locales/' + code + '.json?v=3');
+      const res  = await fetch('/locales/' + code + '.json?v=4');
       const data = await res.json();
       allLocales[code] = data;
       // Store with version stamp so we can bust stale cache later

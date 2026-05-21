@@ -27,6 +27,11 @@ const quizQuestionSchema = new mongoose.Schema({
   correctAnswer: { type: Number, required: true }
 }, { _id: false });
 
+const textbookContentSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: { type: String, required: true }
+}, { _id: false });
+
 const chapterSchema = new mongoose.Schema({
   lessonNo:    { type: String, default: '' },
   chapterName: { type: String, required: true },
@@ -35,6 +40,7 @@ const chapterSchema = new mongoose.Schema({
   pdfTitle:    { type: String, default: '' },
   keyMoments: [keyMomentSchema],
   quizQuestions: [quizQuestionSchema],
+  textbookContent: [textbookContentSchema],
   summary:     { type: String, default: '' }
 }, { _id: false });
 

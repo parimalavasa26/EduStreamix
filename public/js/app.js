@@ -45,6 +45,7 @@
   async function showChapters() {
     hideAllSections();
     chaptersSection.style.display = '';
+    if (window.updateGlobalNav) window.updateGlobalNav();
     chaptersList.innerHTML = `
       <div class="loader-spinner" style="margin: 0 auto;"></div>
       ${Array(3).fill('<div class="skeleton-item" style="margin-top:1rem;"></div>').join('')}
@@ -132,6 +133,7 @@
     if (!instantSwitch) {
       hideAllSections();
       videoSection.style.display = '';
+      if (window.updateGlobalNav) window.updateGlobalNav();
       loader.style.display = 'flex';
       placeholder.style.display = 'none';
       titleEl.textContent = window.t ? window.t('Loading video...') : 'Loading video...';
@@ -384,6 +386,25 @@
 
   /* ── Back Button ── */
   document.getElementById('back-from-video').addEventListener('click', showChapters);
+
+  // Set up global nav callbacks to control Back / Next buttons on study page
+  window.globalNavCallbacks = {
+    update: (backBtn, nextBtn) => {
+      const isVideoVisible = (videoSection.style.display !== 'none');
+      if (isVideoVisible) {
+        backBtn.onclick = () => {
+          showChapters();
+        };
+        nextBtn.style.display = 'none';
+      } else {
+        backBtn.onclick = () => {
+          window.location.href = `/subjects?grade=${GRADE}&board=${BOARD}&language=${encodeURIComponent(LANGUAGE)}`;
+        };
+        nextBtn.style.display = 'flex';
+        nextBtn.disabled = true;
+      }
+    }
+  };
 
   /* ── Init: wait for languageChanged from i18n.js so t() is ready ── */
   // The first languageChanged fires on DOMContentLoaded from i18n.js

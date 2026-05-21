@@ -33,20 +33,7 @@
   <main class="step-main">
     <div class="step-container">
 
-      <div class="step-progress" id="step-progress">
-        <div class="step-dot active" data-step="1">
-          <span class="step-dot-inner">1</span>
-          <span class="step-dot-label" data-i18n="Board">Board</span>
-        </div>
-        <div class="step-line"></div>
-        <div class="step-dot" data-step="2">
-          <span class="step-dot-inner">2</span>
-          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
-        </div>
-      </div>
-
       <div class="step-header">
-        <a href="/" class="back-step-link" id="back-to-home" data-i18n="Back to Home">← Back to Home</a>
         <h1 class="step-title"><span data-i18n="Select Board">Select Board</span></h1>
         <p class="step-subtitle" data-i18n="Choose your education board to see relevant subjects">Choose your education board to see relevant subjects</p>
       </div>
@@ -86,8 +73,17 @@
   </footer>
 
   <script src="/js/i18n.js"></script>
+  <script src="/js/global-nav.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Set click handlers on board cards to store selectedBoard
+      document.querySelectorAll('.board-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const board = card.id.replace('board-card-', '').toUpperCase();
+          localStorage.setItem('selectedBoard', board);
+        });
+      });
+
       const switcher = document.getElementById('nav-lang-switcher');
       if (switcher) {
         switcher.value = localStorage.getItem('appLang') || 'English';

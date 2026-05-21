@@ -33,20 +33,7 @@
   <main class="step-main">
     <div class="step-container">
 
-      <div class="step-progress" id="step-progress">
-        <div class="step-dot completed" data-step="1">
-          <span class="step-dot-inner">1</span>
-          <span class="step-dot-label" data-i18n="Board">Board</span>
-        </div>
-        <div class="step-line filled"></div>
-        <div class="step-dot active" data-step="2">
-          <span class="step-dot-inner">2</span>
-          <span class="step-dot-label" data-i18n="Subjects">Subjects</span>
-        </div>
-      </div>
-
       <div class="step-header">
-        <a href="/boards" class="back-step-link" id="back-to-boards" data-i18n="Back to Boards">← Back to Boards</a>
         <h1 class="step-title"><span class="hero-highlight" data-i18n="Subjects">Subjects</span></h1>
         <p class="step-subtitle font-lucida" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
       </div>
@@ -104,6 +91,12 @@
             card.innerHTML =
               '<span class="subject-icon">' + (SUBJECT_ICONS[originalSubj] || '📖') + '</span>' +
               '<span class="subject-name">' + subjTranslated + '</span>';
+            
+            // Save selection to localStorage on click
+            card.addEventListener('click', () => {
+              localStorage.setItem('selectedSubject', originalSubj);
+            });
+
             grid.appendChild(card);
           });
         } catch (e) {
@@ -126,6 +119,7 @@
     })();
   </script>
   <script src="/js/i18n.js"></script>
+  <script src="/js/global-nav.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const switcher = document.getElementById('nav-lang-switcher');

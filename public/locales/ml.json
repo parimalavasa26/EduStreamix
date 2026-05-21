@@ -79,5 +79,14 @@
   "Choose your education board to see relevant subjects": "പ്രസക്തമായ വിഷയങ്ങൾ കാണാൻ വിദ്യാഭ്യാസ ബോർഡ് തിരഞ്ഞെടുക്കുക",
   "Choose your preferred language for your lessons": "പാഠങ്ങൾക്കായി ഇഷ്ടഭാഷ തിരഞ്ഞെടുക്കുക",
   "Pick a subject to explore chapters and start watching": "അധ്യായങ്ങൾ പര്യവേഷണം ചെയ്യാനും കാണാൻ തുടങ്ങാനും വിഷയം തിരഞ്ഞെടുക്കുക",
-  "General": "പൊതു"
+  "General": "പൊതു",
+  "Select your Board": "നിങ്ങളുടെ ബോർഡ് തിരഞ്ഞെടുക്കുക",
+  "Select your Subject": "നിങ്ങളുടെ വിഷയം തിരഞ്ഞെടുക്കുക",
+  "Select your language": "ഭാഷ:",
+  "Select your Chapter": "നിങ്ങളുടെ അധ്യായം തിരഞ്ഞെടുക്കുക",
+  "Back to Modes": "← മോഡുകളിലേക്ക് മടങ്ങുക",
+  "Back": "പിന്നോട്ട്",
+  "Next": "അടുത്തത്",
+  "Generate Quiz": "ക്വിസ് ഉണ്ടാക്കുക",
+  "Test your knowledge with an AI-generated quiz!": "AI-ജനറേറ്റ് ചെയ്ത ക്വിസ് ഉപയോഗിച്ച് നിങ്ങളുടെ അറിവ് പരീക്ഷിക്കുക!"
 }

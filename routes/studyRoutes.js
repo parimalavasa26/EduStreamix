@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/studyController');
+const chatController = require('../controllers/chatController');
 
 // ── Pages ───────────────────────────────────
 router.get('/',         ctrl.renderLanding);
@@ -21,6 +22,7 @@ router.get('/api/video',    ctrl.getVideo);
 // Translation endpoint
 router.post('/translate-batch', ctrl.translateBatch);
 router.post('/api/upload-pdf', ctrl.uploadPdf);
+router.post('/api/chat', chatController.handleChat);
 
 
 // ── Progress Dashboard ──────────────────────

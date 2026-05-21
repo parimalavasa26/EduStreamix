@@ -171,7 +171,7 @@ exports.getChapters = async (req, res) => {
     // 2. Fallback to the original Subject schema
     const doc = await Subject.findOne(
       { grade: gradeNum, board: boardUp, subject },
-      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.summary': 1, 'units.chapters.videos': 1 }
+      { 'units.unitName': 1, 'units.chapters.lessonNo': 1, 'units.chapters.chapterName': 1, 'units.chapters.type': 1, 'units.chapters.pdfUrl': 1, 'units.chapters.pdfTitle': 1, 'units.chapters.keyMoments': 1, 'units.chapters.quizQuestions': 1, 'units.chapters.textbookContent': 1, 'units.chapters.summary': 1, 'units.chapters.videos': 1 }
     ).lean();
 
     if (doc && doc.units && doc.units.length > 0) {
@@ -187,6 +187,7 @@ exports.getChapters = async (req, res) => {
             pdfTitle: ch.pdfTitle,
             keyMoments: ch.keyMoments,
             quizQuestions: ch.quizQuestions,
+            textbookContent: ch.textbookContent,
             summary: ch.summary,
             originalChapterName: ch.chapterName // Keep original for video fetching
           });
