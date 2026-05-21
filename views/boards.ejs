@@ -275,16 +275,20 @@
 
     /* Mobile adjustments */
     @media (max-width: 480px) {
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
       .bp-page {
-        height: auto;
+        height: 100vh;
         min-height: 100vh;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: hidden;
       }
       .bp-nav {
-        height: 52px;
+        height: 50px;
         gap: 10px;
-        padding-inline: 16px;
+        padding: 8px 12px;
       }
       .bp-brand { min-width: 0; }
       .bp-brand-text {
@@ -313,62 +317,71 @@
         font-size: 0.76rem;
       }
       .bp-main {
-        min-height: auto;
-        padding: 76px 16px 96px;
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+        padding: 58px 16px 66px;
         justify-content: flex-start;
+        gap: 6px;
       }
       .bp-header {
         width: 100%;
+        flex-shrink: 0;
         margin-bottom: 0;
       }
       .bp-title {
         text-align: center;
-        font-size: 2rem;
+        font-size: 20px;
         line-height: 1.2;
-        margin-bottom: 0.45rem;
+        margin: 0 0 4px;
       }
       .bp-subtitle {
         text-align: center;
-        font-size: 1rem;
+        font-size: 12px;
         line-height: 1.35;
-        margin-top: 8px;
+        margin: 0 0 6px;
       }
       .bp-grid {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        flex: unset;
+        justify-content: flex-start;
+        gap: 10px;
         width: 100%;
-        max-width: 360px;
-        margin-top: 24px;
+        max-width: 330px;
+        margin-top: 4px;
+        min-height: 0;
       }
       .bp-card {
         width: 100%;
-        min-height: 160px;
+        min-height: 90px;
         aspect-ratio: auto;
-        padding: 1.2rem 1rem;
-        border-radius: 24px;
-        gap: 0.45rem;
+        padding: 10px;
+        border-radius: 16px;
+        gap: 0.2rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        transform: scale(0.95);
       }
       .bp-card-emoji {
-        width: 46px;
-        height: 46px;
-        font-size: 2rem;
+        width: 28px;
+        height: 28px;
+        font-size: 1.35rem;
       }
-      .bp-card-name { font-size: 1.28rem; }
-      .bp-card-desc { font-size: 0.82rem; line-height: 1.2; }
-      .bp-radio { width: 17px; height: 17px; }
+      .bp-card-name { font-size: 1rem; }
+      .bp-card-desc { font-size: 0.68rem; line-height: 1.1; }
+      .bp-radio { width: 14px; height: 14px; }
+      .bp-radio-wrap { margin-top: 0; }
       .bp-bottom-nav {
-        gap: 16px;
-        padding: 0.7rem 16px;
+        gap: 10px;
+        padding: 10px 16px;
       }
       .bp-nav-btn {
         flex: 1;
         justify-content: center;
-        height: 52px;
+        height: 42px;
         padding: 0.5rem 0.75rem;
-        border-radius: 16px;
-        font-size: 0.92rem;
+        border-radius: 12px;
+        font-size: 14px;
       }
     }
 
