@@ -21,16 +21,21 @@
       <span class="brand-icon">🎓</span>
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
-    <div class="nav-links">
-      <select id="nav-lang-switcher" class="nav-lang-switcher">
-        <option value="English">English</option>
-        <option value="Hindi">हिंदी</option>
-        <option value="Telugu">తెలుగు</option>
-        <option value="Tamil">தமிழ்</option>
-        <option value="Kannada">ಕನ್ನಡ</option>
-        <option value="Malayalam">മലയാളം</option>
-      </select>
-      <a href="/" data-i18n="Home">Home</a>
+    <div class="nav-actions">
+      <a href="/" class="nav-home-link">
+        <span class="home-icon">🏠</span>
+        <span class="home-text" data-i18n="Home">Home</span>
+      </a>
+      <div class="nav-lang-group">
+        <select id="nav-lang-switcher" class="nav-lang-switcher">
+          <option value="English">English</option>
+          <option value="Hindi">हिंदी</option>
+          <option value="Telugu">తెలుగు</option>
+          <option value="Tamil">தமிழ்</option>
+          <option value="Kannada">ಕನ್ನಡ</option>
+          <option value="Malayalam">മലയാളം</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -95,13 +100,25 @@
 
   <script src="/js/i18n.js"></script>
   <script>
+    function updateLanguageSelection() {
+      const currentLang = localStorage.getItem('appLang') || 'English';
+      document.querySelectorAll('.language-selector').forEach(el => {
+        if (el.getAttribute('data-lang') === currentLang) {
+          el.classList.add('selected');
+        } else {
+          el.classList.remove('selected');
+        }
+      });
+      if (window.updateGlobalNav) window.updateGlobalNav();
+    }
+
     document.querySelectorAll('.language-selector').forEach(el => {
       el.addEventListener('click', function (e) {
         e.preventDefault();
         const selectedLang = this.getAttribute('data-lang');
+        localStorage.setItem('appLang', selectedLang);
         if (window.applyLanguage) applyLanguage(selectedLang);
-        else localStorage.setItem('appLang', selectedLang);
-        window.location.href = '/boards';
+        updateLanguageSelection();
       });
     });
 
@@ -110,9 +127,13 @@
       if (switcher) {
         switcher.value = localStorage.getItem('appLang') || 'English';
         switcher.addEventListener('change', (e) => {
-          if (window.applyLanguage) applyLanguage(e.target.value);
+          const selectedLang = e.target.value;
+          localStorage.setItem('appLang', selectedLang);
+          if (window.applyLanguage) applyLanguage(selectedLang);
+          updateLanguageSelection();
         });
       }
+      updateLanguageSelection();
     });
   </script>
 </body>

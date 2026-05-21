@@ -23,13 +23,12 @@
       <span class="brand-icon">🎓</span>
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
-    <div class="nav-links">
+    <div class="nav-actions">
       <a href="/" class="nav-home-link">
         <span class="home-icon">🏠</span>
         <span class="home-text" data-i18n="Home">Home</span>
       </a>
       <div class="nav-lang-group">
-        <span class="nav-lang-label" data-i18n="Choose your language">Choose your language</span>
         <select class="nav-lang-switcher" id="nav-lang-switcher">
           <option value="English">English</option>
           <option value="Hindi">हिंदी</option>
@@ -45,13 +44,9 @@
   <main class="study-main">
     <div class="study-container">
 
-      <!-- HEADER -->
-      <div class="study-page-header">
-        <h1 class="study-page-title"><span class="hero-highlight" data-i18n="Select your Chapter">Select your Chapter</span></h1>
-      </div>
-
       <!-- CHAPTERS -->
       <div class="chapters-section" id="chapters-section">
+        <h1 class="chapters-page-title" data-i18n="Select Your Chapter">Select Your Chapter</h1>
         <div class="chapters-list" id="chapters-list">
           <!-- Filled by JS -->
         </div>
@@ -59,15 +54,11 @@
 
       <!-- VIDEO PLAYER (hidden initially) -->
       <div class="video-section" id="video-section" style="display:none;">
-        <div class="video-top-bar">
-          <button class="back-link" id="back-from-video" data-i18n="Back to Chapters">← Back to Chapters</button>
-        </div>
-        
         <div class="study-two-column-layout">
           <!-- Left Column: Video Workspace -->
           <div class="study-video-column">
             <h2 class="video-title" id="video-title" data-i18n="Loading video...">Loading...</h2>
-            <div class="video-meta" id="video-meta"></div>
+            <div class="video-meta" id="video-meta" aria-hidden="true"></div>
             <div class="video-wrapper" id="video-wrapper">
               <div class="video-loader" id="video-loader">
                 <div class="loader-spinner"></div>
@@ -92,10 +83,13 @@
               <div class="quiz-header">
                 <span data-i18n="AI Generated Quiz">📝 AI Generated Quiz</span>
               </div>
-              <div class="quiz-body" id="quiz-body"></div>
+              <div class="quiz-body" id="quiz-body">
+                <p class="quiz-prompt" data-i18n="Generate a practice quiz for this lesson.">Generate a practice quiz for this lesson.</p>
+              </div>
               <div class="quiz-actions" id="quiz-actions" style="display:none;">
                 <button class="quiz-submit-btn" id="quiz-submit-btn" data-i18n="Submit Answers">Submit Answers</button>
               </div>
+              <button class="quiz-generate-btn" id="quiz-generate-btn" data-i18n="Generate Quiz">Generate Quiz</button>
               <div class="quiz-result" id="quiz-result" style="display:none;"></div>
               <button class="quiz-retake-btn" id="quiz-retake-btn" style="display:none;" data-i18n="Retake Quiz">🔄 Retake Quiz</button>
             </div>

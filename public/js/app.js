@@ -41,6 +41,11 @@
     return [];
   }
 
+  function cleanChapterTitle(title) {
+    if (!title) return title;
+    return title.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+  }
+
   /* ── Render chapters table ── */
   async function showChapters() {
     hideAllSections();
@@ -103,10 +108,11 @@
             showVideoMode(LANGUAGE);
           });
 
+          const chapterTitle = cleanChapterTitle(ch.chapterName || '-');
           const checkmark = isWatched ? '<span class="watched-check">✔️</span>' : '';
           tr.innerHTML = `
             <td class="col-lesson">${ch.lessonNo || '-'}${checkmark}</td>
-            <td class="col-title">${ch.chapterName || '-'}</td>
+            <td class="col-title">${chapterTitle}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -145,7 +151,7 @@
       titleEl.textContent = window.t ? window.t('Loading video...') : 'Loading video...';
       titleEl.setAttribute('data-i18n', 'Loading video...');
       metaEl.innerHTML = '';
-      showQuiz();
+      resetQuizSection();
     }
 
     try {
@@ -194,6 +200,10 @@
         cachedFlag = data.cached;
       }
 
+      videoData.title = cleanChapterTitle(currentChapterData.chapterName) || videoData.title || '';
+      videoData.viewCount = null;
+      videoData.likeCount = null;
+
       const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
       const code = langCodes[selectedLanguage] || 'en';
 
@@ -232,7 +242,6 @@
       let meta = '';
       if (videoData.viewCount) meta += '<span>👁️ ' + Number(videoData.viewCount).toLocaleString() + ' views</span>';
       if (videoData.likeCount) meta += '<span>👍 ' + Number(videoData.likeCount).toLocaleString() + ' likes</span>';
-      if (cachedFlag) meta += '<span>' + (window.t ? window.t('⚡ Cached') : '⚡ Cached') + '</span>';
       metaEl.innerHTML = meta;
 
       // Configure Mark as Watched button state and click listener
@@ -278,24 +287,50 @@
   /* ── Quiz ── */
   let currentQuizData = null;
 
-  async function showQuiz() {
+  function resetQuizSection() {
     const section   = document.getElementById('quiz-section');
     const body      = document.getElementById('quiz-body');
     const actions   = document.getElementById('quiz-actions');
     const result    = document.getElementById('quiz-result');
     const retakeBtn = document.getElementById('quiz-retake-btn');
-    const submitBtn = document.getElementById('quiz-submit-btn');
+    const generateBtn = document.getElementById('quiz-generate-btn');
+
+    if (!section || !body || !generateBtn) return;
 
     section.style.display    = '';
     actions.style.display    = 'none';
     result.style.display     = 'none';
     retakeBtn.style.display  = 'none';
-    submitBtn.style.display  = 'inline-block';
+    generateBtn.style.display = 'inline-flex';
+    generateBtn.disabled     = false;
+    generateBtn.textContent  = window.t ? window.t('Generate Quiz') : 'Generate Quiz';
+    generateBtn.setAttribute('data-i18n', 'Generate Quiz');
 
-    const generatingMsg = window.t ? window.t('Generating AI Quiz...') : 'Generating AI Quiz... This may take up to a minute.';
+    body.innerHTML = `<p class="quiz-prompt" data-i18n="Generate a practice quiz for this lesson.">Generate a practice quiz for this lesson.</p>`;
+    generateBtn.onclick = generateQuiz;
+  }
+
+  async function generateQuiz() {
+    const body      = document.getElementById('quiz-body');
+    const actions   = document.getElementById('quiz-actions');
+    const result    = document.getElementById('quiz-result');
+    const retakeBtn = document.getElementById('quiz-retake-btn');
+    const generateBtn = document.getElementById('quiz-generate-btn');
+    const submitBtn = document.getElementById('quiz-submit-btn');
+
+    if (!generateBtn || !body) return;
+    if (!currentChapterData) {
+      body.innerHTML = `<p class="error-msg">${window.t ? window.t('No chapter selected.') : 'No chapter selected.'}</p>`;
+      return;
+    }
+
+    generateBtn.disabled = true;
+    actions.style.display = 'none';
+    result.style.display  = 'none';
+    retakeBtn.style.display = 'none';
     body.innerHTML = `
       <div class="loader-spinner"></div>
-      <p id="quiz-status">${generatingMsg}</p>
+      <p class="quiz-loading-text">${window.t ? window.t('Generating AI Quiz...') : 'Generating AI Quiz... This may take up to a minute.'}</p>
     `;
 
     try {
@@ -309,7 +344,7 @@
           focusTopic:  currentChapterData.chapterName,
           difficulty:  'medium',
           numQuestions: 5,
-          lang:        LANGUAGE    // ← pass selected language to quiz controller
+          lang:        LANGUAGE
         })
       });
 
@@ -347,14 +382,15 @@
 
       actions.style.display = 'block';
       submitBtn.onclick = handleQuizSubmit;
-
     } catch (err) {
-      body.innerHTML = `<p class="error-msg">Error: ${err.message}</p> <button class="hero-btn" onclick="window._showQuiz && window._showQuiz()">Retry</button>`;
+      body.innerHTML = `<p class="error-msg">Error: ${err.message}</p>`;
+      generateBtn.disabled = false;
+      generateBtn.textContent = window.t ? window.t('Generate Quiz') : 'Generate Quiz';
     }
   }
 
-  // Expose showQuiz so the retry button works
-  window._showQuiz = showQuiz;
+  // Expose generateQuiz for any retry paths
+  window._generateQuiz = generateQuiz;
 
   function handleQuizSubmit() {
     let score = 0;
@@ -396,7 +432,7 @@
 
     submitBtn.style.display  = 'none';
     retakeBtn.style.display  = 'block';
-    retakeBtn.onclick        = showQuiz;
+    retakeBtn.onclick        = generateQuiz;
   }
 
   /* ── Helpers ── */
@@ -425,7 +461,10 @@
   });
 
   /* ── Back Button ── */
-  document.getElementById('back-from-video').addEventListener('click', showChapters);
+  const backFromVideo = document.getElementById('back-from-video');
+  if (backFromVideo) {
+    backFromVideo.addEventListener('click', showChapters);
+  }
 
   // Set up global nav callbacks to control Back / Next buttons on study page
   window.globalNavCallbacks = {

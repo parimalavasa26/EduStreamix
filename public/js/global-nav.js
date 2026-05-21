@@ -64,11 +64,17 @@
         }
       } else if (path === '/languages') {
         backBtn.onclick = () => {
-          window.location.href = `/boards?grade=${grade}&language=${encodeURIComponent(lang)}`;
+          window.location.href = '/';
         };
-        nextBtn.onclick = () => {
-          window.location.href = `/subjects?grade=${grade}&board=${board}&language=${encodeURIComponent(lang)}`;
-        };
+        const selectedLang = localStorage.getItem('appLang') || '';
+        if (!selectedLang) {
+          nextBtn.disabled = true;
+        } else {
+          nextBtn.disabled = false;
+          nextBtn.onclick = () => {
+            window.location.href = `/boards?grade=${grade}&language=${encodeURIComponent(selectedLang)}`;
+          };
+        }
       } else if (path === '/subjects') {
         backBtn.onclick = () => {
           window.location.href = `/boards?grade=${grade}&language=${encodeURIComponent(lang)}`;

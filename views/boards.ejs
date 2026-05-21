@@ -9,100 +9,387 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
-</head>
-<body class="step-body">
+  <style>
+    /* ── Board Page Overrides ── */
+    .bp-page {
+      min-height: 100vh;
+      height: 100vh;
+      background: linear-gradient(150deg, #fffbeb 0%, #fef3c7 40%, #fed7aa 80%, #fffbeb 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-  <nav class="navbar scrolled" id="navbar">
-    <a href="/" class="nav-brand">
-      <span class="brand-icon">🎓</span>
-      <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
+    /* Navbar */
+    .bp-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(0.85rem, 3vw, 2rem);
+      background: rgba(255,251,235,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(245,158,11,0.12);
+    }
+    .bp-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+    .bp-brand-icon { font-size: 1.4rem; }
+    .bp-brand-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      font-weight: 800;
+      color: #451a03;
+      letter-spacing: -0.3px;
+    }
+    .bp-brand-x {
+      background: linear-gradient(135deg,#f59e0b,#f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .bp-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .bp-home-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(245,158,11,0.2);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #78350f;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .bp-home-btn:hover {
+      background: #fff;
+      color: #f97316;
+      border-color: #f97316;
+    }
+    .bp-lang-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #b45309;
+      display: none;
+    }
+    @media (min-width: 600px) { .bp-lang-label { display: inline; } }
+    .bp-lang-select {
+      padding: 0.3rem 0.55rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(245,158,11,0.2);
+      font-size: 0.82rem;
+      color: #78350f;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      cursor: pointer;
+    }
+    .bp-lang-select:focus { border-color: #f97316; background: #fff; }
+
+    /* Main content */
+    .bp-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 68px clamp(0.75rem, 3vw, 1.25rem) 76px;
+      min-height: 0;
+    }
+
+    /* Header */
+    .bp-header {
+      text-align: center;
+      margin-bottom: clamp(0.8rem, 2.5vh, 1.25rem);
+    }
+    .bp-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.55rem, 4.5vw, 2.35rem);
+      font-weight: 900;
+      color: #451a03;
+      letter-spacing: -0.5px;
+      line-height: 1.05;
+      margin: 0 0 0.35rem;
+    }
+    .bp-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      font-weight: 700;
+      color: #78350f;
+      margin: 0;
+    }
+
+    /* Board cards grid */
+    .bp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      justify-content: center;
+      gap: clamp(0.7rem, 2vw, 1rem);
+      width: 100%;
+      max-width: 660px;
+    }
+
+    /* Individual board card */
+    .bp-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      min-height: 152px;
+      aspect-ratio: 1 / 0.82;
+      padding: clamp(0.8rem, 2vw, 1.05rem);
+      background: rgba(255,255,255,0.84);
+      border: 1.5px solid rgba(245,158,11,0.24);
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 24px rgba(120,53,15,0.07);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow: hidden;
+    }
+    .bp-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(249,115,22,0.06), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .bp-card:hover {
+      border-color: #f97316;
+      box-shadow: 0 14px 34px rgba(249,115,22,0.16);
+      transform: translateY(-4px);
+    }
+    .bp-card:hover::before { opacity: 1; }
+    .bp-card.selected {
+      border-color: #f97316;
+      background: rgba(255,245,235,0.95);
+      box-shadow: 0 14px 34px rgba(249,115,22,0.18), 0 0 0 3px rgba(249,115,22,0.12);
+      transform: translateY(-2px);
+    }
+    .bp-card-emoji {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
+    }
+    .bp-card-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.2rem, 2.8vw, 1.45rem);
+      font-weight: 900;
+      color: #451a03;
+      background: linear-gradient(135deg, #d97706, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+    .bp-card-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #92400e;
+      margin: 0;
+      text-align: center;
+    }
+    .bp-radio-wrap {
+      margin-top: 0.15rem;
+    }
+    .bp-radio {
+      width: 17px;
+      height: 17px;
+      accent-color: #f97316;
+      cursor: pointer;
+    }
+
+    /* Bottom nav bar */
+    .bp-bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,251,235,0.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(245,158,11,0.12);
+      padding: 0.55rem clamp(0.85rem,4vw,2rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 99;
+    }
+    .bp-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.4rem;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bp-nav-btn.back {
+      background: rgba(255,255,255,0.7);
+      border: 1.5px solid rgba(245,158,11,0.25);
+      color: #78350f;
+    }
+    .bp-nav-btn.back:hover {
+      background: #fff;
+      border-color: #f97316;
+      color: #f97316;
+    }
+    .bp-nav-btn.next {
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(249,115,22,0.28);
+    }
+    .bp-nav-btn.next:hover:not(:disabled) {
+      box-shadow: 0 6px 22px rgba(249,115,22,0.38);
+      transform: translateY(-1px);
+    }
+    .bp-nav-btn.next:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .bp-nav { height: 52px; }
+      .bp-home-btn { padding: 0.32rem 0.55rem; font-size: 0.78rem; }
+      .bp-lang-label { display: none; }
+      .bp-lang-select { max-width: 92px; padding: 0.28rem 0.42rem; font-size: 0.76rem; }
+      .bp-main { padding: 60px 0.7rem 68px; justify-content: center; }
+      .bp-header { margin-bottom: 0.7rem; }
+      .bp-subtitle { font-size: 0.78rem; line-height: 1.25; }
+      .bp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.48rem; max-width: 100%; }
+      .bp-card { min-height: 118px; aspect-ratio: auto; padding: 0.55rem 0.35rem; border-radius: 14px; gap: 0.26rem; }
+      .bp-card-emoji { width: 34px; height: 34px; font-size: 1.55rem; }
+      .bp-card-name { font-size: 1rem; }
+      .bp-card-desc { font-size: 0.64rem; line-height: 1.15; }
+      .bp-radio { width: 14px; height: 14px; }
+      .bp-nav-btn { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
+    }
+
+    @media (max-height: 620px) {
+      .bp-main { padding-top: 58px; padding-bottom: 62px; }
+      .bp-title { font-size: 1.35rem; }
+      .bp-subtitle { font-size: 0.72rem; }
+      .bp-card { min-height: 104px; padding-block: 0.42rem; }
+      .bp-card-emoji { width: 30px; height: 30px; font-size: 1.35rem; }
+      .bp-radio-wrap { display: none; }
+    }
+  </style>
+</head>
+<body class="bp-page">
+
+  <!-- Navbar -->
+  <nav class="bp-nav" id="navbar">
+    <a href="/" class="bp-brand">
+      <span class="bp-brand-icon">🎓</span>
+      <span class="bp-brand-text">EduStreami<span class="bp-brand-x">x</span></span>
     </a>
-    <div class="nav-links">
-      <a href="/" class="nav-home-link">
-        <span class="home-icon">🏠</span>
-        <span class="home-text" data-i18n="Home">Home</span>
-      </a>
-      <div class="nav-lang-group">
-        <span class="nav-lang-label" data-i18n="Choose your language">Choose your language</span>
-        <select class="nav-lang-switcher" id="nav-lang-switcher">
-          <option value="English">English</option>
-          <option value="Hindi">हिंदी</option>
-          <option value="Telugu">తెలుగు</option>
-          <option value="Tamil">தமிழ்</option>
-          <option value="Kannada">ಕನ್ನಡ</option>
-          <option value="Malayalam">മലയാളം</option>
-        </select>
-      </div>
+    <div class="bp-nav-right">
+      <a href="/" class="bp-home-btn">🏠 <span data-i18n="Home">Home</span></a>
+      <select class="bp-lang-select" id="nav-lang-switcher">
+        <option value="English">English</option>
+        <option value="Hindi">हिंदी</option>
+        <option value="Telugu">తెలుగు</option>
+        <option value="Tamil">தமிழ்</option>
+        <option value="Kannada">ಕನ್ನಡ</option>
+        <option value="Malayalam">മലയാളം</option>
+      </select>
     </div>
   </nav>
 
-  <main class="step-main">
-    <div class="step-container">
+  <!-- Main -->
+  <main class="bp-main">
+    <div class="bp-header">
+      <h1 class="bp-title"><span class="hero-highlight" data-i18n="Select Your Board">Select Your Board</span></h1>
+      <p class="bp-subtitle" data-i18n="Choose your Board to access study materials">Choose your Board to access study materials</p>
+    </div>
 
-      <div class="step-header">
-        <h1 class="step-title"><span data-i18n="Select Your Board">Select Your Board</span></h1>
-        <p class="step-subtitle bold-subtitle" data-i18n="Choose your Board to access study materials">Choose your Board to access study materials</p>
-      </div>
-
-      <div class="board-grid" id="board-grid">
-        <div class="board-card" id="board-card-ssc" data-board="SSC">
-          <div class="board-card-glow"></div>
-          <div class="board-card-content">
-            <span class="board-icon">🏫</span>
-            <div class="board-card-info">
-              <h3 class="board-card-title" data-i18n="SSC">SSC</h3>
-              <p class="board-card-label" data-i18n="State Board">State Board</p>
-            </div>
-          </div>
-          <div class="board-card-select">
-            <input type="radio" name="board-selector" id="radio-ssc" value="SSC" class="card-radio">
-          </div>
-        </div>
-        
-        <div class="board-card" id="board-card-cbse" data-board="CBSE">
-          <div class="board-card-glow"></div>
-          <div class="board-card-content">
-            <span class="board-icon">📘</span>
-            <div class="board-card-info">
-              <h3 class="board-card-title" data-i18n="CBSE">CBSE</h3>
-              <p class="board-card-label" data-i18n="Central Board">Central Board</p>
-            </div>
-          </div>
-          <div class="board-card-select">
-            <input type="radio" name="board-selector" id="radio-cbse" value="CBSE" class="card-radio">
-          </div>
-        </div>
-        
-        <div class="board-card" id="board-card-icse" data-board="ICSE">
-          <div class="board-card-glow"></div>
-          <div class="board-card-content">
-            <span class="board-icon">🎓</span>
-            <div class="board-card-info">
-              <h3 class="board-card-title" data-i18n="ICSE">ICSE</h3>
-              <p class="board-card-label" data-i18n="Indian Certificate">Indian Certificate</p>
-            </div>
-          </div>
-          <div class="board-card-select">
-            <input type="radio" name="board-selector" id="radio-icse" value="ICSE" class="card-radio">
-          </div>
+    <div class="bp-grid" id="board-grid">
+      <div class="bp-card" id="board-card-ssc" data-board="SSC">
+        <span class="bp-card-emoji">🏫</span>
+        <h3 class="bp-card-name" data-i18n="SSC">SSC</h3>
+        <p class="bp-card-desc" data-i18n="State Board">State Board</p>
+        <div class="bp-radio-wrap">
+          <input type="radio" name="board-selector" id="radio-ssc" value="SSC" class="bp-radio card-radio">
         </div>
       </div>
 
+      <div class="bp-card" id="board-card-cbse" data-board="CBSE">
+        <span class="bp-card-emoji">📘</span>
+        <h3 class="bp-card-name" data-i18n="CBSE">CBSE</h3>
+        <p class="bp-card-desc" data-i18n="Central Board">Central Board</p>
+        <div class="bp-radio-wrap">
+          <input type="radio" name="board-selector" id="radio-cbse" value="CBSE" class="bp-radio card-radio">
+        </div>
+      </div>
+
+      <div class="bp-card" id="board-card-icse" data-board="ICSE">
+        <span class="bp-card-emoji">🎓</span>
+        <h3 class="bp-card-name" data-i18n="ICSE">ICSE</h3>
+        <p class="bp-card-desc" data-i18n="Indian Certificate">Indian Certificate</p>
+        <div class="bp-radio-wrap">
+          <input type="radio" name="board-selector" id="radio-icse" value="ICSE" class="bp-radio card-radio">
+        </div>
+      </div>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <span class="footer-brand">🎓 EduStreami<span class="brand-x">x</span></span>
-      <span class="footer-copy">&copy; 2026 EduStreamix. Built for learners.</span>
-    </div>
-  </footer>
+  <!-- Bottom Navigation -->
+  <div class="bp-bottom-nav">
+    <button class="bp-nav-btn back" id="bp-back-btn" onclick="window.location.href='/'">← <span data-i18n="Back">Back</span></button>
+    <button class="bp-nav-btn next" id="bp-next-btn" disabled>
+      <span data-i18n="Next">Next</span> →
+    </button>
+  </div>
 
   <script src="/js/i18n.js"></script>
-  <script src="/js/global-nav.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Restore selected board from localStorage
+      const nextBtn = document.getElementById('bp-next-btn');
+
+      function getQueryParam(name) {
+        return new URLSearchParams(window.location.search).get(name);
+      }
+
+      function updateNextBtn(board) {
+        const grade = getQueryParam('grade') || '8';
+        const lang = getQueryParam('language') || localStorage.getItem('appLang') || 'English';
+        if (board) {
+          nextBtn.disabled = false;
+          nextBtn.onclick = () => {
+            window.location.href = `/subjects?grade=${grade}&board=${board}&language=${encodeURIComponent(lang)}`;
+          };
+        } else {
+          nextBtn.disabled = true;
+        }
+      }
+
+      // Restore selected board
       const storedBoard = localStorage.getItem('selectedBoard');
       if (storedBoard) {
         const activeCard = document.getElementById(`board-card-${storedBoard.toLowerCase()}`);
@@ -110,28 +397,32 @@
           activeCard.classList.add('selected');
           const radio = activeCard.querySelector('.card-radio');
           if (radio) radio.checked = true;
+          updateNextBtn(storedBoard);
         }
       }
 
-      // Add click handlers on board cards
-      document.querySelectorAll('.board-card').forEach(card => {
-        card.addEventListener('click', (e) => {
+      // Click handlers
+      document.querySelectorAll('.bp-card').forEach(card => {
+        card.addEventListener('click', () => {
           const board = card.getAttribute('data-board');
           localStorage.setItem('selectedBoard', board);
 
-          // Update selection styling
-          document.querySelectorAll('.board-card').forEach(c => c.classList.remove('selected'));
+          document.querySelectorAll('.bp-card').forEach(c => c.classList.remove('selected'));
           card.classList.add('selected');
 
-          // Check corresponding radio button
           const radio = card.querySelector('.card-radio');
           if (radio) radio.checked = true;
 
-          // Notify global-nav.js to update the "Next" button
-          if (window.updateGlobalNav) window.updateGlobalNav();
+          updateNextBtn(board);
+          setTimeout(() => {
+            const grade = getQueryParam('grade') || '8';
+            const lang = getQueryParam('language') || localStorage.getItem('appLang') || 'English';
+            window.location.href = `/subjects?grade=${grade}&board=${board}&language=${encodeURIComponent(lang)}`;
+          }, 140);
         });
       });
 
+      // Language switcher
       const switcher = document.getElementById('nav-lang-switcher');
       if (switcher) {
         switcher.value = localStorage.getItem('appLang') || 'English';

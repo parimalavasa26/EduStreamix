@@ -10,20 +10,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body class="step-body">
+<body class="step-body subjects-page">
 
   <nav class="navbar scrolled" id="navbar">
     <a href="/" class="nav-brand">
       <span class="brand-icon">🎓</span>
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
-    <div class="nav-links">
+    <div class="nav-actions">
       <a href="/" class="nav-home-link">
         <span class="home-icon">🏠</span>
         <span class="home-text" data-i18n="Home">Home</span>
       </a>
       <div class="nav-lang-group">
-        <span class="nav-lang-label" data-i18n="Choose your language">Choose your language</span>
         <select class="nav-lang-switcher" id="nav-lang-switcher">
           <option value="English">English</option>
           <option value="Hindi">हिंदी</option>
@@ -40,7 +39,7 @@
     <div class="step-container">
 
       <div class="step-header">
-        <h1 class="step-title"><span class="hero-highlight" data-i18n="Choose Your Subject">Choose Your Subject</span></h1>
+        <h1 class="step-title"><span class="hero-highlight" data-i18n="Select Your Subject">select your subject</span></h1>
         <p class="step-subtitle font-lucida" style="font-weight: 700;" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
       </div>
 
@@ -113,6 +112,11 @@
 
               // Notify global nav to enable Next button
               if (window.updateGlobalNav) window.updateGlobalNav();
+
+              const lang = new URLSearchParams(window.location.search).get('language') || localStorage.getItem('appLang') || 'English';
+              setTimeout(() => {
+                window.location.href = `/study?grade=${GRADE}&board=${BOARD}&subject=${encodeURIComponent(originalSubj)}&language=${encodeURIComponent(lang)}`;
+              }, 140);
             });
 
             grid.appendChild(card);
