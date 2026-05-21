@@ -275,23 +275,104 @@
 
     /* Mobile adjustments */
     @media (max-width: 480px) {
-      .bp-nav { height: 52px; }
-      .bp-home-btn { padding: 0.32rem 0.55rem; font-size: 0.78rem; }
+      .bp-page {
+        height: auto;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .bp-nav {
+        height: 52px;
+        gap: 10px;
+        padding-inline: 16px;
+      }
+      .bp-brand { min-width: 0; }
+      .bp-brand-text {
+        font-size: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .bp-nav-right {
+        flex: 0 0 auto;
+        gap: 10px;
+      }
+      .bp-home-btn {
+        min-width: 34px;
+        height: 34px;
+        justify-content: center;
+        padding: 0;
+        font-size: 0.78rem;
+      }
+      .bp-home-btn span { display: none; }
       .bp-lang-label { display: none; }
-      .bp-lang-select { max-width: 92px; padding: 0.28rem 0.42rem; font-size: 0.76rem; }
-      .bp-main { padding: 56px 0.6rem 62px; justify-content: center; }
-      .bp-header { margin-bottom: 0.7rem; }
-      .bp-subtitle { font-size: 0.78rem; line-height: 1.25; }
-      .bp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.48rem; max-width: 100%; }
-      .bp-card { min-height: 104px; aspect-ratio: auto; padding: 0.48rem 0.3rem; border-radius: 13px; gap: 0.22rem; }
-      .bp-card-emoji { width: 30px; height: 30px; font-size: 1.35rem; }
-      .bp-card-name { font-size: 1rem; }
-      .bp-card-desc { font-size: 0.6rem; line-height: 1.12; }
-      .bp-radio { width: 14px; height: 14px; }
-      .bp-nav-btn { padding: 0.5rem 0.9rem; font-size: 0.82rem; }
+      .bp-lang-select {
+        width: 110px;
+        max-width: 110px;
+        min-height: 34px;
+        padding: 0.28rem 0.42rem;
+        font-size: 0.76rem;
+      }
+      .bp-main {
+        min-height: auto;
+        padding: 76px 16px 96px;
+        justify-content: flex-start;
+      }
+      .bp-header {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      .bp-title {
+        text-align: center;
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 0.45rem;
+      }
+      .bp-subtitle {
+        text-align: center;
+        font-size: 1rem;
+        line-height: 1.35;
+        margin-top: 8px;
+      }
+      .bp-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        max-width: 360px;
+        margin-top: 24px;
+      }
+      .bp-card {
+        width: 100%;
+        min-height: 160px;
+        aspect-ratio: auto;
+        padding: 1.2rem 1rem;
+        border-radius: 24px;
+        gap: 0.45rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      }
+      .bp-card-emoji {
+        width: 46px;
+        height: 46px;
+        font-size: 2rem;
+      }
+      .bp-card-name { font-size: 1.28rem; }
+      .bp-card-desc { font-size: 0.82rem; line-height: 1.2; }
+      .bp-radio { width: 17px; height: 17px; }
+      .bp-bottom-nav {
+        gap: 16px;
+        padding: 0.7rem 16px;
+      }
+      .bp-nav-btn {
+        flex: 1;
+        justify-content: center;
+        height: 52px;
+        padding: 0.5rem 0.75rem;
+        border-radius: 16px;
+        font-size: 0.92rem;
+      }
     }
 
-    @media (max-height: 620px) {
+    @media (max-height: 620px) and (min-width: 481px) {
       .bp-main { padding-top: 58px; padding-bottom: 62px; }
       .bp-title { font-size: 1.35rem; }
       .bp-subtitle { font-size: 0.72rem; }
