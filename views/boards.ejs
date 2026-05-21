@@ -18,15 +18,21 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <select class="nav-lang-switcher" id="nav-lang-switcher">
-        <option value="English">English</option>
-        <option value="Hindi">हिंदी</option>
-        <option value="Telugu">తెలుగు</option>
-        <option value="Tamil">தமிழ்</option>
-        <option value="Kannada">ಕನ್ನಡ</option>
-        <option value="Malayalam">മലയാളം</option>
-      </select>
-      <a href="/" data-i18n="Home">Home</a>
+      <a href="/" class="nav-home-link">
+        <span class="home-icon">🏠</span>
+        <span class="home-text" data-i18n="Home">Home</span>
+      </a>
+      <div class="nav-lang-group">
+        <span class="nav-lang-label" data-i18n="Choose your language">Choose your language</span>
+        <select class="nav-lang-switcher" id="nav-lang-switcher">
+          <option value="English">English</option>
+          <option value="Hindi">हिंदी</option>
+          <option value="Telugu">తెలుగు</option>
+          <option value="Tamil">தமிழ்</option>
+          <option value="Kannada">ಕನ್ನಡ</option>
+          <option value="Malayalam">മലയാളം</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -34,32 +40,52 @@
     <div class="step-container">
 
       <div class="step-header">
-        <h1 class="step-title"><span data-i18n="Select Board">Select Board</span></h1>
-        <p class="step-subtitle" data-i18n="Choose your education board to see relevant subjects">Choose your education board to see relevant subjects</p>
+        <h1 class="step-title"><span data-i18n="Select Your Board">Select Your Board</span></h1>
+        <p class="step-subtitle bold-subtitle" data-i18n="Choose your Board to access study materials">Choose your Board to access study materials</p>
       </div>
 
       <div class="board-grid" id="board-grid">
-        <a href="/subjects?grade=<%= selectedGrade %>&board=SSC" class="board-card" id="board-card-ssc">
+        <div class="board-card" id="board-card-ssc" data-board="SSC">
           <div class="board-card-glow"></div>
-          <span class="board-icon">🏫</span>
-          <h3 class="board-card-title" data-i18n="SSC">SSC</h3>
-          <p class="board-card-label" data-i18n="State Board">State Board</p>
-          <span class="board-card-arrow">→</span>
-        </a>
-        <a href="/subjects?grade=<%= selectedGrade %>&board=CBSE" class="board-card" id="board-card-cbse">
+          <div class="board-card-content">
+            <span class="board-icon">🏫</span>
+            <div class="board-card-info">
+              <h3 class="board-card-title" data-i18n="SSC">SSC</h3>
+              <p class="board-card-label" data-i18n="State Board">State Board</p>
+            </div>
+          </div>
+          <div class="board-card-select">
+            <input type="radio" name="board-selector" id="radio-ssc" value="SSC" class="card-radio">
+          </div>
+        </div>
+        
+        <div class="board-card" id="board-card-cbse" data-board="CBSE">
           <div class="board-card-glow"></div>
-          <span class="board-icon">📘</span>
-          <h3 class="board-card-title" data-i18n="CBSE">CBSE</h3>
-          <p class="board-card-label" data-i18n="Central Board">Central Board</p>
-          <span class="board-card-arrow">→</span>
-        </a>
-        <a href="/subjects?grade=<%= selectedGrade %>&board=ICSE" class="board-card" id="board-card-icse">
+          <div class="board-card-content">
+            <span class="board-icon">📘</span>
+            <div class="board-card-info">
+              <h3 class="board-card-title" data-i18n="CBSE">CBSE</h3>
+              <p class="board-card-label" data-i18n="Central Board">Central Board</p>
+            </div>
+          </div>
+          <div class="board-card-select">
+            <input type="radio" name="board-selector" id="radio-cbse" value="CBSE" class="card-radio">
+          </div>
+        </div>
+        
+        <div class="board-card" id="board-card-icse" data-board="ICSE">
           <div class="board-card-glow"></div>
-          <span class="board-icon">🎓</span>
-          <h3 class="board-card-title" data-i18n="ICSE">ICSE</h3>
-          <p class="board-card-label" data-i18n="Indian Certificate">Indian Certificate</p>
-          <span class="board-card-arrow">→</span>
-        </a>
+          <div class="board-card-content">
+            <span class="board-icon">🎓</span>
+            <div class="board-card-info">
+              <h3 class="board-card-title" data-i18n="ICSE">ICSE</h3>
+              <p class="board-card-label" data-i18n="Indian Certificate">Indian Certificate</p>
+            </div>
+          </div>
+          <div class="board-card-select">
+            <input type="radio" name="board-selector" id="radio-icse" value="ICSE" class="card-radio">
+          </div>
+        </div>
       </div>
 
     </div>
@@ -76,11 +102,33 @@
   <script src="/js/global-nav.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Set click handlers on board cards to store selectedBoard
+      // Restore selected board from localStorage
+      const storedBoard = localStorage.getItem('selectedBoard');
+      if (storedBoard) {
+        const activeCard = document.getElementById(`board-card-${storedBoard.toLowerCase()}`);
+        if (activeCard) {
+          activeCard.classList.add('selected');
+          const radio = activeCard.querySelector('.card-radio');
+          if (radio) radio.checked = true;
+        }
+      }
+
+      // Add click handlers on board cards
       document.querySelectorAll('.board-card').forEach(card => {
         card.addEventListener('click', (e) => {
-          const board = card.id.replace('board-card-', '').toUpperCase();
+          const board = card.getAttribute('data-board');
           localStorage.setItem('selectedBoard', board);
+
+          // Update selection styling
+          document.querySelectorAll('.board-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+
+          // Check corresponding radio button
+          const radio = card.querySelector('.card-radio');
+          if (radio) radio.checked = true;
+
+          // Notify global-nav.js to update the "Next" button
+          if (window.updateGlobalNav) window.updateGlobalNav();
         });
       });
 

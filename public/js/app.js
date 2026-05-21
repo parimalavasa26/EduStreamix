@@ -90,16 +90,22 @@
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
+        const watchedKey = `watched_${GRADE}_${BOARD}_${SUBJECT}`;
+        const watchedChapters = JSON.parse(localStorage.getItem(watchedKey) || '[]');
+        
         chaps.forEach(ch => {
           const tr = document.createElement('tr');
-          tr.className = 'chapter-row';
+          const isWatched = watchedChapters.includes(ch.chapterName);
+          tr.className = 'chapter-row' + (isWatched ? ' watched' : '');
+          
           tr.addEventListener('click', () => {
             currentChapterData = ch;
             showVideoMode(LANGUAGE);
           });
 
+          const checkmark = isWatched ? '<span class="watched-check">✔️</span>' : '';
           tr.innerHTML = `
-            <td class="col-lesson">${ch.lessonNo || '-'}</td>
+            <td class="col-lesson">${ch.lessonNo || '-'}${checkmark}</td>
             <td class="col-title">${ch.chapterName || '-'}</td>
           `;
           tbody.appendChild(tr);
@@ -228,6 +234,40 @@
       if (videoData.likeCount) meta += '<span>👍 ' + Number(videoData.likeCount).toLocaleString() + ' likes</span>';
       if (cachedFlag) meta += '<span>' + (window.t ? window.t('⚡ Cached') : '⚡ Cached') + '</span>';
       metaEl.innerHTML = meta;
+
+      // Configure Mark as Watched button state and click listener
+      const markBtn = document.getElementById('mark-watched-btn');
+      if (markBtn) {
+        const watchedKey = `watched_${GRADE}_${BOARD}_${SUBJECT}`;
+        
+        function updateBtnUI() {
+          const currentList = JSON.parse(localStorage.getItem(watchedKey) || '[]');
+          const isCompleted = currentList.includes(currentChapterData.chapterName);
+          if (isCompleted) {
+            markBtn.classList.add('completed');
+            markBtn.querySelector('.btn-text').textContent = window.t ? window.t('Watched') : 'Watched';
+            markBtn.querySelector('.btn-text').setAttribute('data-i18n', 'Watched');
+          } else {
+            markBtn.classList.remove('completed');
+            markBtn.querySelector('.btn-text').textContent = window.t ? window.t('Mark as Watched') : 'Mark as Watched';
+            markBtn.querySelector('.btn-text').setAttribute('data-i18n', 'Mark as Watched');
+          }
+        }
+        
+        updateBtnUI();
+        
+        markBtn.onclick = () => {
+          let currentList = JSON.parse(localStorage.getItem(watchedKey) || '[]');
+          const chapName = currentChapterData.chapterName;
+          if (currentList.includes(chapName)) {
+            currentList = currentList.filter(name => name !== chapName);
+          } else {
+            currentList.push(chapName);
+          }
+          localStorage.setItem(watchedKey, JSON.stringify(currentList));
+          updateBtnUI();
+        };
+      }
 
     } catch (e) {
       titleEl.textContent = 'Error loading video';
@@ -406,6 +446,36 @@
     }
   };
 
+  function triggerConfetti() {
+    if (window.confetti) {
+      window.confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    } else {
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+      script.onload = () => {
+        if (window.confetti) {
+          window.confetti({
+            particleCount: 120,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        }
+      };
+      document.head.appendChild(script);
+    }
+  }
+
   /* ── Init: wait for languageChanged from i18n.js so t() is ready ── */
   // The first languageChanged fires on DOMContentLoaded from i18n.js
+  document.addEventListener('languageChanged', () => {
+    // Only call showChapters once per page load to avoid multiple fetches on bootstrap
+    if (!window.__initialized_chapters__) {
+      window.__initialized_chapters__ = true;
+      showChapters();
+    }
+  });
 })();

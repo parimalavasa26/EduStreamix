@@ -88,5 +88,11 @@
   "Back": "பின்",
   "Next": "அடுத்து",
   "Generate Quiz": "வினாடி வினா உருவாக்கு",
-  "Test your knowledge with an AI-generated quiz!": "AI-உருவாக்கிய வினாடி வினாவுடன் உங்கள் அறிவை சோதிக்கவும்!"
+  "Test your knowledge with an AI-generated quiz!": "AI-உருவாக்கிய வினாடி வினாவுடன் உங்கள் அறிவை சோதிக்கவும்!",
+  "Select Your Board": "உங்கள் போர்டைத் தேர்ந்தெடுக்கவும்",
+  "Choose Your Subject": "உங்கள் பாடத்தைத் தேர்ந்தெடுக்கவும்",
+  "Choose your language": "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
+  "Choose your Board to access study materials": "பாடப் பொருட்களைப் பெற உங்கள் போர்டைத் தேர்ந்தெடுக்கவும்",
+  "Mark as Watched": "பார்த்ததாகக் குறிக்கவும்",
+  "Watched": "பார்க்கப்பட்டது"
 }

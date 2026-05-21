@@ -18,15 +18,21 @@
       <span class="brand-text">EduStreami<span class="brand-x">x</span></span>
     </a>
     <div class="nav-links">
-      <select class="nav-lang-switcher" id="nav-lang-switcher">
-        <option value="English">English</option>
-        <option value="Hindi">हिंदी</option>
-        <option value="Telugu">తెలుగు</option>
-        <option value="Tamil">தமிழ்</option>
-        <option value="Kannada">ಕನ್ನಡ</option>
-        <option value="Malayalam">മലയാളം</option>
-      </select>
-      <a href="/" data-i18n="Home">Home</a>
+      <a href="/" class="nav-home-link">
+        <span class="home-icon">🏠</span>
+        <span class="home-text" data-i18n="Home">Home</span>
+      </a>
+      <div class="nav-lang-group">
+        <span class="nav-lang-label" data-i18n="Choose your language">Choose your language</span>
+        <select class="nav-lang-switcher" id="nav-lang-switcher">
+          <option value="English">English</option>
+          <option value="Hindi">हिंदी</option>
+          <option value="Telugu">తెలుగు</option>
+          <option value="Tamil">தமிழ்</option>
+          <option value="Kannada">ಕನ್ನಡ</option>
+          <option value="Malayalam">മലയാളം</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -34,8 +40,8 @@
     <div class="step-container">
 
       <div class="step-header">
-        <h1 class="step-title"><span class="hero-highlight" data-i18n="Subjects">Subjects</span></h1>
-        <p class="step-subtitle font-lucida" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
+        <h1 class="step-title"><span class="hero-highlight" data-i18n="Choose Your Subject">Choose Your Subject</span></h1>
+        <p class="step-subtitle font-lucida" style="font-weight: 700;" data-i18n="Pick a subject to explore chapters and start watching">Pick a subject to explore chapters and start watching</p>
       </div>
 
       <div class="subjects-grid" id="subjects-grid">
@@ -82,19 +88,31 @@
           }
 
           grid.innerHTML = '';
+          const storedSubject = localStorage.getItem('selectedSubject');
           data.subjects.forEach((subjTranslated, i) => {
             const originalSubj = data.originalSubjects ? data.originalSubjects[i] : subjTranslated;
             const card = document.createElement('a');
-            card.href = '/study?grade=' + GRADE + '&board=' + BOARD + '&language=' + appLang + '&subject=' + encodeURIComponent(originalSubj);
+            card.href = '#';
             card.className = 'subject-card';
+            if (storedSubject === originalSubj) {
+              card.classList.add('selected');
+            }
             card.id = 'subject-' + originalSubj.toLowerCase().replace(/\s+/g, '-');
             card.innerHTML =
               '<span class="subject-icon">' + (SUBJECT_ICONS[originalSubj] || '📖') + '</span>' +
               '<span class="subject-name">' + subjTranslated + '</span>';
             
-            // Save selection to localStorage on click
-            card.addEventListener('click', () => {
+            // Save selection to localStorage on click & update state
+            card.addEventListener('click', (e) => {
+              e.preventDefault();
               localStorage.setItem('selectedSubject', originalSubj);
+              
+              // Clear previous selection and select current
+              document.querySelectorAll('.subject-card').forEach(c => c.classList.remove('selected'));
+              card.classList.add('selected');
+
+              // Notify global nav to enable Next button
+              if (window.updateGlobalNav) window.updateGlobalNav();
             });
 
             grid.appendChild(card);
