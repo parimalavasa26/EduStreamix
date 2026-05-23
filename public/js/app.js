@@ -10,6 +10,32 @@
   let currentChapterData = null;
   let ytPlayer = null;
 
+  // Frontend-only display name mapping for ICSE English (safe; does not change internal keys)
+  // Maps lessonNo -> display label for chapters where internal chapterName must remain unchanged
+  const ICSE_EN_DISPLAY_MAP = {
+    '3': 'Present Tense',
+    '4': 'Past Tense',
+    '5': 'Future Tense',
+    '6': 'Sentences - Part 1',
+    '7': 'Sentences - Part 2',
+    '14': 'Active and Passive Voice - Part 1',
+    '15': 'Active and Passive Voice - Part 2',
+    '20': 'Reported Speech - Part 1',
+    '21': 'Reported Speech - Part 2',
+    '23': 'Transformation of Sentences - Part 1',
+    '24': 'Transformation of Sentences - Part 2'
+  };
+
+  function getDisplayLabelForChapter(ch) {
+    if (!ch) return null;
+    // Only apply mapping for ICSE board when the selected subject is English
+    if ((BOARD || '').toUpperCase() === 'ICSE' && (SUBJECT || '').toLowerCase() === 'english') {
+      const key = String(ch.lessonNo != null ? ch.lessonNo : (ch.lesson != null ? ch.lesson : '')).trim();
+      if (key && ICSE_EN_DISPLAY_MAP[key]) return ICSE_EN_DISPLAY_MAP[key];
+    }
+    return null;
+  }
+
   // Inject YouTube API
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
@@ -109,10 +135,13 @@
           });
 
           const chapterTitle = cleanChapterTitle(ch.chapterName || '-');
+          // apply frontend display mapping when applicable (ICSE English)
+          const mapped = getDisplayLabelForChapter(ch);
+          const displayTitle = mapped || chapterTitle;
           const checkmark = isWatched ? '<span class="watched-check">✔️</span>' : '';
           tr.innerHTML = `
             <td class="col-lesson">${ch.lessonNo || '-'}${checkmark}</td>
-            <td class="col-title">${chapterTitle}</td>
+            <td class="col-title">${displayTitle}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -200,7 +229,9 @@
         cachedFlag = data.cached;
       }
 
-      videoData.title = cleanChapterTitle(currentChapterData.chapterName) || videoData.title || '';
+      // prefer frontend display mapping for the video title when applicable
+      const mappedVideoTitle = getDisplayLabelForChapter(currentChapterData);
+      videoData.title = mappedVideoTitle || cleanChapterTitle(currentChapterData.chapterName) || videoData.title || '';
       videoData.viewCount = null;
       videoData.likeCount = null;
 

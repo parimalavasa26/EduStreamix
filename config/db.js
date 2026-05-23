@@ -1,44 +1,48 @@
-/* ──────────────────────────────────────────────
-   MongoDB Connection Utility
-   ────────────────────────────────────────────── */
-
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
+const atlasOptions = {
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  family: 4
+};
 
 /**
  * Connects to MongoDB Atlas using the URI provided in environment variables.
- * Includes robust error handling and event listeners for production stability.
  */
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
-
-    console.log(`\n✅ MongoDB Connected: ${conn.connection.host}`);
-    
-    // Optional: Log database name to confirm connection
-    console.log(`📂 Database: ${conn.connection.name}\n`);
-
-  } catch (err) {
-    console.error(`\n❌ MongoDB Connection Error: ${err.message}`);
-    
-    // Detailed troubleshooting for beginners
-    if (err.message.includes('Authentication failed')) {
-      console.error('👉 TIP: Check your username and password in the .env file.');
-    } else if (err.message.includes('queryTxt ETIMEOUT')) {
-      console.error('👉 TIP: Check your internet connection or IP whitelisting in Atlas.');
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not defined');
     }
 
-    // In production, you might want to retry or exit
-    // process.exit(1); 
+    const conn = await mongoose.connect(process.env.MONGO_URI, atlasOptions);
+
+    console.log('MongoDB Atlas Connected Successfully');
+    console.log(`Database: ${conn.connection.name}`);
+  } catch (err) {
+    console.error(`MongoDB Atlas Connection Error: ${err.message}`);
+
+    if (err.message.includes('Authentication failed')) {
+      console.error('TIP: Check your username and password in the .env file.');
+    } else if (err.message.includes('querySrv') || err.message.includes('ETIMEOUT') || err.message.includes('ECONNREFUSED')) {
+      console.error('TIP: Check your internet connection, DNS, or Atlas network access list.');
+    }
   }
 };
 
-// Handle connection events for better monitoring
 mongoose.connection.on('disconnected', () => {
-  console.log('⚠️  MongoDB disconnected. Attempting to reconnect...');
+  console.log('MongoDB disconnected. Mongoose will attempt to reconnect...');
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('MongoDB Atlas reconnected successfully');
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error(`🛑 MongoDB runtime error: ${err}`);
+  console.error(`MongoDB runtime error: ${err}`);
 });
 
 module.exports = connectDB;

@@ -240,6 +240,60 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .step-subtitle{font-family:var(--font-elegant);font-size:1.05rem;color:var(--text-secondary);max-width:600px;margin:0 auto}
 .step-subtitle.font-lucida{font-family:var(--font-handwriting-alt)}
 
+.page-top-heading,
+.study-page-heading {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:0.28rem;
+  margin:0 auto 1.5rem;
+  padding:0 0.6rem;
+  max-width:860px;
+}
+.page-top-heading .top-heading-line,
+.study-page-heading .top-heading-line {
+  font-family:"Calisto MT", serif;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--text-primary);
+  line-height:1.05;
+  margin:0;
+}
+.page-top-heading .top-heading-board,
+.study-page-heading .top-heading-board,
+.page-top-heading .top-heading-subject,
+.study-page-heading .top-heading-subject {
+  font-family:"Bell MT", serif;
+  font-size:clamp(1.35rem, 2.5vw, 1.95rem);
+  font-weight:700;
+  color:var(--text-primary);
+  text-transform:uppercase;
+  margin:0;
+}
+.page-top-heading .page-main-title,
+.study-page-heading .page-main-title {
+  font-family:"Bell MT", serif;
+  font-size:clamp(2rem, 5vw, 3rem);
+  font-weight:800;
+  color:var(--text-primary);
+  margin:0;
+}
+.page-top-heading .page-subtitle,
+.study-page-heading .page-subtitle {
+  font-family:'Lucida Handwriting', 'Lucida Cursive', cursive;
+  font-size:clamp(1rem, 2vw, 1.15rem);
+  color:var(--text-secondary);
+  margin:0;
+  line-height:1.6;
+}
+.subjects-page .step-main,
+.study-body .study-main {
+  align-items:center;
+}
 .back-step-link{display:inline-flex;align-items:center;gap:.3rem;font-size:.85rem;font-weight:600;color:var(--accent-1);margin-bottom:1.2rem;transition:opacity .3s;font-family:var(--font-elegant)}
 .back-step-link:hover{opacity:.7}
 
@@ -328,7 +382,7 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 
 /* Chapters */
 .chapters-section{animation:fadeInUp .5s var(--ease-out) both;width:100%;max-width:980px;margin:0 auto}
-.chapters-page-title{font-family:var(--font-heading);font-size:clamp(1.65rem,4vw,2.45rem);font-weight:900;letter-spacing:-0.5px;line-height:1.05;text-align:center;margin:0 0 1rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapters-page-title{font-family:"Bell MT", serif;font-size:clamp(2rem, 5vw, 3rem);font-weight:800;letter-spacing:0.03em;line-height:1.1;text-align:center;margin:0 0 1rem;color:var(--text-primary)}
 .chapters-list{display:flex;flex-direction:column;gap:0.55rem;max-height:calc(100vh - 175px);overflow-y:auto;padding-right:0.5rem;scrollbar-width:thin;scrollbar-color:var(--accent-1) rgba(255,255,255,0.5)}
 .chapters-list::-webkit-scrollbar{width:10px}
 .chapters-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.7);border-radius:999px}
@@ -347,11 +401,24 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 /* Video */
 .video-section{animation:fadeInUp .5s var(--ease-out) both;width:100%}
 .video-top-bar{margin-bottom:1rem}
-.video-title{font-family:var(--font-heading);font-size:clamp(1.15rem,3vw,1.55rem);font-weight:900;margin-bottom:.75rem;line-height:1.2;color:var(--text-primary)}
+.video-title{font-family:"Bell MT", serif;font-size:clamp(2rem, 5vw, 3rem);font-weight:800;margin-bottom:.75rem;line-height:1.1;color:var(--text-primary)}
 .video-meta{display:none}
 .video-meta span{display:flex;align-items:center;gap:.3rem}
 .video-wrapper{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--bg-secondary);border:1px solid var(--border-glass);box-shadow:0 12px 36px rgba(0,0,0,0.07)}
 .video-wrapper iframe{position:absolute;inset:0;width:100%;height:100%}
+
+/* Scoped override: keep video page chapter title medium-sized */
+/* Targets the video column/section specifically so global headings don't affect it */
+.study-video-column .video-title,
+.video-section .video-title {
+  font-family: "Bell MT", serif;
+  font-size: clamp(1rem, 1.8vw, 1.35rem) !important;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+}
 .video-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:var(--text-secondary);font-size:.95rem}
 .loader-spinner{width:40px;height:40px;border:3px solid var(--border-glass);border-top-color:var(--accent-1);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -1006,7 +1073,7 @@ img, svg, iframe, video {
 }
 
 .chapters-page-title {
-  font-size: clamp(1.35rem, 3.4vw, 2.15rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   text-align: center;
   margin: 0 0 0.75rem;
   background: var(--accent-gradient);
@@ -1067,15 +1134,11 @@ img, svg, iframe, video {
 }
 
 .video-title {
-  font-family: var(--font-heading);
-  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
-  font-weight: 900;
+  font-family: "Bell MT", serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
   line-height: 1.2;
   margin-bottom: 0.45rem;
-}
-
-.video-meta {
-  display: none;
 }
 
 .video-wrapper {
@@ -1350,7 +1413,7 @@ img, svg, iframe, video {
   .step-title,
   .bp-title,
   .chapters-page-title {
-    font-size: 1.25rem;
+    font-size: clamp(2rem, 5vw, 3rem);
   }
 
   .step-subtitle,
@@ -1436,7 +1499,7 @@ img, svg, iframe, video {
   }
 
   .video-title {
-    font-size: 1rem;
+    font-size: clamp(2rem, 5vw, 3rem);
     margin-bottom: 0.35rem;
   }
 
