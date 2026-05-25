@@ -158,6 +158,7 @@
   /* ── Video Mode ── */
   async function showVideoMode(selectedLanguage, instantSwitch) {
     selectedLanguage = selectedLanguage || LANGUAGE;
+    currentQuizKey = getQuizKey(currentChapterData);
     const titleEl    = document.getElementById('video-title');
     const metaEl     = document.getElementById('video-meta');
     const loader     = document.getElementById('video-loader');
@@ -282,7 +283,14 @@
   }
 
   /* ── Quiz ── */
+  const quizStateCache = {};
   let currentQuizData = null;
+  let currentQuizKey = null;
+
+  function getQuizKey(chapter) {
+    if (!chapter || !chapter.chapterName) return null;
+    return `${GRADE}_${BOARD}_${SUBJECT}_${LANGUAGE}_${chapter.chapterName}`;
+  }
 
   function resetQuizSection() {
     const section   = document.getElementById('quiz-section');
@@ -291,16 +299,24 @@
     const result    = document.getElementById('quiz-result');
     const retakeBtn = document.getElementById('quiz-retake-btn');
     const generateBtn = document.getElementById('quiz-generate-btn');
+    const submitBtn = document.getElementById('quiz-submit-btn');
 
     if (!section || !body || !generateBtn) return;
 
-    section.style.display    = '';
-    actions.style.display    = 'none';
-    result.style.display     = 'none';
-    retakeBtn.style.display  = 'none';
+    currentQuizData = null;
+    if (currentQuizKey) {
+      quizStateCache[currentQuizKey] = null;
+      section.dataset.quizKey = currentQuizKey;
+    }
+
+    section.style.display     = '';
+    actions.style.display     = 'none';
+    result.style.display      = 'none';
+    retakeBtn.style.display   = 'none';
+    if (submitBtn) submitBtn.style.display = 'none';
     generateBtn.style.display = 'inline-flex';
-    generateBtn.disabled     = false;
-    generateBtn.textContent  = window.t ? window.t('Generate Quiz') : 'Generate Quiz';
+    generateBtn.disabled      = false;
+    generateBtn.textContent   = window.t ? window.t('Generate Quiz') : 'Generate Quiz';
     generateBtn.setAttribute('data-i18n', 'Generate Quiz');
 
     body.innerHTML = `<p class="quiz-prompt" data-i18n="Generate a practice quiz for this lesson.">Generate a practice quiz for this lesson.</p>`;
@@ -321,9 +337,14 @@
       return;
     }
 
-    generateBtn.disabled = true;
-    actions.style.display = 'none';
-    result.style.display  = 'none';
+    currentQuizKey = getQuizKey(currentChapterData);
+    currentQuizData = null;
+    if (currentQuizKey) quizStateCache[currentQuizKey] = null;
+
+    generateBtn.disabled   = true;
+    actions.style.display   = 'none';
+    result.style.display    = 'none';
+    submitBtn.style.display = 'none';
     retakeBtn.style.display = 'none';
     body.innerHTML = `
       <div class="loader-spinner"></div>
@@ -349,6 +370,7 @@
       if (!response.ok) throw new Error(data.message || 'Quiz generation failed.');
 
       currentQuizData = data.questions;
+      if (currentQuizKey) quizStateCache[currentQuizKey] = currentQuizData;
       body.innerHTML  = '';
 
       const explanationLabel = window.t ? window.t('Explanation:') : 'Explanation:';
@@ -377,11 +399,18 @@
         body.innerHTML += html;
       });
 
-      actions.style.display = 'block';
-      submitBtn.onclick = handleQuizSubmit;
+      actions.style.display          = 'block';
+      submitBtn.style.display         = 'inline-flex';
+      submitBtn.disabled              = false;
+      submitBtn.onclick               = handleQuizSubmit;
+      generateBtn.style.display       = 'none';
+      generateBtn.disabled            = false;
+      retakeBtn.style.display         = 'inline-flex';
+      retakeBtn.onclick               = generateQuiz;
     } catch (err) {
       body.innerHTML = `<p class="error-msg">Error: ${err.message}</p>`;
       generateBtn.disabled = false;
+      generateBtn.style.display = 'inline-flex';
       generateBtn.textContent = window.t ? window.t('Generate Quiz') : 'Generate Quiz';
     }
   }
@@ -395,6 +424,8 @@
     const submitBtn = document.getElementById('quiz-submit-btn');
     const retakeBtn = document.getElementById('quiz-retake-btn');
     const resultEl  = document.getElementById('quiz-result');
+
+    if (!currentQuizData || !Array.isArray(currentQuizData)) return;
 
     currentQuizData.forEach((q, qi) => {
       const selected    = document.querySelector(`input[name="q${qi}"]:checked`);
@@ -428,7 +459,7 @@
     resultEl.className     = 'quiz-result ' + (score === currentQuizData.length ? 'good' : (score > currentQuizData.length / 2 ? 'ok' : 'bad'));
 
     submitBtn.style.display  = 'none';
-    retakeBtn.style.display  = 'block';
+    retakeBtn.style.display  = 'inline-flex';
     retakeBtn.onclick        = generateQuiz;
   }
 
