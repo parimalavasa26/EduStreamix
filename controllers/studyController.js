@@ -19,6 +19,72 @@ const CURRICULUM = {
   }
 };
 
+function getEmbedUrl(url) {
+  if (!url) return '';
+  if (url.includes('embed/')) return url;
+  let videoId = '';
+  if (url.includes('v=')) {
+    videoId = url.split('v=')[1].split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1].split('?')[0];
+  }
+  if (videoId) {
+    if (videoId.includes('?')) videoId = videoId.split('?')[0];
+    if (videoId.includes('&')) videoId = videoId.split('&')[0];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url;
+}
+
+async function resolveVideoUrl(ch, grade, board, subject) {
+  if (!ch) return null;
+  
+  // 1. If chapter already contains a valid URL/link, use it
+  const possibleUrl = ch.videoUrl || ch.embedUrl || ch.youtubeUrl || ch.link;
+  if (possibleUrl) {
+    return getEmbedUrl(possibleUrl);
+  }
+
+  const gradeNum = 8;
+  const boardUp = board ? board.toUpperCase() : 'SSC';
+
+  // 2. Check cached DB video for that chapter WITHOUT language filtering
+  try {
+    const directVideo = await Video.findOne({
+      grade: String(gradeNum),
+      board: boardUp,
+      subject: subject,
+      chapter: ch.chapterName
+    });
+    if (directVideo && directVideo.url) {
+      return getEmbedUrl(directVideo.url);
+    }
+  } catch (err) {
+    console.warn('Video.findOne lookup failed in resolveVideoUrl:', err.message);
+  }
+
+  // 3. Check Subject model unit chapters for that chapter WITHOUT language filtering
+  try {
+    const doc = await Subject.findOne({ grade: gradeNum, board: boardUp, subject });
+    if (doc && doc.units) {
+      for (const unit of doc.units) {
+        for (const chap of unit.chapters) {
+          if (chap.chapterName === ch.chapterName && chap.videos && chap.videos.length > 0) {
+            const vid = chap.videos[0]; // pick any video
+            if (vid) {
+              return vid.embedUrl || getEmbedUrl(vid.youtubeVideoId);
+            }
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Subject.findOne lookup failed in resolveVideoUrl:', err.message);
+  }
+
+  return null;
+}
+
 /**
  * GET /  — Render landing page
  */
@@ -164,7 +230,13 @@ exports.getChapters = async (req, res) => {
             link: link // Custom property for the frontend
           });
         });
-        return res.json({ grade: gradeNum, board: boardUp, subject, chapters });
+        const chaptersWithUrls = await Promise.all(
+          chapters.map(async (ch) => {
+            ch.videoUrl = await resolveVideoUrl(ch, gradeNum, boardUp, subject);
+            return ch;
+          })
+        );
+        return res.json({ grade: gradeNum, board: boardUp, subject, chapters: chaptersWithUrls });
       }
     }
 
@@ -189,22 +261,37 @@ exports.getChapters = async (req, res) => {
             quizQuestions: ch.quizQuestions,
             textbookContent: ch.textbookContent,
             summary: ch.summary,
-            originalChapterName: ch.chapterName // Keep original for video fetching
+            originalChapterName: ch.chapterName, // Keep original for video fetching
+            videos: ch.videos // pass videos temporarily so resolveVideoUrl can access them
           });
         });
       });
-      return res.json({ grade: gradeNum, board: boardUp, subject, chapters });
+      const chaptersWithUrls = await Promise.all(
+        chapters.map(async (ch) => {
+          ch.videoUrl = await resolveVideoUrl(ch, gradeNum, boardUp, subject);
+          delete ch.videos; // clean up before sending
+          return ch;
+        })
+      );
+      return res.json({ grade: gradeNum, board: boardUp, subject, chapters: chaptersWithUrls });
     }
   } catch (err) {
     console.warn('getChapters DB lookup failed (MongoDB may be offline):', err.message);
   }
 
   // 3. Fallback: return default chapters when DB is unavailable or not seeded
+  const defaultChapters = _getDefaultChapters(subject, gradeNum, boardUp);
+  const chaptersWithUrls = await Promise.all(
+    defaultChapters.map(async (ch) => {
+      ch.videoUrl = await resolveVideoUrl(ch, gradeNum, boardUp, subject);
+      return ch;
+    })
+  );
   res.json({
     grade: gradeNum,
     board: boardUp,
     subject,
-    chapters: _getDefaultChapters(subject, gradeNum, boardUp)
+    chapters: chaptersWithUrls
   });
 };
 

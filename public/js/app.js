@@ -131,7 +131,7 @@
           
           tr.addEventListener('click', () => {
             currentChapterData = ch;
-            showVideoMode(LANGUAGE);
+            showVideoMode();
           });
 
           const chapterTitle = cleanChapterTitle(ch.chapterName || '-');
@@ -156,8 +156,7 @@
   }
 
   /* ── Video Mode ── */
-  async function showVideoMode(selectedLanguage, instantSwitch) {
-    selectedLanguage = selectedLanguage || LANGUAGE;
+  async function showVideoMode(instantSwitch) {
     currentQuizKey = getQuizKey(currentChapterData);
     const titleEl    = document.getElementById('video-title');
     const metaEl     = document.getElementById('video-meta');
@@ -185,98 +184,33 @@
     }
 
     try {
-      let videoData = null;
-      let cachedFlag = false;
+      const videoUrl = currentChapterData?.videoUrl || '';
 
-      if (currentChapterData.link) {
-        let videoId = '';
-        if (currentChapterData.link.includes('embed/')) {
-          videoId = currentChapterData.link.split('embed/')[1].split('?')[0];
-        } else if (currentChapterData.link.includes('v=')) {
-          videoId = currentChapterData.link.split('v=')[1].split('&')[0];
-        }
-
-        if (videoId) {
-          videoData = {
-            youtubeVideoId: videoId,
-            title: currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT
-          };
-          cachedFlag = true;
-        } else {
-          window.open(currentChapterData.link, '_blank');
-          hideAllSections();
-          chaptersSection.style.display = '';
-          return;
-        }
+      if (!videoUrl) {
+        titleEl.textContent = window.t ? window.t('No video found') : 'No video found';
+        loader.innerHTML = '<p class="no-data-msg error-msg">' + (window.t ? window.t('Video unavailable for this chapter') : 'Video unavailable for this chapter') + '</p>';
+        return;
       }
 
-      if (!videoData) {
-        const params = new URLSearchParams({
-          chapter:  currentChapterData.originalChapterName || currentChapterData.chapterName,
-          grade:    GRADE,
-          language: selectedLanguage,
-          board:    BOARD,
-          subject:  SUBJECT
-        });
-        const res  = await fetch('/api/video?' + params.toString());
-        const data = await res.json();
-
-        if (!data.video) {
-          titleEl.textContent = window.t ? window.t('No video found') : 'No video found';
-          loader.innerHTML = '<p class="no-data-msg error-msg">' + (window.t ? window.t('No video found for this topic.') : 'No video found for this topic.') + '</p>';
-          return;
-        }
-        videoData  = data.video;
-        cachedFlag = data.cached;
-      }
-
-      // prefer frontend display mapping for the video title when applicable
+      // Use the chapter name for the video title (same for all languages)
       const mappedVideoTitle = getDisplayLabelForChapter(currentChapterData);
-      videoData.title = mappedVideoTitle || cleanChapterTitle(currentChapterData.chapterName) || videoData.title || '';
-      videoData.viewCount = null;
-      videoData.likeCount = null;
+      const displayVideoTitle = (mappedVideoTitle ? cleanChapterTitle(mappedVideoTitle) : cleanChapterTitle(currentChapterData.chapterName)) || '';
 
-      const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
-      const code = langCodes[selectedLanguage] || 'en';
-
-      if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
-
-      placeholder = document.getElementById('video-iframe-container');
-      if (!placeholder) {
-        placeholder = document.createElement('div');
-        placeholder.id = 'video-iframe-container';
-        placeholder.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%;';
-        wrapper.appendChild(placeholder);
-      } else {
-        placeholder.style.display = 'block';
+      placeholder.style.display = 'block';
+      let iframe = document.getElementById('video-iframe');
+      if (!iframe) {
+        placeholder.innerHTML = `<iframe id="video-iframe" src="${videoUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%; height:100%;"></iframe>`;
+      } else if (currentChapterData?.videoUrl) {
+        iframe.src = currentChapterData.videoUrl;
       }
-
-      ytPlayer = new YT.Player('video-iframe-container', {
-        videoId: videoData.youtubeVideoId,
-        playerVars: {
-          autoplay: 1, rel: 0, modestbranding: 1,
-          cc_load_policy: 1, hl: code, cc_lang_pref: code
-        },
-        events: {
-          'onReady': (event) => {
-            try {
-              event.target.loadModule('captions');
-              event.target.setOption('captions', 'track', { languageCode: code });
-            } catch (e) {}
-          }
-        }
-      });
 
       loader.style.display = 'none';
-      titleEl.textContent = videoData.title || (currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT);
+      titleEl.textContent = displayVideoTitle || (currentChapterData.chapterName + ' — ' + DISPLAY_SUBJECT);
       titleEl.removeAttribute('data-i18n');
-
-      let meta = '';
-      if (videoData.viewCount) meta += '<span>👁️ ' + Number(videoData.viewCount).toLocaleString() + ' views</span>';
-      if (videoData.likeCount) meta += '<span>👍 ' + Number(videoData.likeCount).toLocaleString() + ' likes</span>';
-      metaEl.innerHTML = meta;
+      metaEl.innerHTML = '';
 
     } catch (e) {
+      console.error(e);
       titleEl.textContent = 'Error loading video';
       loader.innerHTML = '<p class="no-data-msg error-msg">Could not load video.</p>';
     }
@@ -467,8 +401,9 @@
   function hideAllSections() {
     chaptersSection.style.display = 'none';
     videoSection.style.display    = 'none';
-    if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
-      ytPlayer.stopVideo();
+    const iframe = document.getElementById('video-iframe');
+    if (iframe) {
+      iframe.src = '';
     }
   }
 
@@ -477,15 +412,11 @@
     const newLang = e.detail;
     LANGUAGE = newLang;
 
-    // Update YT captions seamlessly
-    if (ytPlayer && typeof ytPlayer.setOption === 'function') {
-      const langCodes = { 'English':'en', 'Hindi':'hi', 'Telugu':'te', 'Tamil':'ta', 'Kannada':'kn', 'Malayalam':'ml' };
-      const code = langCodes[newLang] || 'en';
-      try { ytPlayer.setOption('captions', 'track', { languageCode: code }); } catch (err) {}
+    // Only re-render chapters if NOT currently viewing a video
+    const isVideoVisible = (videoSection.style.display !== 'none');
+    if (!isVideoVisible) {
+      showChapters();
     }
-
-    // Re-render chapters on language change (clears session cache for new lang)
-    showChapters();
   });
 
   /* ── Back Button ── */
