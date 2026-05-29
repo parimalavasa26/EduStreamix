@@ -1,0 +1,47 @@
+*** Begin Patch
+*** Update File: c:\Users\Parimala\Downloads\EDUSTREAMIX\server.js
+@@
+-// ── Start Server ────────────────────────────
+-const server = app.listen(PORT, () => {
+-  console.log(`\n🚀 EduStreamix is running at http://localhost:${PORT}\n`);
+-});
+-
+-// ── Server Error Handling ───────────────────
+-server.on('error', (err) => {
+-  if (err.code === 'EADDRINUSE') {
+-    console.error(`Port ${PORT} is in use. Trying port ${PORT + 1}...`);
+-
+-    app.listen(PORT + 1, () => {
+-      console.log(`\n🚀 EduStreamix is running at http://localhost:${PORT + 1}\n`);
+-    });
+-  } else {
+-    console.error("Server Error:", err);
+-  }
+-});
++// ── Start Server ────────────────────────────
++const DEFAULT_PORT = 3000;
++
++function startServer(port) {
++
++    const server = app.listen(port, () => {
++
++        console.log(`Server running on port ${port}`);
++    });
++
++    server.on("error", (err) => {
++
++        if (err.code === "EADDRINUSE") {
++
++            console.log(`Port ${port} is in use. Trying ${port + 1}...`);
++
++            startServer(port + 1);
++
++        } else {
++
++            console.error("Server Error:", err);
++        }
++    });
++}
++
++startServer(DEFAULT_PORT);
+*** End Patch

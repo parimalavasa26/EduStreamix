@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EduStreamix secure payment gateway" />
+    <title>EduStreamix — Unlock Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/!payment.css" />
+  </head>
+  <body>
+    <div class="payment-page">
+      <!-- Ambient decorative glow elements in background -->
+      <div class="ambient-glow bg-glow-1"></div>
+      <div class="ambient-glow bg-glow-2"></div>
+
+      <div class="payment-grid">
+        <section class="info-panel" aria-labelledby="page-title">
+          <div id="lock-icon" class="lock-icon locked" role="img" aria-label="Locked status">🔒</div>
+          <div class="hero-chip">Just ₹10</div>
+          <h1 id="page-title">SITE LOCKED</h1>
+          <p class="grade-description">Unlock the ultimate learning experience for Grade 8. No distractions, just pure focus!</p>
+
+          <!-- Payment Step Section (Shown First and Directly Triggers Razorpay) -->
+          <div class="payment-step">
+            <button id="pay-button" class="pay-button" type="button" aria-label="Pay Ten Rupees Now">
+              <span class="btn-text">PAY ₹10 NOW</span>
+              <span class="btn-spinner hidden" aria-hidden="true"></span>
+            </button>
+            <p class="secure-note">100% Secure Checkout</p>
+          </div>
+
+          <!-- Success State Section -->
+          <div id="success-state" class="success-state hidden" role="region" aria-live="polite">
+            <div class="confetti-container" id="confetti-container"></div>
+            <div class="success-icon-wrap">
+              <svg class="checkmark-svg" viewBox="0 0 52 52" aria-hidden="true">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+              </svg>
+            </div>
+            <h2 class="success-heading">Access Unlocked Successfully</h2>
+            <p class="success-subtext">Redirecting to the site...</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Toast notifications -->
+      <div id="payment-toast" class="toast hidden" role="alert" aria-live="assertive"></div>
+
+      <!-- Page overlay during loading states -->
+      <div id="page-overlay" class="overlay-hidden" aria-hidden="true">
+        <div class="overlay-panel">
+          <div class="spinner"></div>
+          <div class="overlay-message">Preparing secure checkout...</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="/js/!payment.js" defer></script>
+  </body>
+</html>
