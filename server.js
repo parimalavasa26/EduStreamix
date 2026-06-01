@@ -221,7 +221,7 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start Server ────────────────────────────
-const DEFAULT_PORT = 3000;
+const DEFAULT_PORT = 30002;
 
 function startServer(port) {
     const server = app.listen(port, () => {
