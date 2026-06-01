@@ -221,19 +221,22 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start Server ────────────────────────────
-const DEFAULT_PORT = 3000;
+// ── Start Server ────────────────────────────
+
+const DEFAULT_PORT = process.env.PORT || 3000;
 
 function startServer(port) {
     const server = app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
+        console.log(`🚀 Server running on port ${port}`);
     });
 
     server.on("error", (err) => {
         if (err.code === "EADDRINUSE") {
-            console.log(`Port ${port} is in use. Trying ${port + 1}...`);
+            console.log(`⚠️ Port ${port} is already in use. Trying ${port + 1}...`);
             startServer(port + 1);
         } else {
-            console.error("Server Error:", err);
+            console.error("❌ Server Error:", err);
+            process.exit(1);
         }
     });
 }
