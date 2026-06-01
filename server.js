@@ -221,7 +221,6 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start Server ────────────────────────────
-// ── Start Server ────────────────────────────
 const DEFAULT_PORT = 30002;
 
 function startServer(port) {
