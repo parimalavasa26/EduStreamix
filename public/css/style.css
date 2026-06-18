@@ -409,6 +409,31 @@ button{font-family:var(--font-body);cursor:pointer;border:none;background:none;c
 .video-wrapper{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:var(--bg-secondary);border:1px solid var(--border-glass);box-shadow:0 12px 36px rgba(0,0,0,0.07)}
 .video-wrapper iframe{position:absolute;inset:0;width:100%;height:100%}
 
+/* Video Disclaimer Card */
+.video-disclaimer-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 12px 12px;
+  padding: 0.9rem 1.2rem;
+  margin-top: -4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 0.5s var(--ease-out) 0.2s both;
+}
+
+.video-disclaimer-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6b7280;
+  text-align: center;
+  margin: 0;
+  font-weight: 400;
+}
+
+.video-disclaimer-text strong {
+  font-weight: 600;
+  color: #4b5563;
+}
+
 /* Scoped override: keep video page chapter title medium-sized */
 /* Targets the video column/section specifically so global headings don't affect it */
 .study-video-column .video-title,
@@ -1536,6 +1561,16 @@ img, svg, iframe, video {
     border-radius: 11px;
   }
 
+  .video-disclaimer-card {
+    padding: 0.75rem 1rem;
+    border-radius: 0 0 11px 11px;
+  }
+
+  .video-disclaimer-text {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
   .quiz-header,
   .ai-summary-header,
   .key-moments-header,
@@ -1600,6 +1635,14 @@ img, svg, iframe, video {
     min-height: 100vh;
     overflow: hidden;
     padding: 0;
+  }
+
+  .video-disclaimer-card {
+    padding: 0.8rem 1.1rem;
+  }
+
+  .video-disclaimer-text {
+    font-size: 12px;
   }
 
   .subjects-page .navbar {
